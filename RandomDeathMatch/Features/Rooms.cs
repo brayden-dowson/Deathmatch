@@ -38,15 +38,6 @@ namespace TheRiptide
         private static Dictionary<RoomIdentifier, float> closing_rooms = new Dictionary<RoomIdentifier, float>();
         private static Dictionary<RoomIdentifier, int> closed_rooms = new Dictionary<RoomIdentifier, int>();
 
-        //private static float rooms_per_player = 2.5f;
-        //private static int surface_weight = 5;
-
-        //private static float decontamination_time = 25.0f;
-        //private static float decontamination_caution = 20.0f;
-        //private static float decontamination_warning = 14.0f;
-        //private static float decontamination_danger = 7.0f;
-        //private static float surface_decontamination_time_multiplier = 2.0f;
-
         private static CoroutineHandle update_handle = new CoroutineHandle();
         private static CoroutineHandle light_update_handle = new CoroutineHandle();
         private static CoroutineHandle decontamination_update_handle = new CoroutineHandle();
