@@ -264,7 +264,7 @@ namespace TheRiptide
                     if (killstreak.mode == Killstreaks.KillstreakMode.Easy)
                         AddFirearm(player, loadout.tertiary, GunAmmoType(loadout.primary) != GunAmmoType(loadout.tertiary) && GunAmmoType(loadout.secondary) != GunAmmoType(loadout.tertiary));
                 }
-                Killstreaks.AddKillstreakStartItems(player);
+                Killstreaks.Singleton.AddKillstreakStartItems(player);
             }
         }
 

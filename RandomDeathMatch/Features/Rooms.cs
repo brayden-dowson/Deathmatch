@@ -10,30 +10,53 @@ using UnityEngine;
 using PluginAPI.Core;
 using CustomPlayerEffects;
 using PlayerStatsSystem;
+using System.ComponentModel;
 
 namespace TheRiptide
 {
-    class Rooms
+    public class RoomsConfig
     {
+        public float RoomsPerPlayer { get; set; } = 2.5f;
+        [Description("how resistant surface is to changes in its open/close state. higher numbers will keep surface open/closed for longer")]
+        public int SurfaceWeight { get; set; } = 5;
+        [Description("decon delay. broadcast msg is not sent until time left is less than DecontaminationCaution. we want to buffer this timer to prevent frequent changes in room decon state being seen by the player i.e. lights flickering from yellow to normal")]
+        public float DecontaminationTime { get; set; } = 25.0f;
+        [Description("broadcast with low priority a caution message to the player. see BroadcastOverride.cs for details about priority")]
+        public float DecontaminationCaution { get; set; } = 20.0f;
+        [Description("broadcast with medium priority a warning message to the player")]
+        public float DecontaminationWarning { get; set; } = 14.0f;
+        [Description("broadcast with high priority a danger message to the player")]
+        public float DecontaminationDanger { get; set; } = 7.0f;
+        public float SurfaceDecontaminationTimeMultiplier { get; set; } = 2.0f;
+    }
+
+    public class Rooms
+    {
+        public RoomsConfig config;
+
         private static Dictionary<RoomIdentifier, int> opened_rooms = new Dictionary<RoomIdentifier, int>();
         private static Dictionary<RoomIdentifier, float> closing_rooms = new Dictionary<RoomIdentifier, float>();
         private static Dictionary<RoomIdentifier, int> closed_rooms = new Dictionary<RoomIdentifier, int>();
 
-        private static float rooms_per_player = 2.5f;
-        private static int surface_weight = 5;
+        //private static float rooms_per_player = 2.5f;
+        //private static int surface_weight = 5;
 
-        private static float decontamination_time = 25.0f;
-        private static float decontamination_caution = 20.0f;
-        private static float decontamination_warning = 14.0f;
-        private static float decontamination_danger = 7.0f;
-        private static float surface_decontamination_time_multiplier = 2.0f;
+        //private static float decontamination_time = 25.0f;
+        //private static float decontamination_caution = 20.0f;
+        //private static float decontamination_warning = 14.0f;
+        //private static float decontamination_danger = 7.0f;
+        //private static float surface_decontamination_time_multiplier = 2.0f;
 
         private static CoroutineHandle update_handle = new CoroutineHandle();
         private static CoroutineHandle light_update_handle = new CoroutineHandle();
         private static CoroutineHandle decontamination_update_handle = new CoroutineHandle();
 
-
         public static IEnumerable<RoomIdentifier> OpenedRooms { get { return opened_rooms.Keys; } }
+
+        public Rooms()
+        {
+            config = Deathmatch.Singleton.rooms_config;
+        }
 
         [PluginEvent(ServerEventType.RoundStart)]
         void OnRoundStart()
@@ -75,11 +98,11 @@ namespace TheRiptide
                         break;
                     }
                 }
-                ResizeFacility((int)Math.Round(Player.Count * rooms_per_player));
+                ResizeFacility((int)Math.Round(Player.Count * config.RoomsPerPlayer));
             }
             else
             {
-                ResizeFacility((int)Math.Round(Player.Count * rooms_per_player));
+                ResizeFacility((int)Math.Round(Player.Count * config.RoomsPerPlayer));
             }
         }
 
@@ -92,7 +115,7 @@ namespace TheRiptide
             }
             else if (Player.Count > 2)
             {
-                ResizeFacility((int)Math.Round(Player.Count * rooms_per_player));
+                ResizeFacility((int)Math.Round(Player.Count * config.RoomsPerPlayer));
             }
             ServerConsole.AddLog("player: " + player.Nickname + " left. player count: " + Player.Count);
         }
@@ -117,7 +140,7 @@ namespace TheRiptide
 
         private static IEnumerable<RoomIdentifier> ValidRooms = RoomIdentifier.AllRoomIdentifiers.Where((r) => r.Zone != FacilityZone.Other && r.Zone != FacilityZone.None);
 
-        public static void UnlockFacility()
+        public void UnlockFacility()
         {
             FacilityManager.UnlockAllRooms(DoorLockReason.AdminCommand);
             FacilityManager.OpenAllRooms();
@@ -129,7 +152,7 @@ namespace TheRiptide
             closed_rooms.Clear();
         }
 
-        public static void LockdownFacility()
+        public void LockdownFacility()
         {
             FacilityManager.LockAllRooms(DoorLockReason.AdminCommand);
             FacilityManager.CloseAllRooms();
@@ -141,7 +164,7 @@ namespace TheRiptide
                 closed_rooms.Add(room, RoomWeight(room));
         }
 
-        private static bool SearchForStartRoom(Player player)
+        private bool SearchForStartRoom(Player player)
         {
             if (ValidPlayerInRoom(player))
             {
@@ -154,7 +177,7 @@ namespace TheRiptide
             }
         }
 
-        private static void ResizeFacility(int count)
+        private void ResizeFacility(int count)
         {
             if (count < opened_rooms.Count())
                 ShrinkFacility(opened_rooms.Count() - count);
@@ -162,7 +185,7 @@ namespace TheRiptide
                 ExpandFacility(count - opened_rooms.Count());
         }
 
-        public static void ExpandFacility(int count)
+        public void ExpandFacility(int count)
         {
             if(opened_rooms.IsEmpty())
             {
@@ -217,7 +240,7 @@ namespace TheRiptide
             }  
         }
 
-        public static void ShrinkFacility(int count)
+        public void ShrinkFacility(int count)
         {
             System.Random random = new System.Random();
             for (int i = 0; i < count; i++)
@@ -287,7 +310,7 @@ namespace TheRiptide
             }
         }
 
-        private static IEnumerator<float> _UpdateDecontaminationLights()
+        private IEnumerator<float> _UpdateDecontaminationLights()
         {
             const float delta = 0.2f;
             while (true)
@@ -297,7 +320,7 @@ namespace TheRiptide
                     foreach (var pair in closing_rooms)
                     {
                         bool is_surface = IsSurface(pair.Key);
-                        float caution = (is_surface ? decontamination_caution * surface_decontamination_time_multiplier : decontamination_caution) + 1.0f;
+                        float caution = (is_surface ? config.DecontaminationCaution * config.SurfaceDecontaminationTimeMultiplier : config.DecontaminationCaution) + 1.0f;
                         if (caution >= pair.Value)
                         {
                             float x = pair.Value / caution;
@@ -313,7 +336,7 @@ namespace TheRiptide
             }
         }
 
-        private static IEnumerator<float> _Update()
+        private IEnumerator<float> _Update()
         {
             const float delta = 1.0f/7.0f;
             while (true)
@@ -326,9 +349,9 @@ namespace TheRiptide
                         if (ValidPlayerInRoom(player) && closing_rooms.ContainsKey(player.Room))
                         {
                             bool is_surface = IsSurface(player.Room);
-                            float caution = (is_surface ? decontamination_caution * surface_decontamination_time_multiplier : decontamination_caution) + 1.0f;
-                            float warning = (is_surface ? decontamination_warning * surface_decontamination_time_multiplier : decontamination_warning) + 1.0f;
-                            float danger = (is_surface ? decontamination_danger * surface_decontamination_time_multiplier : decontamination_danger) + 1.0f;
+                            float caution = (is_surface ? config.DecontaminationCaution * config.SurfaceDecontaminationTimeMultiplier : config.DecontaminationCaution) + 1.0f;
+                            float warning = (is_surface ? config.DecontaminationWarning * config.SurfaceDecontaminationTimeMultiplier : config.DecontaminationWarning) + 1.0f;
+                            float danger = (is_surface ? config.DecontaminationDanger * config.SurfaceDecontaminationTimeMultiplier : config.DecontaminationDanger) + 1.0f;
                             float time = closing_rooms[player.Room];
                             if (Math.Abs(time - Math.Round(time)) <= (delta / 2.0f) || danger >= time)
                             {
@@ -363,7 +386,7 @@ namespace TheRiptide
             }
         }
 
-        private static void OpenRoom(RoomIdentifier room)
+        private void OpenRoom(RoomIdentifier room)
         {
             FacilityManager.ResetRoomLight(room);
             HashSet<RoomIdentifier> joined_rooms = new HashSet<RoomIdentifier>();
@@ -378,7 +401,7 @@ namespace TheRiptide
             closed_rooms.Remove(room);
         }
 
-        private static void ClosingRoom(RoomIdentifier room)
+        private void ClosingRoom(RoomIdentifier room)
         {
             if (!closing_rooms.ContainsKey(room))
                 closing_rooms.Add(room, RoomDecontaminationTime(room));
@@ -386,7 +409,7 @@ namespace TheRiptide
             closed_rooms.Remove(room);
         }
 
-        private static void CloseRoom(RoomIdentifier room)
+        private void CloseRoom(RoomIdentifier room)
         {
             FacilityManager.CloseRoom(room);
             FacilityManager.LockRoom(room, DoorLockReason.AdminCommand);
@@ -402,13 +425,13 @@ namespace TheRiptide
             return room.Zone == FacilityZone.Surface;
         }
 
-        private static float RoomDecontaminationTime(RoomIdentifier room)
+        private float RoomDecontaminationTime(RoomIdentifier room)
         {
             if (room.Zone == FacilityZone.Surface)
-                return decontamination_time * surface_decontamination_time_multiplier;
+                return config.DecontaminationTime * config.SurfaceDecontaminationTimeMultiplier;
             else
             {
-                float extened_decontamination_time = decontamination_time;
+                float extened_decontamination_time = config.DecontaminationTime;
                 foreach (var adj in FacilityManager.GetAdjacent(room).Keys)
                     if (closing_rooms.ContainsKey(adj) && closing_rooms[adj] > extened_decontamination_time)
                         extened_decontamination_time = closing_rooms[adj];
@@ -416,10 +439,10 @@ namespace TheRiptide
             }
         }
         
-        private static int RoomWeight(RoomIdentifier room)
+        private int RoomWeight(RoomIdentifier room)
         {
             if (room.Zone == FacilityZone.Surface)
-                return surface_weight;
+                return config.SurfaceWeight;
             else
                 return 1;
         }

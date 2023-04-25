@@ -1,42 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 using MEC;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using PluginAPI.Events;
-using MapGeneration;
-using Interactables.Interobjects.DoorUtils;
-using Interactables.Interobjects;
 using PlayerRoles;
-using PlayerStatsSystem;
 using UnityEngine;
+using System.ComponentModel;
 
 //todo voice and spectate cmd
 namespace TheRiptide
 {
+    public class MainConfig
+    {
+        public bool IsEnabled { get; set; } = true;
+
+        [Description("round time in minutes")]
+        public float RoundTime { get; set; } = 30.0f;
+
+        public string DummyPlayerName { get; set; } = "[THE RIPTIDE]";
+    }
+
     public class Deathmatch
     {
         public static Deathmatch Singleton { get; private set; }
 
+        [PluginConfig("main_config.yml")]
+        public MainConfig config;
+
+        [PluginConfig("rooms_config.yml")]
+        public RoomsConfig rooms_config;
+
+        [PluginConfig("killstreak_config.yml")]
+        public KillstreakConfig killstreak_config;
+
+        [PluginConfig("menu_config.yml")]
+        public MenuConfig menu_config;
+
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
-        public static float round_time = 30.0f;
 
         public static bool GameStarted
         {
             get => game_started;
             set
             {
-                if(value == true)
+                if (value == true)
                 {
                     foreach (var player in Player.GetPlayers())
                         if (player.IsAlive)
-                            Killstreaks.AddKillstreakEffects(player);
+                            Killstreaks.Singleton.AddKillstreakEffects(player);
                 }
                 else
                 {
@@ -56,11 +71,10 @@ namespace TheRiptide
             Lobby.Init();
         }
 
-        [PluginEntryPoint("Deathmatch", "1.0.0", "needs no explanation", "The Riptide")]
-        void EntryPoint()
+        public void Start()
         {
             EventManager.RegisterEvents(this);
-            //dependecies
+            //dependencies
             EventManager.RegisterEvents<InventoryMenu>(this);
             EventManager.RegisterEvents<BroadcastOverride>(this);
             EventManager.RegisterEvents<FacilityManager>(this);
@@ -75,27 +89,7 @@ namespace TheRiptide
             EventManager.RegisterEvents<Rooms>(this);
         }
 
-        [PluginReload]
-        void Reload()
-        {
-            EventManager.RegisterEvents(this);
-            //dependecies
-            EventManager.RegisterEvents<InventoryMenu>(this);
-            EventManager.RegisterEvents<BroadcastOverride>(this);
-            EventManager.RegisterEvents<FacilityManager>(this);
-
-            //features
-            EventManager.RegisterEvents<DataBase>(this);
-            EventManager.RegisterEvents<Statistics>(this);
-            EventManager.RegisterEvents<Killfeeds>(this);
-            EventManager.RegisterEvents<Killstreaks>(this);
-            EventManager.RegisterEvents<Loadouts>(this);
-            EventManager.RegisterEvents<Lobby>(this);
-            EventManager.RegisterEvents<Rooms>(this);
-        }
-
-        [PluginUnload]
-        void Unload()
+        public void Stop()
         {
             DataBase.PluginUnload();
 
@@ -108,12 +102,25 @@ namespace TheRiptide
             EventManager.UnregisterEvents<Statistics>(this);
             EventManager.UnregisterEvents<DataBase>(this);
 
-            //dependecies
+            //dependencies
             EventManager.UnregisterEvents<FacilityManager>(this);
             EventManager.UnregisterEvents<BroadcastOverride>(this);
             EventManager.UnregisterEvents<InventoryMenu>(this);
 
             EventManager.UnregisterEvents(this);
+        }
+
+        [PluginEntryPoint("Deathmatch", "1.0", "needs no explanation", "The Riptide")]
+        void EntryPoint()
+        {
+            if (config.IsEnabled)
+                Start();
+        }
+
+        [PluginUnload]
+        void Unload()
+        {
+            Stop();
         }
 
         [PluginEvent(ServerEventType.WaitingForPlayers)]
@@ -124,13 +131,12 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.RoundStart)]
         void OnRoundStart()
         {
-            //Respawning.RespawnManager.Singleton._timeForNextSequence = 60 * 60 * 24;
-
             Server.Instance.SetRole(RoleTypeId.Scp939);
-            Server.Instance.ReferenceHub.nicknameSync.SetNick("[THE RIPTIDE]");
+            Server.Instance.ReferenceHub.nicknameSync.SetNick(config.DummyPlayerName);
             Server.Instance.Position = new Vector3(128.8f, 994.0f, 18.0f);
             Server.FriendlyFire = true;
             FriendlyFireConfig.PauseDetector = true;
+            Server.IsHeavilyModded = true;
 
             Timing.CallDelayed(1.0f, () =>
             {
@@ -148,11 +154,11 @@ namespace TheRiptide
                     ServerConsole.AddLog(ex.ToString());
                 }
             });
-            if (round_time > 5.0f)
-                Timing.CallDelayed(60.0f * (round_time - 5.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 5 minutes</color>"); });
-            if (round_time > 1.0f)
-                Timing.CallDelayed(60.0f * (round_time - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
-            Timing.CallDelayed(60.0f * round_time, () => 
+            if (config.RoundTime > 5.0f)
+                Timing.CallDelayed(60.0f * (config.RoundTime - 5.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 5 minutes</color>"); });
+            if (config.RoundTime > 1.0f)
+                Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
+            Timing.CallDelayed(60.0f * config.RoundTime, () => 
             {
                 Statistics.DisplayRoundStats();
                 Timing.CallPeriodically(20.0f, 0.2f, () =>

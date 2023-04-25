@@ -45,7 +45,8 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.MapGenerated)]
         void OnMapGenerated()
         {
-            BuildSpawn(8, 8);
+            int x = Mathf.CeilToInt(Mathf.Sqrt(Server.MaxPlayers));
+            BuildSpawn(x, x);
             round_started = false;
         }
 
@@ -416,7 +417,7 @@ namespace TheRiptide
                         if (Deathmatch.GameStarted)
                         {
                             Statistics.SetPlayerStartTime(player, Time.time);
-                            Killstreaks.AddKillstreakEffects(player);
+                            Killstreaks.Singleton.AddKillstreakEffects(player);
                         }
                         else
                             ApplyGameNotStartedEffects(player);
