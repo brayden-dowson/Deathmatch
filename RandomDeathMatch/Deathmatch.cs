@@ -124,22 +124,15 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.RoundStart)]
         void OnRoundStart()
         {
-            //foreach (var room in RoomIdentifier.AllRoomIdentifiers)
-            //{
-            //    SafeTeleportPosition stp = room.GetComponentInParent<SafeTeleportPosition>();
-            //    if (stp != null && stp.SafePositions != null && !stp.SafePositions.IsEmpty() && stp.SafePositions[0] != null)
-            //    {
-            //        Transform transform = stp.SafePositions[0];
-            //        ServerConsole.AddLog("room " + room.Name.ToString() + " | " + room.Shape.ToString() + " has a SafeTeleportPosition component " + transform.ToString(), ConsoleColor.White);
-            //    }
-            //    else
-            //        ServerConsole.AddLog("room " + room.Name.ToString() + " | " + room.Shape.ToString() + " does not have a SafeTeleportPosition component", ConsoleColor.Red);
-            //}
+            //Respawning.RespawnManager.Singleton._timeForNextSequence = 60 * 60 * 24;
 
             Server.Instance.SetRole(RoleTypeId.Scp939);
             Server.Instance.ReferenceHub.nicknameSync.SetNick("[THE RIPTIDE]");
             Server.Instance.Position = new Vector3(128.8f, 994.0f, 18.0f);
             Server.FriendlyFire = true;
+            FriendlyFireConfig.PauseDetector = true;
+            Server.IsHeavilyModded = true;
+
 
             Timing.CallDelayed(1.0f, () =>
             {
