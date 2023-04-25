@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MEC;
 using PlayerStatsSystem;
 using PluginAPI.Core;
@@ -148,18 +146,6 @@ namespace TheRiptide
                 player_killfeed.Remove(player.PlayerId);
         }
 
-        //public static void RegisterPlayer(Player player)
-        //{
-        //    if (!player_killfeed.ContainsKey(player.PlayerId))
-        //        player_killfeed.Add(player.PlayerId, new PlayerKillfeed());
-        //}
-
-        //public static void UnregisterPlayer(Player player)
-        //{
-        //    if (player_killfeed.ContainsKey(player.PlayerId))
-        //        player_killfeed.Remove(player.PlayerId);
-        //}
-
         public static void SetBroadcastKillfeedLayout(Player player)
         {
             BroadcastOverride.SetCustomLineSizes(player, broadcast_layout);
@@ -270,16 +256,6 @@ namespace TheRiptide
                 else
                     kill_msg = "<b><color=#eb0d47>" + victim.Nickname + "</color></b> humiliated  themselves ";
             }
-
-
-
-
-            //string msg = "<b><color=#eb0d47>" + victim.Nickname + "</color></b> humiliated themselves";
-            //if (killer != null)
-            //{
-            //    string gun_name = Enum.GetName(typeof(ItemType), killer.CurrentItem.ItemTypeId).Substring(3);
-            //    msg = "<b><color=#eb0d47>" + killer.Nickname + "</color></b> killed  <b><color=#43BFF0>" + victim.Nickname + "</color></b> with  <b><color=#eb0d47>" + gun_name + "</color></b>";
-            //}
 
             foreach (Player player in Player.GetPlayers())
             {

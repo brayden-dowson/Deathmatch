@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Diagnostics;
 
 using PluginAPI.Core;
@@ -207,18 +205,6 @@ namespace TheRiptide
             if (broadcast_info.ContainsKey(player.PlayerId))
                 broadcast_info.Remove(player.PlayerId);
         }
-
-        //public static void RegisterPlayer(Player player)
-        //{
-        //    if (!broadcast_info.ContainsKey(player.PlayerId))
-        //        broadcast_info.Add(player.PlayerId, new BroadcastInfo());
-        //}
-        //
-        //public static void UnregisterPlayer(Player player)
-        //{
-        //    if (broadcast_info.ContainsKey(player.PlayerId))
-        //        broadcast_info.Remove(player.PlayerId);
-        //}
 
         public static void BroadcastLine(Player player, int line, float duration, BroadcastPriority priority, string msg)
         {

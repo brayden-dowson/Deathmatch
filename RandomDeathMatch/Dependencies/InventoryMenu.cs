@@ -7,8 +7,6 @@ using PluginAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TheRiptide
 {
@@ -123,7 +121,6 @@ namespace TheRiptide
                 if (menu.items[i].description != "")
                     broadcast.Add(menu.items[i].description);
                 items.Add(menu.items[i].item);
-                //player.AddItem(menu.items[i].item);
             }
             if (!broadcast.IsEmpty())
             {

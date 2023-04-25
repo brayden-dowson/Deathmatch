@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using LiteDB;
 using PluginAPI.Core;
@@ -49,9 +47,6 @@ namespace TheRiptide
         static List<Task<FetchResult>> fetches = new List<Task<FetchResult>>();
         static CoroutineHandle fetch_handle;
 
-        //static List<Task> saves = new List<Task>();
-        //static CoroutineHandle save_handle;
-
         public static void PluginUnload()
         {
             database.Dispose();
@@ -61,14 +56,12 @@ namespace TheRiptide
         void OnRoundStart()
         {
             fetch_handle = Timing.RunCoroutine(_CheckFetches());
-            //save_handle = Timing.RunCoroutine(_CheckSaves());
         }
 
         [PluginEvent(ServerEventType.RoundEnd)]
         void OnRoundEnd(RoundSummary.LeadingTeam leadingTeam)
         {
             Timing.KillCoroutines(fetch_handle);
-            //Timing.KillCoroutines(save_handle);
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
@@ -169,14 +162,5 @@ namespace TheRiptide
                 }
             }
         }
-
-        //public IEnumerator<float> _CheckSaves()
-        //{
-        //    while (true)
-        //    {
-        //        saves.RemoveAll(t => t.IsCompleted);
-        //        yield return Timing.WaitForSeconds(1.0f);
-        //    }
-        //}
     }
 }

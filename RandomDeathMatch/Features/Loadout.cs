@@ -163,29 +163,6 @@ namespace TheRiptide
             }
         }
 
-        //[PluginEvent(ServerEventType.PlayerChangeRole)]
-        //void OnPlayerChangeRole(Player player, PlayerRoleBase old_role, RoleTypeId new_role, RoleChangeReason reason)
-        //{
-        //    if (player == null || !player_loadouts.ContainsKey(player.PlayerId))
-        //        return;
-        //
-        //    Loadout loadout = player_loadouts[player.PlayerId];
-        //
-        //    if (new_role != RoleTypeId.Spectator)
-        //    {
-        //        //Deathmatch.GetRDMPlayer(player).in_spawn = true;
-        //        loadout.locked = false;
-        //
-        //        Timing.CallDelayed(0.0f, () =>
-        //        {
-        //            if (player == null || !player_loadouts.ContainsKey(player.PlayerId))
-        //                return;
-        //            player.ClearInventory();
-        //            Timing.CallDelayed(0.0f, () => { AddLoadoutStartItems(player); });
-        //        });
-        //    }
-        //}
-
         [PluginEvent(ServerEventType.PlayerSpawn)]
         void OnPlayerSpawn(Player player, RoleTypeId role)
         {

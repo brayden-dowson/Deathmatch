@@ -4,11 +4,8 @@ using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Core.Items;
 using PluginAPI.Enums;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
 

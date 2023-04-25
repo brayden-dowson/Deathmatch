@@ -1,5 +1,4 @@
 ﻿using AdminToys;
-using CommandSystem;
 using MapGeneration;
 using MEC;
 using Mirror;
@@ -11,9 +10,6 @@ using PluginAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace TheRiptide
@@ -310,7 +306,6 @@ namespace TheRiptide
             blocks.Add(obj);
         }
 
-        //42.656
         static Vector3 offset = new Vector3(42.656f, 1007.25f, -47.25f);
         private static void BuildSpawn(int x, int y)
         {

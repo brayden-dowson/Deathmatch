@@ -6,8 +6,6 @@ using PluginAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace TheRiptide
@@ -348,26 +346,5 @@ namespace TheRiptide
                     return Direction.Down;
             }
         }
-
-        //private Direction InvertDirection(Direction dir)
-        //{
-        //    switch(dir)
-        //    {
-        //        case Direction.North:
-        //            return Direction.South;
-        //        case Direction.East:
-        //            return Direction.West;
-        //        case Direction.South:
-        //            return Direction.North;
-        //        case Direction.West:
-        //            return Direction.East;
-        //        case Direction.Up:
-        //            return Direction.Down;
-        //        case Direction.Down:
-        //            return Direction.Up;
-        //        default:
-        //            return Direction.North;
-        //    }
-        //}
     }
 }

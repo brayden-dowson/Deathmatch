@@ -5,8 +5,6 @@ using Interactables.Interobjects.DoorUtils;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using MEC;
 using UnityEngine;
 using PluginAPI.Core;
@@ -15,11 +13,6 @@ using PlayerStatsSystem;
 
 namespace TheRiptide
 {
-    //132.46 988.79 24.52
-    //132.44 995.69 -27.34
-    //29.19  991.88 -27.15
-    //-40.68 988.01 -39.73
-    //7.00   999.07 -15.02
     class Rooms
     {
         private static Dictionary<RoomIdentifier, int> opened_rooms = new Dictionary<RoomIdentifier, int>();
@@ -56,7 +49,6 @@ namespace TheRiptide
             if(Player.Count == 1)
             {
                 UnlockFacility();
-                //Deathmatch.game_started = false;
             }
             else if(Player.Count == 2)
             {
@@ -97,7 +89,6 @@ namespace TheRiptide
             if (Player.Count == 2)
             {
                 UnlockFacility();
-                //Deathmatch.game_started = false;
             }
             else if (Player.Count > 2)
             {
@@ -131,7 +122,6 @@ namespace TheRiptide
             FacilityManager.UnlockAllRooms(DoorLockReason.AdminCommand);
             FacilityManager.OpenAllRooms();
             FacilityManager.ResetAllRoomLights();
-            //FacilityManager.LockRoom(RoomIdentifier.AllRoomIdentifiers.Where((r) => r.Zone == FacilityZone.Surface).First(), DoorLockReason.AdminCommand);
             opened_rooms.Clear();
             foreach (var room in ValidRooms)
                     opened_rooms.Add(room, RoomWeight(room));
@@ -156,7 +146,6 @@ namespace TheRiptide
             if (ValidPlayerInRoom(player))
             {
                 OpenRoom(player.Room);
-                //opened_rooms.Add(player.Room, close_weight);
                 return true;
             }
             else

@@ -4,8 +4,6 @@ using PluginAPI.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace TheRiptide
@@ -138,18 +136,6 @@ namespace TheRiptide
                 world_positions.Add(room.transform.position);
             return world_positions;
         }
-
-        //public static RoomIdentifier FindFirstRoomWithID(RoomID id)
-        //{
-        //    return RoomIdentifier.AllRoomIdentifiers.Where((r) => r.Name == id.name && r.Zone == id.zone).First();
-        //}
-
-        //public static HashSet<RoomIdentifier> FindAllRoomsWithID(RoomID id)
-        //{
-        //    HashSet<RoomIdentifier> rooms = new HashSet<RoomIdentifier>();
-        //    rooms.UnionWith(RoomIdentifier.AllRoomIdentifiers.Where((r) => r.Name == id.name && r.Zone == id.zone));
-        //    return rooms;
-        //}
     }
 
 
@@ -268,68 +254,6 @@ namespace TheRiptide
                         response += "\t" + shape.ToString() + " = " + ((int)shape).ToString() + "\n";
                 }
                 return true;
-
-                //if (arguments.Count >= 2)
-                //{
-                //    int name;
-                //    int zone;
-                //    if(!int.TryParse(arguments.ElementAt(0), out name))
-                //    {
-                //        response = "name_id must be an interger. provided: " + arguments.Array[0];
-                //        return false;
-                //    }
-                //    if(!int.TryParse(arguments.ElementAt(1), out zone))
-                //    {
-                //        response = "zone_id must be an interger. provided: " + arguments.Array[1];
-                //        return false;
-                //    }
-                //
-                //    Teleport.RoomID key = new Teleport.RoomID((RoomName)name, (FacilityZone)zone);
-                //    if(arguments.Count == 3)
-                //    {
-                //        int instance;
-                //        if(!int.TryParse(arguments.ElementAt(2), out instance))
-                //        {
-                //            response = "instance_id must be an interger. provided" + arguments.Array[2];
-                //            return false;
-                //        }
-                //        Teleport.Room(player, Teleport.FindAllRoomsWithID(key).ElementAt(instance));
-                //    }
-                //    else
-                //    {
-                //        Teleport.Room(player, Teleport.FindFirstRoomWithID(key));
-                //    }
-                //
-                //    response = "teleport successful";
-                //    return true;
-                //}
-                //else
-                //{
-                //    response = "zone_ids\n";
-                //    foreach (var zone in Enum.GetValues(typeof(FacilityZone)))
-                //        response += zone.ToString() + " = " + ((int)zone).ToString() + "\n";
-                //    response += "name_ids\n";
-                //    foreach (var name in Enum.GetValues(typeof(RoomName)))
-                //        response += name.ToString() + " = " + ((int)name).ToString() + "\n";
-                //    response += "shape_ids\n";
-                //    foreach (var shape in Enum.GetValues(typeof(RoomShape)))
-                //        response += shape.ToString() + " = " + ((int)shape).ToString() + "\n";
-                //
-                //    response += "Name, Zone | Instance Count\n";
-                //
-                //    Dictionary<Teleport.RoomID, int> count = new Dictionary<Teleport.RoomID, int>();
-                //    foreach(var room in RoomIdentifier.AllRoomIdentifiers)
-                //    {
-                //        Teleport.RoomID id = new Teleport.RoomID(room.Name, room.Zone);
-                //        if (!count.ContainsKey(id))
-                //            count.Add(id, 1);
-                //        else
-                //            count[id]++;
-                //    }
-                //    foreach (var kv in count)
-                //        response += kv.Key.name.ToString() + ", " + kv.Key.zone.ToString() + " = " + kv.Value.ToString() + "\n";
-                //}
-                //return true;
             }
             else
             {
@@ -337,29 +261,29 @@ namespace TheRiptide
                 return false;
             }
         }
+    }
 
-        [CommandHandler(typeof(RemoteAdminCommandHandler))]
-        public class gp : ICommand
+    [CommandHandler(typeof(RemoteAdminCommandHandler))]
+    public class gp : ICommand
+    {
+        public string Command { get; } = "gp";
+
+        public string[] Aliases { get; } = new string[] { };
+
+        public string Description { get; } = "get local pos";
+
+        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
         {
-            public string Command { get; } = "gp";
-
-            public string[] Aliases { get; } = new string[] { };
-
-            public string Description { get; } = "get local pos";
-
-            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            Player player;
+            if (Player.TryGet(sender, out player))
             {
-                Player player;
-                if (Player.TryGet(sender, out player))
-                {
-                    Vector3 pos = player.Room.transform.InverseTransformPoint(player.Position);
-                    ServerConsole.AddLog(pos.ToPreciseString(), ConsoleColor.Cyan);
-                    response = pos.ToPreciseString() + " | " + player.Room.Zone.ToString() + " | " + player.Room.Name.ToString() + " | " + player.Room.Shape.ToString();
-                    return true;
-                }
-                response = "failed";
-                return false;
+                Vector3 pos = player.Room.transform.InverseTransformPoint(player.Position);
+                ServerConsole.AddLog(pos.ToPreciseString(), ConsoleColor.Cyan);
+                response = pos.ToPreciseString() + " | " + player.Room.Zone.ToString() + " | " + player.Room.Name.ToString() + " | " + player.Room.Shape.ToString();
+                return true;
             }
+            response = "failed";
+            return false;
         }
     }
 }
