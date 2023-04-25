@@ -138,7 +138,6 @@ namespace TheRiptide
             FriendlyFireConfig.PauseDetector = true;
             Server.IsHeavilyModded = true;
 
-
             Timing.CallDelayed(1.0f, () =>
             {
                 try

@@ -1,5 +1,5 @@
-#Deathmatch Gamemode NW-API
-##Features
+# Deathmatch Gamemode NW-API
+## Features
 - Instant respawn
 - Fully customisable loadouts
 - Role selection
@@ -13,14 +13,14 @@
 - Round stats displayed at end of round
 - Base game features overriden for minimal setup
 
-##Install
-###LocalAdmin
+## Install
+### LocalAdmin
 To install via LocalAdmin console use "p install brayden-dowson/Deathmatch" and make the following changes to your config_gameplay.cfg (assuming default config)
 1. friendly_fire_multiplier: 1.0
 2. disable_decontamination: true
 3. custom_gamemode_server: true
 
-###Manual
+### Manual
 To manually install get LiteDB.dll from [github]https://github.com/mbdavid/LiteDB or from the [releases]https://github.com/brayden-dowson/Deathmatch/releases and place in your PluginAPI/plugins/"your server port number"/dependencies/ folder. Place Deathmatch.dll inside the PluginAPI/plugins/"your server port number"/ folder and make the following changes to your config_gameplay.cfg (assuming default config)
 1. friendly_fire_multiplier: 1.0
 2. disable_decontamination: true

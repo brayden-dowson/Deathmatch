@@ -7,6 +7,7 @@ using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
+using Respawning;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -201,6 +202,12 @@ namespace TheRiptide
                     player.Position = offset + new Vector3(1.0f + x * 2.0f, 0.5f, 1.0f + y * 2.0f);
                 });
             }
+        }
+
+        [PluginEvent(ServerEventType.TeamRespawn)]
+        bool OnRespawn(SpawnableTeamType team)
+        {
+            return false;
         }
 
         [PluginEvent(ServerEventType.PlayerEscape)]
