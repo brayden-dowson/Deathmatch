@@ -14,9 +14,15 @@
 - Base game features overriden for minimal setup
 
 ##Install
-Requiers [LiteDB.dll](https://github.com/mbdavid/LiteDB) - place in the dependencies folder. Changes need to be made in config_gameplay.cfg for the plugin to work properly (assumes default config)
+###LocalAdmin
+To install via LocalAdmin console use "p install brayden-dowson/Deathmatch" and make the following changes to your config_gameplay.cfg (assuming default config)
 1. friendly_fire_multiplier: 1.0
 2. disable_decontamination: true
 3. custom_gamemode_server: true
 
-To install via LocalAdmin console use "p install brayden-dowson/Deathmatch"
+###Manual
+To manually install get LiteDB.dll from [github]https://github.com/mbdavid/LiteDB or from the [releases]https://github.com/brayden-dowson/Deathmatch/releases and place in your PluginAPI/plugins/"your server port number"/dependencies/ folder. Place Deathmatch.dll inside the PluginAPI/plugins/"your server port number"/ folder and make the following changes to your config_gameplay.cfg (assuming default config)
+1. friendly_fire_multiplier: 1.0
+2. disable_decontamination: true
+3. custom_gamemode_server: true
+

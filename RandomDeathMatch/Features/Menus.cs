@@ -1,5 +1,6 @@
 ﻿using PlayerRoles;
 using PluginAPI.Core;
+using PluginAPI.Core.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,9 +9,24 @@ using static TheRiptide.Utility;
 
 namespace TheRiptide
 {
-    class DeathmatchMenu
+    public class MenuConfig
     {
+        public bool RageEnabled { get; set; } = true;
+    }
+
+    public class DeathmatchMenu
+    {
+        public static DeathmatchMenu Singleton { get; private set; }
+
+        public MenuConfig config;
+
         public enum MenuPage { None, Main, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, Debug };
+
+        public DeathmatchMenu()
+        {
+            Singleton = this;
+            config = Deathmatch.Singleton.menu_config;
+        }
 
         public static void SetupMenus()
         {
@@ -61,7 +77,7 @@ namespace TheRiptide
                     Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
                     Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
                     MenuInfo info;
-                    if (loadout.rage_mode_enabled)
+                    if (loadout.rage_mode_enabled && Singleton.config.RageEnabled)
                     {
                         InventoryMenu.ShowMenu(player, (int)MenuPage.KillstreakModeSecret);
                         info = InventoryMenu.GetInfo((int)MenuPage.KillstreakModeSecret);
@@ -349,13 +365,13 @@ namespace TheRiptide
                 new MenuItem(ItemType.KeycardGuard, "close all rooms", (player)=>
                 {
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "closed all rooms");
-                    Rooms.LockdownFacility();
+                    //Rooms.LockdownFacility();
                     return false;
                 }),
                 new MenuItem(ItemType.KeycardNTFOfficer, "open all rooms", (player)=>
                 {
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "opened all rooms");
-                    Rooms.UnlockFacility();
+                    //Rooms.UnlockFacility();
                     return false;
                 }),
                 new MenuItem(ItemType.KeycardNTFLieutenant, "start game", (player)=>
