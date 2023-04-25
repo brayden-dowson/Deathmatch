@@ -1,5 +1,5 @@
-#Deathmatch Gamemode NW-API
-##Features
+# Deathmatch Gamemode NW-API
+## Features
 - Instant respawn
 - Fully customisable loadouts
 - Role selection
@@ -13,7 +13,7 @@
 - Round stats displayed at end of round
 - Base game features overriden for minimal setup
 
-##Install
+## Install
 Requiers [LiteDB.dll](https://github.com/mbdavid/LiteDB) - place in the dependencies folder. Changes need to be made in config_gameplay.cfg for the plugin to work properly (assumes default config)
 1. friendly_fire_multiplier: 1.0
 2. disable_decontamination: true
