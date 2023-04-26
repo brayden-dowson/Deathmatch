@@ -30,6 +30,7 @@ namespace TheRiptide
         private static SortedSet<int> avaliable_spawn_rooms = new SortedSet<int>();
         private static List<GameObject> blocks = new List<GameObject>();
         private static bool round_started = false;
+        private static int spawn_dim = Mathf.CeilToInt(Mathf.Sqrt(Server.MaxPlayers));
 
         public static string teleport_msg = "<color=#43BFF0>you will be teleported after selecting a gun</color>";
         public static List<string> waiting_for_players_msg = new List<string>(){
@@ -45,8 +46,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.MapGenerated)]
         void OnMapGenerated()
         {
-            int x = Mathf.CeilToInt(Mathf.Sqrt(Server.MaxPlayers));
-            BuildSpawn(x, x);
+            BuildSpawn(spawn_dim, spawn_dim);
             round_started = false;
         }
 
@@ -197,8 +197,8 @@ namespace TheRiptide
                 BroadcastOverride.UpdateIfDirty(player);
                 Timing.CallDelayed(0.0f, () =>
                 {
-                    int x = spawn.spawn_room % 8;
-                    int y = spawn.spawn_room / 8;
+                    int x = spawn.spawn_room % spawn_dim;
+                    int y = spawn.spawn_room / spawn_dim;
                     player.Position = offset + new Vector3(1.0f + x * 2.0f, 0.5f, 1.0f + y * 2.0f);
                 });
             }
