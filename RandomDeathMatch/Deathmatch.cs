@@ -39,6 +39,9 @@ namespace TheRiptide
         [PluginConfig("menu_config.yml")]
         public MenuConfig menu_config;
 
+        [PluginConfig("experience_config.yml")]
+        public ExperienceConfig experience_config;
+
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
 

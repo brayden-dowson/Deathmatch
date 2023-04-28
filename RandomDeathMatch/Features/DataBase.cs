@@ -192,10 +192,10 @@ namespace TheRiptide
             Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
             new Task(() =>
             {
+                var configs = db.GetCollection<Config>("configs");
+                configs.EnsureIndex(x => x.UserId);
                 if (!player.DoNotTrack)
                 {
-                    var configs = db.GetCollection<Config>("configs");
-                    configs.EnsureIndex(x => x.UserId);
                     Config config = configs.FindById(player.UserId);
                     if (config != null)
                     {
@@ -213,8 +213,6 @@ namespace TheRiptide
                 }
                 else
                 {
-                    var configs = db.GetCollection<Config>("configs");
-                    configs.EnsureIndex(x => x.UserId);
                     configs.Delete(player.UserId);
                 }
             }).Start();
@@ -284,7 +282,46 @@ namespace TheRiptide
             }).Start();
         }
 
+        public void LoadExperience(Player player)
+        {
+            Experiences.XP player_xp = Experiences.Singleton.GetXP(player);
+            new Task(() =>
+            {
+                if (!player.DoNotTrack)
+                {
+                    var experiences = db.GetCollection<Experience>("experiences");
+                    experiences.EnsureIndex(x => x.UserId);
+                    Experience xp = experiences.FindById(player.UserId);
+                    if (xp != null)
+                    {
+                        Timing.CallDelayed(0.0f, () =>
+                        {
+                            player_xp.value = xp.value;
+                            player_xp.stage = xp.stage;
+                            player_xp.tier = xp.tier;
+                        });
+                    }
+                }
+            }).Start();
+        }
 
+        public void SaveExperience(Player player)
+        {
+            Experiences.XP player_xp = Experiences.Singleton.GetXP(player);
+            new Task(() =>
+            {
+                if (!player.DoNotTrack)
+                {
+                    var experiences = db.GetCollection<Experience>("experiences");
+                    experiences.EnsureIndex(x => x.UserId);
+                    Experience xp = new Experience { UserId = player.UserId };
+                    xp.value = player_xp.value;
+                    xp.stage = player_xp.stage;
+                    xp.tier = player_xp.tier;
+                    experiences.Upsert(xp);
+                }
+            }).Start();
+        }
 
 
         //public class PlayerRecord

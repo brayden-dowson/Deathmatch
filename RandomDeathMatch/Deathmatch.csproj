@@ -90,6 +90,7 @@
     <Compile Include="Dependencies\FacilityManager.cs" />
     <Compile Include="Dependencies\Teleport.cs" />
     <Compile Include="Features\DataBase.cs" />
+    <Compile Include="Features\Experience.cs" />
     <Compile Include="Features\Menus.cs" />
     <Compile Include="Dependencies\InventoryMenu.cs" />
     <Compile Include="Features\Killfeed.cs" />
