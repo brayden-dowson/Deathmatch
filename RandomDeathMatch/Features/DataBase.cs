@@ -116,13 +116,13 @@ namespace TheRiptide
 
         class Tracking
         {
-            public long TrackingId;
+            public long TrackingId { get; set; }
             [BsonRef("users")]
-            public User user;
-            public Config config;
-            public Experience experience;
+            public User user { get; set; }
+            public Config config { get; set; }
+            public Experience experience { get; set; }
             [BsonRef("sessions")]
-            public List<Session> sessions = new List<Session>();
+            public List<Session> sessions { get; set; } = new List<Session>();
         }
 
         class Rank
@@ -134,14 +134,19 @@ namespace TheRiptide
 
         class User
         {
-            public string UserId;
-            public Rank rank;
+            public string UserId { get; set; }
+            public Rank rank { get; set; }
             [BsonRef("tracking")]
-            public Tracking tracking;
+            public Tracking tracking { get; set; }
         }
+
+        public static DataBase Singleton { get; private set; }
+
+        private LiteDatabase db;
 
         public DataBase()
         {
+            Singleton = this;
             BsonMapper.Global.RegisterType
             (
                 serialize: (Hit h) =>
@@ -165,6 +170,86 @@ namespace TheRiptide
                 }
             );
         }
+
+        void Load()
+        {
+            db = new LiteDatabase(@".config/SCP Secret Laboratory/PluginAPI/plugins/" + ServerStatic.ServerPort.ToString() + "/Deathmatch.db");
+        }
+
+        void UnLoad()
+        {
+            db.Dispose();
+        }
+
+        void LoadConfig(Player player)
+        {
+            if(!player.DoNotTrack)
+            {
+                new Task(()=>
+                {
+                    var col = db.GetCollection<User>();
+                    col.EnsureIndex(x => x.UserId);
+                    User user = col.Include(x => x.tracking).FindById(player.UserId);
+                    if (user != null)
+                    {
+                        Config config = user.tracking.config;
+                        Timing.CallDelayed(0.0f, () =>
+                        {
+                            Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
+                            Lobby.Spawn spawn = Lobby.GetSpawn(player);
+                            Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
+                            loadout.primary = config.primary;
+                            loadout.secondary = config.secondary;
+                            loadout.tertiary = config.tertiary;
+                            loadout.radio = config.radio;
+                            loadout.rage_mode_enabled = config.rage_enabled;
+                            spawn.role = config.role;
+                            killstreak.mode = config.killstreak_mode;
+
+                        });
+                    }
+                }).Start();
+            }
+        }
+
+        void SaveConfig(Player player)
+        {
+            Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
+            Lobby.Spawn spawn = Lobby.GetSpawn(player);
+            Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
+            new Task(() =>
+            {
+                var users = db.GetCollection<User>("users");
+                users.EnsureIndex(x => x.UserId);
+                User user = users.Include(x => x.tracking).FindById(player.UserId);
+                if (user == null)
+                    user = new User { UserId = player.UserId };
+                if (user.tracking == null)
+                    user.tracking = new Tracking();
+                user.tracking.user = user;
+
+                if (!player.DoNotTrack)
+                {
+                    Config config = user.tracking.config;
+                    Timing.CallDelayed(0.0f, () =>
+                    {
+                        config.primary = loadout.primary;
+                        config.secondary = loadout.secondary;
+                        config.tertiary = loadout.tertiary;
+                        config.radio = loadout.radio;
+                        config.rage_enabled = loadout.rage_mode_enabled;
+                        config.role = spawn.role;
+                        config.killstreak_mode = killstreak.mode;
+                    });
+                }
+
+                users.Upsert(user);
+            }).Start();
+        }
+
+
+
+
 
         //public class PlayerRecord
         //{
