@@ -12,6 +12,25 @@ namespace TheRiptide
 {
     class DataBase
     {
+        //configs collection
+        class Config
+        {
+            public string UserId { get; set; }
+            //loadout
+            public ItemType primary { get; set; } = ItemType.None;
+            public ItemType secondary { get; set; } = ItemType.None;
+            public ItemType tertiary { get; set; } = ItemType.None;
+            public bool radio { get; set; } = true;
+            public bool rage_enabled { get; set; } = false;
+
+            //spawn
+            public RoleTypeId role { get; set; } = RoleTypeId.ClassD;
+
+            //killstreak
+            public Killstreaks.KillstreakMode killstreak_mode { get; set; } = Killstreaks.KillstreakMode.Standard;
+        }
+
+        //users collection
         public class Hit
         {
             public long HitId { get; set; }
@@ -91,53 +110,38 @@ namespace TheRiptide
             public List<Life> lives = new List<Life>();
         }
 
-        class Experience
-        {
-            public int xp;
-            public int stage;
-            public int tier;
-        }
-
-        class Config
-        {
-            //loadout
-            public ItemType primary { get; set; } = ItemType.None;
-            public ItemType secondary { get; set; } = ItemType.None;
-            public ItemType tertiary { get; set; } = ItemType.None;
-            public bool radio { get; set; } = true;
-            public bool rage_enabled { get; set; } = false;
-
-            //spawn
-            public RoleTypeId role { get; set; } = RoleTypeId.ClassD;
-
-            //killstreak
-            public Killstreaks.KillstreakMode killstreak_mode { get; set; } = Killstreaks.KillstreakMode.Standard;
-        }
-
         class Tracking
         {
             public long TrackingId { get; set; }
             [BsonRef("users")]
             public User user { get; set; }
-            public Config config { get; set; }
-            public Experience experience { get; set; }
             [BsonRef("sessions")]
             public List<Session> sessions { get; set; } = new List<Session>();
-        }
-
-        class Rank
-        {
-            public float rating;
-            public float rd;
-            public float rv;
         }
 
         class User
         {
             public string UserId { get; set; }
-            public Rank rank { get; set; }
             [BsonRef("tracking")]
             public Tracking tracking { get; set; }
+        }
+
+        //ranks collection
+        class Rank
+        {
+            public string UserId { get; set; }
+            public float rating { get; set; }
+            public float rd { get; set; }
+            public float rv { get; set; }
+        }
+
+        //experience collecion
+        class Experience
+        {
+            public string UserId { get; set; }
+            public int value { get; set; } = 0;
+            public int stage { get; set; } = 0;
+            public int tier { get; set; } = 0;
         }
 
         public static DataBase Singleton { get; private set; }
@@ -171,33 +175,32 @@ namespace TheRiptide
             );
         }
 
-        void Load()
+        public void Load()
         {
             db = new LiteDatabase(@".config/SCP Secret Laboratory/PluginAPI/plugins/" + ServerStatic.ServerPort.ToString() + "/Deathmatch.db");
         }
 
-        void UnLoad()
+        public void UnLoad()
         {
             db.Dispose();
         }
 
-        void LoadConfig(Player player)
+        public void LoadConfig(Player player)
         {
-            if(!player.DoNotTrack)
+            Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
+            Lobby.Spawn spawn = Lobby.GetSpawn(player);
+            Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
+            new Task(() =>
             {
-                new Task(()=>
+                if (!player.DoNotTrack)
                 {
-                    var col = db.GetCollection<User>();
-                    col.EnsureIndex(x => x.UserId);
-                    User user = col.Include(x => x.tracking).FindById(player.UserId);
-                    if (user != null)
+                    var configs = db.GetCollection<Config>("configs");
+                    configs.EnsureIndex(x => x.UserId);
+                    Config config = configs.FindById(player.UserId);
+                    if (config != null)
                     {
-                        Config config = user.tracking.config;
                         Timing.CallDelayed(0.0f, () =>
                         {
-                            Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
-                            Lobby.Spawn spawn = Lobby.GetSpawn(player);
-                            Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
                             loadout.primary = config.primary;
                             loadout.secondary = config.secondary;
                             loadout.tertiary = config.tertiary;
@@ -205,48 +208,81 @@ namespace TheRiptide
                             loadout.rage_mode_enabled = config.rage_enabled;
                             spawn.role = config.role;
                             killstreak.mode = config.killstreak_mode;
-
                         });
                     }
-                }).Start();
-            }
+                }
+                else
+                {
+                    var configs = db.GetCollection<Config>("configs");
+                    configs.EnsureIndex(x => x.UserId);
+                    configs.Delete(player.UserId);
+                }
+            }).Start();
+
         }
 
-        void SaveConfig(Player player)
+        public void SaveConfig(Player player)
         {
             Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
             Lobby.Spawn spawn = Lobby.GetSpawn(player);
             Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
             new Task(() =>
             {
-                var users = db.GetCollection<User>("users");
-                users.EnsureIndex(x => x.UserId);
-                User user = users.Include(x => x.tracking).FindById(player.UserId);
-                if (user == null)
-                    user = new User { UserId = player.UserId };
-                if (user.tracking == null)
-                    user.tracking = new Tracking();
-                user.tracking.user = user;
-
+                var configs = db.GetCollection<Config>("configs");
+                configs.EnsureIndex(x => x.UserId);
                 if (!player.DoNotTrack)
                 {
-                    Config config = user.tracking.config;
-                    Timing.CallDelayed(0.0f, () =>
-                    {
-                        config.primary = loadout.primary;
-                        config.secondary = loadout.secondary;
-                        config.tertiary = loadout.tertiary;
-                        config.radio = loadout.radio;
-                        config.rage_enabled = loadout.rage_mode_enabled;
-                        config.role = spawn.role;
-                        config.killstreak_mode = killstreak.mode;
-                    });
+                    Config config = new Config { UserId = player.UserId };
+                    config.primary = loadout.primary;
+                    config.secondary = loadout.secondary;
+                    config.tertiary = loadout.tertiary;
+                    config.radio = loadout.radio;
+                    config.rage_enabled = loadout.rage_mode_enabled;
+                    config.role = spawn.role;
+                    config.killstreak_mode = killstreak.mode;
+                    configs.Upsert(config);
                 }
-
-                users.Upsert(user);
+                else
+                {
+                    configs.Delete(player.UserId);
+                }
             }).Start();
         }
 
+        public void LoadRank(Player player)
+        {
+            Ranks.Rank player_rank = Ranks.Singleton.GetRank(player);
+            new Task(() =>
+            {
+                var ranks = db.GetCollection<Rank>("ranks");
+                ranks.EnsureIndex(x => x.UserId);
+                Rank rank = ranks.FindById(player.UserId);
+                Timing.CallDelayed(0.0f, () =>
+                {
+                    if (rank != null)
+                    {
+                        player_rank.rating = rank.rating;
+                        player_rank.rd = rank.rd;
+                        player_rank.rv = rank.rv;
+                    }
+                    player_rank.loaded = true;
+                });
+            }).Start();
+        }
+
+        public void SaveRank(string user_id, float rating, float rd, float rv)
+        {
+            new Task(() =>
+            {
+                var ranks = db.GetCollection<Rank>("ranks");
+                ranks.EnsureIndex(x => x.UserId);
+                Rank rank = new Rank { UserId = user_id };
+                rank.rating = rating;
+                rank.rd = rd;
+                rank.rv = rv;
+                ranks.Upsert(rank);
+            }).Start();
+        }
 
 
 
