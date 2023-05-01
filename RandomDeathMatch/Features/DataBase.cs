@@ -131,6 +131,7 @@ namespace TheRiptide
             [BsonId]
             public string UserId { get; set; }
             public int value { get; set; } = 0;
+            public int level { get; set; } = 0;
             public int stage { get; set; } = 0;
             public int tier { get; set; } = 0;
         }
@@ -302,6 +303,7 @@ namespace TheRiptide
                         Timing.CallDelayed(0.0f, () =>
                         {
                             player_xp.value = xp.value;
+                            player_xp.level = xp.level;
                             player_xp.stage = xp.stage;
                             player_xp.tier = xp.tier;
                         });
@@ -321,6 +323,7 @@ namespace TheRiptide
                     experiences.EnsureIndex(x => x.UserId);
                     Experience xp = new Experience { UserId = player.UserId };
                     xp.value = player_xp.value;
+                    xp.level = player_xp.level;
                     xp.stage = player_xp.stage;
                     xp.tier = player_xp.tier;
                     experiences.Upsert(xp);
