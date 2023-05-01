@@ -13,6 +13,8 @@ namespace TheRiptide
 {
     public class RankConfig
     {
+        public bool IsEnabled { get; set; } = false;
+
         public List<RankInfo> Ranks { get; set; } = new List<RankInfo>
         {
             new RankInfo{ Tag = "[S1]", Elo = 0 },
@@ -58,7 +60,11 @@ namespace TheRiptide
         public Ranks()
         {
             Singleton = this;
-            config = Deathmatch.Singleton.rank_config;
+        }
+
+        public void Init(RankConfig config)
+        {
+            this.config = config;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]

@@ -12,6 +12,8 @@ namespace TheRiptide
 {
     public class ExperienceConfig
     {
+        public bool IsEnabled { get; set; } = false;
+
         public int Kill { get; set; } = 50;
         //public int Minute { get; set; } = 20;
         //public int OnehundredDamage { get; set; } = 25;
@@ -91,7 +93,11 @@ namespace TheRiptide
         public Experiences()
         {
             Singleton = this;
-            config = Deathmatch.Singleton.experience_config;
+        }
+
+        public void Init(ExperienceConfig config)
+        {
+            this.config = config;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]

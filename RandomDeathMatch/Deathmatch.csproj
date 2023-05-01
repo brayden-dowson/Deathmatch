@@ -101,6 +101,7 @@
     <Compile Include="Features\Rank.cs" />
     <Compile Include="Features\Rooms.cs" />
     <Compile Include="Features\Tracking.cs" />
+    <Compile Include="Features\TranslationConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Features\Lobby.cs" />
     <Compile Include="Features\Stats.cs" />

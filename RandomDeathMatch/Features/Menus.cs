@@ -16,19 +16,29 @@ namespace TheRiptide
 
     public class DeathmatchMenu
     {
-        public static DeathmatchMenu Singleton { get; private set; }
+        private static DeathmatchMenu instance = null;
+        public static DeathmatchMenu Singleton 
+        {
+            get
+            {
+                if (instance == null)
+                    instance = new DeathmatchMenu();
+                return instance;
+            }
+        }
 
         public MenuConfig config;
 
         public enum MenuPage { None, Main, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, Debug };
 
-        public DeathmatchMenu()
+        private DeathmatchMenu() { }
+
+        public void Init(MenuConfig config)
         {
-            Singleton = this;
-            config = Deathmatch.Singleton.menu_config;
+            this.config = config;
         }
 
-        public static void SetupMenus()
+        public void SetupMenus()
         {
             InventoryMenu.CreateMenu((int)MenuPage.None, "", new List<MenuItem>
             {

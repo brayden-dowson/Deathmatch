@@ -15,7 +15,7 @@ namespace TheRiptide
 {
     public class TrackingConfig
     {
-        public bool IsEnabled { get; set; } = true;
+        public bool IsEnabled { get; set; } = false;
         public bool TrackHits { get; set; } = true;
         public bool TrackLoadouts { get; set; } = true;
         public bool TrackRounds { get; set; } = true;
@@ -33,7 +33,11 @@ namespace TheRiptide
         public Tracking()
         {
             Singleton = this;
-            config = Deathmatch.Singleton.tracking_config;
+        }
+
+        public void Init(TrackingConfig config)
+        {
+            this.config = config;
         }
 
         [PluginEvent(ServerEventType.WaitingForPlayers)]

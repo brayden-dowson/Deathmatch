@@ -76,7 +76,7 @@ namespace TheRiptide
         {
             Singleton = this;
             Killfeeds.Init(2, 5, 20);
-            DeathmatchMenu.SetupMenus();
+            DeathmatchMenu.Singleton.SetupMenus();
             Lobby.Init();
         }
 
@@ -97,10 +97,20 @@ namespace TheRiptide
             EventManager.RegisterEvents<Loadouts>(this);
             EventManager.RegisterEvents<Lobby>(this);
             EventManager.RegisterEvents<Rooms>(this);
-            EventManager.RegisterEvents<Ranks>(this);
-            EventManager.RegisterEvents<Experiences>(this);
+            if (rank_config.IsEnabled)
+                EventManager.RegisterEvents<Ranks>(this);
+            if (experience_config.IsEnabled)
+                EventManager.RegisterEvents<Experiences>(this);
             if (tracking_config.IsEnabled)
                 EventManager.RegisterEvents<Tracking>(this);
+
+
+            Rooms.Singleton.Init(rooms_config);
+            Killstreaks.Singleton.Init(killstreak_config);
+            DeathmatchMenu.Singleton.Init(menu_config);
+            Experiences.Singleton.Init(experience_config);
+            Ranks.Singleton.Init(rank_config);
+            Tracking.Singleton.Init(tracking_config);
         }
 
         public void Stop()

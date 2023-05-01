@@ -237,11 +237,12 @@ namespace TheRiptide
 
         public Killstreaks()
         {
-            Effect e = new Effect();
-
-
             Singleton = this;
-            config = Deathmatch.Singleton.killstreak_config;
+        }
+
+        public void Init(KillstreakConfig config)
+        {
+            this.config = config;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]

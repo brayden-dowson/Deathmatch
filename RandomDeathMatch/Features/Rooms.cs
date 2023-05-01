@@ -32,6 +32,8 @@ namespace TheRiptide
 
     public class Rooms
     {
+        public static Rooms Singleton { get; private set; }
+
         public RoomsConfig config;
 
         private static Dictionary<RoomIdentifier, int> opened_rooms = new Dictionary<RoomIdentifier, int>();
@@ -46,7 +48,12 @@ namespace TheRiptide
 
         public Rooms()
         {
-            config = Deathmatch.Singleton.rooms_config;
+            Singleton = this;
+        }
+
+        public void Init(RoomsConfig config)
+        {
+            this.config = config;
         }
 
         [PluginEvent(ServerEventType.RoundStart)]
