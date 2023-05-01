@@ -13,7 +13,29 @@ namespace TheRiptide
 {
     public class RankConfig
     {
+        public List<RankInfo> Ranks { get; set; } = new List<RankInfo>
+        {
+            new RankInfo{ Tag = "[S1]", Elo = 0 },
+            new RankInfo{ Tag = "[S2]", Elo = 250 },
+            new RankInfo{ Tag = "[S3]", Elo = 500 },
+            new RankInfo{ Tag = "[S4]", Elo = 750 },
+            new RankInfo{ Tag = "[SE]", Elo = 1000 },
+            new RankInfo{ Tag = "[SEM]", Elo = 1250 },
+            new RankInfo{ Tag = "[MG1]", Elo = 1500 },
+            new RankInfo{ Tag = "[MG2]", Elo = 1750 },
+            new RankInfo{ Tag = "[MGE]", Elo = 2000 },
+            new RankInfo{ Tag = "[DMG]", Elo = 2250 },
+            new RankInfo{ Tag = "[LE]", Elo = 2500 },
+            new RankInfo{ Tag = "[LEM]", Elo = 2750 },
+            new RankInfo{ Tag = "[SMFC]", Elo = 3000 },
+            new RankInfo{ Tag = "[GE]", Elo = 3250 },
+        };
+    }
 
+    public class RankInfo
+    {
+        public string Tag { get; set; }
+        public float Elo { get; set; }
     }
 
     public class Ranks
