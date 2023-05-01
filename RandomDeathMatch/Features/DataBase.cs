@@ -176,14 +176,7 @@ namespace TheRiptide
 
         public void Load()
         {
-            try
-            {
-                db = new LiteDatabase(@".config/SCP Secret Laboratory/PluginAPI/plugins/" + ServerStatic.ServerPort.ToString() + "/Deathmatch/Deathmatch.db");
-            }
-            catch(System.Exception ex)
-            {
-                Log.Error("Database error: " + ex.ToString());
-            }
+            db = new LiteDatabase(@".config/SCP Secret Laboratory/PluginAPI/plugins/" + ServerStatic.ServerPort.ToString() + "/Deathmatch/Deathmatch.db");
         }
 
         public void UnLoad()
@@ -191,48 +184,9 @@ namespace TheRiptide
             db.Dispose();
         }
 
-        private void DbAsync(System.Action action)
-        {
-            new Task(() =>
-            {
-                try
-                {
-                    lock (db)
-                    {
-                        action.Invoke();
-                    }
-                }
-                catch (System.Exception ex)
-                {
-                    Log.Error("Database error: " + ex.ToString());
-                }
-            }).Start();
-        }
-
-        private void DbDelayedAsync(System.Action action)
-        {
-            Timing.CallDelayed(0.0f, () =>
-            {
-                new Task(() =>
-                {
-                    try
-                    {
-                        lock (db)
-                        {
-                            action.Invoke();
-                        }
-                    }
-                    catch (System.Exception ex)
-                    {
-                        Log.Error("Database error: " + ex.ToString());
-                    }
-                }).Start();
-            });
-        }
-
         public void Checkpoint()
         {
-            db.Checkpoint();
+            DbAsync(() => db.Checkpoint());
         }
 
         public void LoadConfig(Player player)
@@ -436,6 +390,45 @@ namespace TheRiptide
                     player_tracking.sessions.Add(session);
                     tracking.Upsert(player_tracking);
                 }
+            });
+        }
+
+        private void DbAsync(System.Action action)
+        {
+            new Task(() =>
+            {
+                try
+                {
+                    lock (db)
+                    {
+                        action.Invoke();
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error("Database error: " + ex.ToString());
+                }
+            }).Start();
+        }
+
+        private void DbDelayedAsync(System.Action action)
+        {
+            Timing.CallDelayed(0.0f, () =>
+            {
+                new Task(() =>
+                {
+                    try
+                    {
+                        lock (db)
+                        {
+                            action.Invoke();
+                        }
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Log.Error("Database error: " + ex.ToString());
+                    }
+                }).Start();
             });
         }
     }

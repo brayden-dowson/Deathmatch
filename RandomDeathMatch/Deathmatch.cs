@@ -42,6 +42,12 @@ namespace TheRiptide
         [PluginConfig("experience_config.yml")]
         public ExperienceConfig experience_config;
 
+        [PluginConfig("rank_config.yml")]
+        public RankConfig rank_config;
+
+        [PluginConfig("tracking_config.yml")]
+        public TrackingConfig tracking_config;
+
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
 
@@ -85,7 +91,6 @@ namespace TheRiptide
             EventManager.RegisterEvents<FacilityManager>(this);
 
             //features
-            //EventManager.RegisterEvents<DataBase>(this);
             EventManager.RegisterEvents<Statistics>(this);
             EventManager.RegisterEvents<Killfeeds>(this);
             EventManager.RegisterEvents<Killstreaks>(this);
@@ -94,7 +99,8 @@ namespace TheRiptide
             EventManager.RegisterEvents<Rooms>(this);
             EventManager.RegisterEvents<Ranks>(this);
             EventManager.RegisterEvents<Experiences>(this);
-            EventManager.RegisterEvents<Tracking>(this);
+            if (tracking_config.IsEnabled)
+                EventManager.RegisterEvents<Tracking>(this);
         }
 
         public void Stop()
@@ -111,7 +117,6 @@ namespace TheRiptide
             EventManager.UnregisterEvents<Killstreaks>(this);
             EventManager.UnregisterEvents<Killfeeds>(this);
             EventManager.UnregisterEvents<Statistics>(this);
-            //EventManager.UnregisterEvents<DataBase>(this);
 
             //dependencies
             EventManager.UnregisterEvents<FacilityManager>(this);

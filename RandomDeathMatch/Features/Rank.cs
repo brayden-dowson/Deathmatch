@@ -11,9 +11,15 @@ using Glicko2;
 
 namespace TheRiptide
 {
+    public class RankConfig
+    {
+
+    }
+
     public class Ranks
     {
         public static Ranks Singleton { get; private set; }
+        private RankConfig config;
 
         public class Rank
         {
@@ -30,6 +36,7 @@ namespace TheRiptide
         public Ranks()
         {
             Singleton = this;
+            config = Deathmatch.Singleton.rank_config;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]

@@ -13,9 +13,18 @@ using static TheRiptide.Utility;
 
 namespace TheRiptide
 {
+    public class TrackingConfig
+    {
+        public bool IsEnabled { get; set; } = true;
+        public bool TrackHits { get; set; } = true;
+        public bool TrackLoadouts { get; set; } = true;
+        public bool TrackRounds { get; set; } = true;
+    }
+
     public class Tracking
     {
         public static Tracking Singleton { get; private set; }
+        private TrackingConfig config;
 
         private DataBase.Round current_round = new DataBase.Round();
         private Dictionary<int, DataBase.Session> player_sessions = new Dictionary<int, DataBase.Session>();
@@ -24,6 +33,7 @@ namespace TheRiptide
         public Tracking()
         {
             Singleton = this;
+            config = Deathmatch.Singleton.tracking_config;
         }
 
         [PluginEvent(ServerEventType.WaitingForPlayers)]
@@ -35,9 +45,12 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.RoundStart)]
         void OnRoundStart()
         {
-            current_round = new DataBase.Round();
-            foreach (var ids in player_sessions.Keys.ToList())
-                player_sessions[ids].round = current_round;
+            if (config.TrackRounds)
+            {
+                current_round = new DataBase.Round();
+                foreach (var ids in player_sessions.Keys.ToList())
+                    player_sessions[ids].round = current_round;
+            }
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
@@ -79,8 +92,6 @@ namespace TheRiptide
                 DataBase.Kill kill = new DataBase.Kill();
                 victim_life.death = kill;
                 killer_life.kills.Add(kill);
-                //kill.killer = killer_life;
-                //kill.victim = victim_life;
                 if(damage is StandardDamageHandler standard)
                     kill.hitbox = standard.Hitbox;
                 kill.weapon = GetItemFromDamageHandler(damage);
@@ -92,7 +103,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.PlayerDamage)]
         void OnPlayerDamage(Player victim, Player attacker, DamageHandlerBase damage)
         {
-            if (victim != null && attacker != null && player_life.ContainsKey(victim.PlayerId) && player_life.ContainsKey(attacker.PlayerId))
+            if (config.TrackHits && victim != null && attacker != null && player_life.ContainsKey(victim.PlayerId) && player_life.ContainsKey(attacker.PlayerId))
             {
                 if (damage is StandardDamageHandler standard)
                 {
@@ -128,7 +139,6 @@ namespace TheRiptide
                 DataBase.Life life = new DataBase.Life();
                 DataBase.Loadout loadout = null;
                 session.lives.Add(life);
-                //life.session = session;
                 if (player_life.ContainsKey(player.PlayerId))
                 {
                     loadout = player_life[player.PlayerId].loadout;
@@ -137,35 +147,31 @@ namespace TheRiptide
                 else
                     player_life.Add(player.PlayerId, life);
                 life.role = Lobby.GetSpawn(player).role;
-                if (loadout == null)
-                    loadout = new DataBase.Loadout();
+                if (config.TrackLoadouts)
+                {
+                    if (loadout == null)
+                        loadout = new DataBase.Loadout();
 
-                var weapon_attachments = AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub];
-                Loadouts.Loadout player_loadout = Loadouts.GetLoadout(player);
-                DataBase.Loadout current = new DataBase.Loadout();
-                current.LoadoutId = 0;
-                //current.owner = null;
-                current.killstreak_mode = Killstreaks.GetKillstreak(player).mode.ToString();
-                current.primary = player_loadout.primary;
-                if (weapon_attachments.ContainsKey(player_loadout.primary))
-                    current.primary_attachment_code = weapon_attachments[player_loadout.primary];
-                current.secondary = player_loadout.secondary;
-                if (weapon_attachments.ContainsKey(player_loadout.secondary))
-                    current.secondary_attachment_code = weapon_attachments[player_loadout.secondary];
-                current.tertiary = player_loadout.tertiary;
-                if (weapon_attachments.ContainsKey(player_loadout.tertiary))
-                    current.tertiary_attachment_code = weapon_attachments[player_loadout.tertiary];
-                long save_id = loadout.LoadoutId;
-                loadout.LoadoutId = 0;
-                //loadout.owner = null;
+                    var weapon_attachments = AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub];
+                    Loadouts.Loadout player_loadout = Loadouts.GetLoadout(player);
+                    DataBase.Loadout new_loadout = new DataBase.Loadout();
 
-                if (current != loadout)
-                    loadout = current;
-                else
-                    loadout.LoadoutId = save_id;
+                    new_loadout.killstreak_mode = Killstreaks.GetKillstreak(player).mode.ToString();
+                    new_loadout.primary = player_loadout.primary;
+                    if (weapon_attachments.ContainsKey(player_loadout.primary))
+                        new_loadout.primary_attachment_code = weapon_attachments[player_loadout.primary];
+                    new_loadout.secondary = player_loadout.secondary;
+                    if (weapon_attachments.ContainsKey(player_loadout.secondary))
+                        new_loadout.secondary_attachment_code = weapon_attachments[player_loadout.secondary];
+                    new_loadout.tertiary = player_loadout.tertiary;
+                    if (weapon_attachments.ContainsKey(player_loadout.tertiary))
+                        new_loadout.tertiary_attachment_code = weapon_attachments[player_loadout.tertiary];
 
-                life.loadout = loadout;
-                //loadout.owner = life;
+                    if (loadout == null || new_loadout != loadout)
+                        life.loadout = new_loadout;
+                    else
+                        life.loadout = loadout;
+                }
             }
         }
 
