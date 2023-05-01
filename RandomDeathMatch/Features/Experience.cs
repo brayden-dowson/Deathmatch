@@ -65,5 +65,12 @@ namespace TheRiptide
         {
             return player_xp[player.PlayerId];
         }
+
+        public void SaveExperiences()
+        {
+            foreach (Player p in Player.GetPlayers())
+                if (player_xp.ContainsKey(p.PlayerId))
+                    DataBase.Singleton.SaveExperience(p);
+        }
     }
 }

@@ -422,6 +422,7 @@ namespace TheRiptide
                         else
                             ApplyGameNotStartedEffects(player);
                         spawn.in_spawn = false;
+                        Tracking.Singleton.PlayerSpawn(player);
                     }
                     else
                     {

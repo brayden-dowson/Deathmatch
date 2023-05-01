@@ -17,6 +17,10 @@ namespace TheRiptide
         public string name { get; set; }
         public byte intensity { get; set; }
 
+        public Effect()
+        {
+        }
+
         public Effect(string name, byte intensity)
         {
             this.name = name;
@@ -233,6 +237,9 @@ namespace TheRiptide
 
         public Killstreaks()
         {
+            Effect e = new Effect();
+
+
             Singleton = this;
             config = Deathmatch.Singleton.killstreak_config;
         }

@@ -2,6 +2,7 @@
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
 using PlayerRoles;
+using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Items;
 using System.Collections.Generic;
@@ -12,6 +13,24 @@ namespace TheRiptide
 {
     public static class Utility
     {
+        public static ItemType GetItemFromDamageHandler(DamageHandlerBase damage)
+        {
+            if (damage is FirearmDamageHandler firearm)
+                return firearm.WeaponType;
+            else if (damage is DisruptorDamageHandler)
+                return ItemType.ParticleDisruptor;
+            else if (damage is ExplosionDamageHandler)
+                return ItemType.GrenadeHE;
+            else if (damage is JailbirdDamageHandler)
+                return ItemType.Jailbird;
+            else if (damage is MicroHidDamageHandler)
+                return ItemType.MicroHID;
+            else if (damage is Scp018DamageHandler)
+                return ItemType.SCP018;
+            else
+                return ItemType.None;
+        }
+
         public static bool IsHumanRole(RoleTypeId role)
         {
             return role == RoleTypeId.ChaosConscript || role == RoleTypeId.ChaosMarauder || role == RoleTypeId.ChaosRepressor || role == RoleTypeId.ChaosRifleman ||

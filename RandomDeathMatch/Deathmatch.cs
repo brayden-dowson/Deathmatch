@@ -76,6 +76,8 @@ namespace TheRiptide
 
         public void Start()
         {
+            DataBase.Singleton.Load();
+
             EventManager.RegisterEvents(this);
             //dependencies
             EventManager.RegisterEvents<InventoryMenu>(this);
@@ -83,27 +85,33 @@ namespace TheRiptide
             EventManager.RegisterEvents<FacilityManager>(this);
 
             //features
-            EventManager.RegisterEvents<DataBase>(this);
+            //EventManager.RegisterEvents<DataBase>(this);
             EventManager.RegisterEvents<Statistics>(this);
             EventManager.RegisterEvents<Killfeeds>(this);
             EventManager.RegisterEvents<Killstreaks>(this);
             EventManager.RegisterEvents<Loadouts>(this);
             EventManager.RegisterEvents<Lobby>(this);
             EventManager.RegisterEvents<Rooms>(this);
+            EventManager.RegisterEvents<Ranks>(this);
+            EventManager.RegisterEvents<Experiences>(this);
+            EventManager.RegisterEvents<Tracking>(this);
         }
 
         public void Stop()
         {
-            DataBase.PluginUnload();
+            DataBase.Singleton.UnLoad();
 
             //features
+            EventManager.UnregisterEvents<Tracking>(this);
+            EventManager.UnregisterEvents<Experiences>(this);
+            EventManager.UnregisterEvents<Ranks>(this);
             EventManager.UnregisterEvents<Rooms>(this);
             EventManager.UnregisterEvents<Lobby>(this);
             EventManager.UnregisterEvents<Loadouts>(this);
             EventManager.UnregisterEvents<Killstreaks>(this);
             EventManager.UnregisterEvents<Killfeeds>(this);
             EventManager.UnregisterEvents<Statistics>(this);
-            EventManager.UnregisterEvents<DataBase>(this);
+            //EventManager.UnregisterEvents<DataBase>(this);
 
             //dependencies
             EventManager.UnregisterEvents<FacilityManager>(this);
@@ -129,6 +137,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         void WaitingForPlayers()
         {
+            DataBase.Singleton.Checkpoint();
         }
 
         [PluginEvent(ServerEventType.RoundStart)]
@@ -163,6 +172,8 @@ namespace TheRiptide
                 Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
             Timing.CallDelayed(60.0f * config.RoundTime, () => 
             {
+                Ranks.Singleton.CalculateAndSaveRanks();
+                Experiences.Singleton.SaveExperiences();
                 Statistics.DisplayRoundStats();
                 Timing.CallPeriodically(20.0f, 0.2f, () =>
                 {
@@ -177,11 +188,13 @@ namespace TheRiptide
         void OnPlayerJoined(Player player)
         {
             players.Add(player.PlayerId);
+            DataBase.Singleton.LoadConfig(player);
         }
 
         [PluginEvent(ServerEventType.PlayerLeft)]
         void OnPlayerLeft(Player player)
         {
+            DataBase.Singleton.SaveConfig(player);
             players.Remove(player.PlayerId);
         }
 
