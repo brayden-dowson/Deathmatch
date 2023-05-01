@@ -15,9 +15,10 @@ namespace TheRiptide
         public int Kill { get; set; } = 50;
         //public int Minute { get; set; } = 20;
         //public int OnehundredDamage { get; set; } = 25;
+
         public int XpPerLevel { get; set; } = 250;
         public float LevelExponent { get; set; } = 1.0f;
-        public float StageExponent { get; set; } = 1.0f;
+        public float StageExponent { get; set; } = 1.5f;
         public float TierExponent { get; set; } = 1.0f;
 
         public string BadgeFormat { get; set; } = "[{0} {1} {2} {3}]";
