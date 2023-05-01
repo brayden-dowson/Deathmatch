@@ -333,6 +333,18 @@ namespace TheRiptide
                 }
 
                 AddItems(killer, reward_items);
+                killstreak.count++;
+                if (killstreak.count % 5 == 0)
+                    BroadcastOverride.BroadcastLine(1, killstreak.count, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> is on a <b><color=#FF0000>" + killstreak.count.ToString() + "</color></b> kill streak");
+                else
+                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, "Kill streak <b><color=#FF0000>" + killstreak.count.ToString() + "</color></b>");
+            }
+            if (player_killstreak.ContainsKey(target.PlayerId))
+            {
+                Killstreak killstreak = player_killstreak[target.PlayerId];
+                if (killstreak.count >= 5)
+                    BroadcastOverride.BroadcastLine(2, killstreak.count, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> ended <b><color=#43BFF0>" + target.Nickname + "'s </color></b>" + "<b><color=#FF0000>" + killstreak.count.ToString() + "</color></b> kill streak");
+                killstreak.count = 0;
             }
         }
 

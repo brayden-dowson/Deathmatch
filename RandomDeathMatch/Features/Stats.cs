@@ -84,22 +84,14 @@ namespace TheRiptide
                 stats.killstreak++;
                 if (stats.killstreak > stats.highest_killstreak)
                     stats.highest_killstreak = stats.killstreak;
-                if (stats.killstreak % 5 == 0)
-                    BroadcastOverride.BroadcastLine(1, stats.killstreak, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> is on a <b><color=#FF0000>" + stats.killstreak.ToString() + "</color></b> kill streak");
-                else
-                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, "Kill streak <b><color=#FF0000>" + stats.killstreak.ToString() + "</color></b>");
             }
             if (player_stats.ContainsKey(target.PlayerId))
             {
                 Stats stats = player_stats[target.PlayerId];
-                if (stats.killstreak >= 5)
-                    BroadcastOverride.BroadcastLine(2, stats.killstreak, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> ended <b><color=#43BFF0>" + target.Nickname + "'s </color></b>" + "<b><color=#FF0000>" + stats.killstreak.ToString() + "</color></b> kill streak");
 
                 stats.time_alive += (int)Math.Round(Time.time - stats.start_time);
                 stats.killstreak = 0;
                 stats.deaths++;
-                BroadcastOverride.BroadcastLine(target, 1, 300, BroadcastPriority.Low, "<b><color=#FFFF00>Left/Right click to respawn</color></b>");
-                BroadcastOverride.BroadcastLine(target, 2, 300, BroadcastPriority.Low, "<b><color=#FF0000>Tab to edit attachments/presets</color></b>");
 
                 if(killer != null && player_stats.ContainsKey(killer.PlayerId))
                 {

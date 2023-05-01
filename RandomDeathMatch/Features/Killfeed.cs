@@ -210,6 +210,10 @@ namespace TheRiptide
                 if (untagged_gun_name.First() == 'A')
                     with = " with  an  ";
 
+                string text = "{test}";
+
+                kill_msg = text.Replace("{killer}", killer_name).Replace("{victim}", victim_name).Replace("{hitbox}", hit_box).Replace("{gun}", gun_name);
+
                 kill_msg = killer_name + " shot  " + victim_name + " in  the  " + hit_box + with + gun_name;
             }
             else if (damage is ExplosionDamageHandler explosion)

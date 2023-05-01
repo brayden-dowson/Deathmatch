@@ -108,6 +108,8 @@ namespace TheRiptide
                 Killfeeds.PushKill(target, killer, damage);
             }
             Killfeeds.UpdateAllDirty();
+            BroadcastOverride.BroadcastLine(target, 1, 300, BroadcastPriority.Low, "<b><color=#FFFF00>Left/Right click to respawn</color></b>");
+            BroadcastOverride.BroadcastLine(target, 2, 300, BroadcastPriority.Low, "<b><color=#FF0000>Tab to edit attachments/presets</color></b>");
             BroadcastOverride.UpdateAllDirty();
         }
 
