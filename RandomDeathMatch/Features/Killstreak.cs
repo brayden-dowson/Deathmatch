@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
+using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
@@ -335,15 +336,15 @@ namespace TheRiptide
                 AddItems(killer, reward_items);
                 killstreak.count++;
                 if (killstreak.count % 5 == 0)
-                    BroadcastOverride.BroadcastLine(1, killstreak.count, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> is on a <b><color=#FF0000>" + killstreak.count.ToString() + "</color></b> kill streak");
+                    BroadcastOverride.BroadcastLine(1, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreak.Replace("{name}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()));
                 else
-                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, "Kill streak <b><color=#FF0000>" + killstreak.count.ToString() + "</color></b>");
+                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, translation.PrivateKillstreak.Replace("{streak}", killstreak.count.ToString()));
             }
             if (player_killstreak.ContainsKey(target.PlayerId))
             {
                 Killstreak killstreak = player_killstreak[target.PlayerId];
                 if (killstreak.count >= 5)
-                    BroadcastOverride.BroadcastLine(2, killstreak.count, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> ended <b><color=#43BFF0>" + target.Nickname + "'s </color></b>" + "<b><color=#FF0000>" + killstreak.count.ToString() + "</color></b> kill streak");
+                    BroadcastOverride.BroadcastLine(2, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{name}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()).Replace("{victim}",target.Nickname));
                 killstreak.count = 0;
             }
         }

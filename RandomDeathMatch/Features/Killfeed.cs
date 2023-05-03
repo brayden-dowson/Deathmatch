@@ -7,6 +7,7 @@ using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
+using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
@@ -156,9 +157,9 @@ namespace TheRiptide
             string hitbox_string = "";
             switch (hitbox)
             {
-                case HitboxType.Body: hitbox_string = "<b><color=#36a832>Body</color></b>"; break;
-                case HitboxType.Limb: hitbox_string = "<b><color=#43BFF0>Limb</color></b>"; break;
-                case HitboxType.Headshot: hitbox_string = "<b><color=#FF0000>Head</color></b>"; break;
+                case HitboxType.Body: hitbox_string = "<b><color=#36a832>" + translation.Body + "</color></b>"; break;
+                case HitboxType.Limb: hitbox_string = "<b><color=#43BFF0>" + translation.Limb + "</color></b>"; break;
+                case HitboxType.Headshot: hitbox_string = "<b><color=#FF0000>" + translation.Head + "</color></b>"; break;
             }
             return hitbox_string;
         }
@@ -205,60 +206,49 @@ namespace TheRiptide
                 }
                 string untagged_gun_name = Enum.GetName(typeof(ItemType), firearm.WeaponType).Substring(3);
                 string gun_name = "<b>" + team_color + untagged_gun_name + "</color></b>";
-
-                string with = " with  a  ";
-                if (untagged_gun_name.First() == 'A')
-                    with = " with  an  ";
-
-                string text = "{test}";
-
-                kill_msg = text.Replace("{killer}", killer_name).Replace("{victim}", victim_name).Replace("{hitbox}", hit_box).Replace("{gun}", gun_name);
-
-                kill_msg = killer_name + " shot  " + victim_name + " in  the  " + hit_box + with + gun_name;
+                kill_msg = translation.FirearmKill.Replace("{killer}", killer_name).Replace("{victim}", victim_name).Replace("{hitbox}", hit_box).Replace("{gun}", gun_name);
             }
             else if (damage is ExplosionDamageHandler explosion)
             {
                 if (victim == killer)
-                    kill_msg = victim_name + " humiliated  themselves  with  a  <b><color=#eb0d47>Frag grenade</color></b>";
+                    kill_msg = translation.ExplosionSelfKill.Replace("{victim}", victim_name);
                 else
-                    kill_msg = killer_name + " fragged " + victim_name;
+                    kill_msg = translation.ExplosionKill.Replace("{killer}", killer_name).Replace("{victim}", victim_name);
             }
             else if(damage is JailbirdDamageHandler jailbird)
             {
                 string hit_box = HitboxToString(jailbird.Hitbox);
-                string hit_type = "";
                 if (jailbird.Hitbox == HitboxType.Headshot)
-                    hit_type = " bonked ";
+                    kill_msg = translation.JailbirdHeadKill.Replace("{killer}", killer_name).Replace("{victim}", victim_name).Replace("{hitbox}", hit_box);
                 else
-                    hit_type = " slapped ";
-                kill_msg = killer_name + hit_type + victim_name + " on the " + hit_box + " with the <b><color=#eb0d47>Jailbird</color></b>";
+                    kill_msg = translation.JailbirdNormalKill.Replace("{killer}", killer_name).Replace("{victim}", victim_name).Replace("{hitbox}", hit_box);
             }
             else if(damage is Scp018DamageHandler scp018)
             {
                 if (victim == killer)
-                    kill_msg = victim_name + " humiliated themselves by failing to catch their own ball";
+                    kill_msg = translation.Scp018SelfKill.Replace("{victim}", victim_name);
                 else
-                    kill_msg = killer_name + " pummeled " + victim_name + " with <b><color=#eb0d47>SCP 018</color></b>";
+                    kill_msg = translation.Scp018Kill.Replace("{killer}", killer_name).Replace("{victim}", victim_name);
             }
             else if(damage is DisruptorDamageHandler disruptor)
             {
                 if (victim == killer)
-                    kill_msg = victim_name + " humiliated themselves with the <b><color=#eb0d47>Particle disruptor</color></b>";
+                    kill_msg = translation.DistruptorSelfKill.Replace("{victim}", victim_name);
                 else
-                    kill_msg = killer_name + " atomised " + victim_name + " in the " + HitboxToString(disruptor.Hitbox) + " with the <b><color=#eb0d47>Particle disruptor</color></b>";
+                    kill_msg = translation.DistruptorKill.Replace("{killer}", killer_name).Replace("{victim}", victim_name).Replace("{hitbox}", HitboxToString(disruptor.Hitbox));
             }
             else if (damage is CustomReasonDamageHandler custom)
             {
-                kill_msg = victim_name + " slain: <b><color=#43BFF0>" + custom.CassieDeathAnnouncement.Announcement + "</color></b>";
+                kill_msg = translation.CustomReasonKill.Replace("{victim}", victim_name).Replace("{reason}", custom.CassieDeathAnnouncement.Announcement);
             }
             else if(killer == null && victim != null)
             {
                 Statistics.Stats stats = Statistics.GetStats(victim);
                 Loadouts.Loadout loadout = Loadouts.GetLoadout(victim);
                 if (Lobby.InSpawn(victim) && Loadouts.IsLoadoutEmpty(victim) && stats.kills == 0 && stats.deaths == 0 && !loadout.customising)
-                    kill_msg = victim_name + " <b><color=#eb0d47>could not read so they left the match humiliating themselves</color></b>";
+                    kill_msg = translation.FailedFirstGrade.Replace("{victim}", victim_name);
                 else
-                    kill_msg = "<b><color=#eb0d47>" + victim.Nickname + "</color></b> humiliated  themselves ";
+                    kill_msg = translation.SelfKill.Replace("{victim}", victim_name);
             }
 
             foreach (Player player in Player.GetPlayers())

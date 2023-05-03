@@ -15,7 +15,7 @@ namespace TheRiptide
 {
     public class TrackingConfig
     {
-        public bool IsEnabled { get; set; } = false;
+        public bool IsEnabled { get; set; } = true;
         public bool TrackHits { get; set; } = true;
         public bool TrackLoadouts { get; set; } = true;
         public bool TrackRounds { get; set; } = true;
@@ -26,9 +26,9 @@ namespace TheRiptide
         public static Tracking Singleton { get; private set; }
         private TrackingConfig config;
 
-        private DataBase.Round current_round = new DataBase.Round();
-        private Dictionary<int, DataBase.Session> player_sessions = new Dictionary<int, DataBase.Session>();
-        private Dictionary<int, DataBase.Life> player_life = new Dictionary<int, DataBase.Life>();
+        private Database.Round current_round = new Database.Round();
+        private Dictionary<int, Database.Session> player_sessions = new Dictionary<int, Database.Session>();
+        private Dictionary<int, Database.Life> player_life = new Dictionary<int, Database.Life>();
 
         public Tracking()
         {
@@ -51,7 +51,7 @@ namespace TheRiptide
         {
             if (config.TrackRounds)
             {
-                current_round = new DataBase.Round();
+                current_round = new Database.Round();
                 foreach (var ids in player_sessions.Keys.ToList())
                     player_sessions[ids].round = current_round;
             }
@@ -62,13 +62,17 @@ namespace TheRiptide
         {
             int id = player.PlayerId;
             if (!player_sessions.ContainsKey(id))
-                player_sessions.Add(id, new DataBase.Session());
+                player_sessions.Add(id, new Database.Session());
             else
-                player_sessions[player.PlayerId] = new DataBase.Session();
+                player_sessions[player.PlayerId] = new Database.Session();
 
-            DataBase.Session session = player_sessions[player.PlayerId];
+            Database.Session session = player_sessions[player.PlayerId];
             session.nickname = player.Nickname;
             session.round = current_round;
+
+            if (current_round != null)
+                if (Player.Count > current_round.max_players)
+                    current_round.max_players = Player.Count;
         }
 
         [PluginEvent(ServerEventType.PlayerLeft)]
@@ -78,7 +82,7 @@ namespace TheRiptide
             if (player_sessions.ContainsKey(id))
             {
                 player_sessions[player.PlayerId].disconnect = System.DateTime.Now;
-                DataBase.Singleton.SaveTrackingSession(player);
+                Database.Singleton.SaveTrackingSession(player);
                 player_sessions.Remove(id);
             }
 
@@ -91,9 +95,9 @@ namespace TheRiptide
         {
             if(victim != null && killer != null && player_life.ContainsKey(victim.PlayerId) && player_life.ContainsKey(killer.PlayerId))
             {
-                DataBase.Life victim_life = player_life[victim.PlayerId];
-                DataBase.Life killer_life = player_life[killer.PlayerId];
-                DataBase.Kill kill = new DataBase.Kill();
+                Database.Life victim_life = player_life[victim.PlayerId];
+                Database.Life killer_life = player_life[killer.PlayerId];
+                Database.Kill kill = new Database.Kill();
                 victim_life.death = kill;
                 killer_life.kills.Add(kill);
                 if(damage is StandardDamageHandler standard)
@@ -111,9 +115,9 @@ namespace TheRiptide
             {
                 if (damage is StandardDamageHandler standard)
                 {
-                    DataBase.Life victim_life = player_life[victim.PlayerId];
-                    DataBase.Life attacker_life = player_life[attacker.PlayerId];
-                    DataBase.Hit hit = new DataBase.Hit();
+                    Database.Life victim_life = player_life[victim.PlayerId];
+                    Database.Life attacker_life = player_life[attacker.PlayerId];
+                    Database.Hit hit = new Database.Hit();
                     victim_life.received.Add(hit);
                     attacker_life.delt.Add(hit);
                     hit.health = (byte)victim.Health;
@@ -129,7 +133,7 @@ namespace TheRiptide
         {
             if(player != null)
             {
-                DataBase.Life life = player_life[player.PlayerId];
+                Database.Life life = player_life[player.PlayerId];
                 if (life != null)
                     life.shots++;
             }
@@ -139,9 +143,9 @@ namespace TheRiptide
         {
             if(player != null && player_sessions.ContainsKey(player.PlayerId))
             {
-                DataBase.Session session = player_sessions[player.PlayerId];
-                DataBase.Life life = new DataBase.Life();
-                DataBase.Loadout loadout = null;
+                Database.Session session = player_sessions[player.PlayerId];
+                Database.Life life = new Database.Life();
+                Database.Loadout loadout = null;
                 session.lives.Add(life);
                 if (player_life.ContainsKey(player.PlayerId))
                 {
@@ -154,11 +158,11 @@ namespace TheRiptide
                 if (config.TrackLoadouts)
                 {
                     if (loadout == null)
-                        loadout = new DataBase.Loadout();
+                        loadout = new Database.Loadout();
 
                     var weapon_attachments = AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub];
                     Loadouts.Loadout player_loadout = Loadouts.GetLoadout(player);
-                    DataBase.Loadout new_loadout = new DataBase.Loadout();
+                    Database.Loadout new_loadout = new Database.Loadout();
 
                     new_loadout.killstreak_mode = Killstreaks.GetKillstreak(player).mode.ToString();
                     new_loadout.primary = player_loadout.primary;
@@ -179,7 +183,7 @@ namespace TheRiptide
             }
         }
 
-        public DataBase.Session GetSession(Player player)
+        public Database.Session GetSession(Player player)
         {
             return player_sessions[player.PlayerId];
         }

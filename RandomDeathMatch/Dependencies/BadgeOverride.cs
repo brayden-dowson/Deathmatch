@@ -62,6 +62,13 @@ namespace TheRiptide
         {
             player_badges[player.PlayerId].badges[slot] = badge;
             player.ReferenceHub.serverRoles.Group.BadgeText = player_badges[player.PlayerId].BadgeText();
+            player.ReferenceHub.characterClassManager.UserCode_CmdRequestShowTag(false);
+        }
+
+        public void SetBadgeColor(Player player, string color)
+        {
+            player.ReferenceHub.serverRoles.Group.BadgeColor = color;
+            player.ReferenceHub.characterClassManager.UserCode_CmdRequestShowTag(false);
         }
 
     }

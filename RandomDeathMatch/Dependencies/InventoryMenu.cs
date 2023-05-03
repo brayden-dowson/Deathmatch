@@ -166,5 +166,12 @@ namespace TheRiptide
         {
             return player_menu[player.PlayerId];
         }
+
+        public static void Clear()
+        {
+            menus.Clear();
+            foreach (var id in player_menu.Keys.ToList())
+                player_menu[id] = 0;
+        }
     }
 }

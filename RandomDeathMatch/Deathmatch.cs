@@ -48,6 +48,9 @@ namespace TheRiptide
         [PluginConfig("tracking_config.yml")]
         public TrackingConfig tracking_config;
 
+        [PluginConfig("translation_config.yml")]
+        public TranslationConfig translation_config;
+
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
 
@@ -76,19 +79,20 @@ namespace TheRiptide
         {
             Singleton = this;
             Killfeeds.Init(2, 5, 20);
-            DeathmatchMenu.Singleton.SetupMenus();
             Lobby.Init();
         }
 
         public void Start()
         {
-            DataBase.Singleton.Load();
+            Database.Singleton.Load();
 
             EventManager.RegisterEvents(this);
             //dependencies
             EventManager.RegisterEvents<InventoryMenu>(this);
             EventManager.RegisterEvents<BroadcastOverride>(this);
             EventManager.RegisterEvents<FacilityManager>(this);
+            EventManager.RegisterEvents<BadgeOverride>(this);
+            BadgeOverride.Singleton.Init(2);
 
             //features
             EventManager.RegisterEvents<Statistics>(this);
@@ -108,14 +112,20 @@ namespace TheRiptide
             Rooms.Singleton.Init(rooms_config);
             Killstreaks.Singleton.Init(killstreak_config);
             DeathmatchMenu.Singleton.Init(menu_config);
-            Experiences.Singleton.Init(experience_config);
-            Ranks.Singleton.Init(rank_config);
-            Tracking.Singleton.Init(tracking_config);
+            if (rank_config.IsEnabled)
+                Ranks.Singleton.Init(rank_config);
+            if (experience_config.IsEnabled)
+                Experiences.Singleton.Init(experience_config);
+            if (tracking_config.IsEnabled)
+                Tracking.Singleton.Init(tracking_config);
+            Translation.translation = translation_config;
+
+            DeathmatchMenu.Singleton.SetupMenus();
         }
 
         public void Stop()
         {
-            DataBase.Singleton.UnLoad();
+            Database.Singleton.UnLoad();
 
             //features
             EventManager.UnregisterEvents<Tracking>(this);
@@ -129,11 +139,14 @@ namespace TheRiptide
             EventManager.UnregisterEvents<Statistics>(this);
 
             //dependencies
+            EventManager.UnregisterEvents<BadgeOverride>(this);
             EventManager.UnregisterEvents<FacilityManager>(this);
             EventManager.UnregisterEvents<BroadcastOverride>(this);
             EventManager.UnregisterEvents<InventoryMenu>(this);
 
             EventManager.UnregisterEvents(this);
+
+            DeathmatchMenu.Singleton.ClearMenus();
         }
 
         [PluginEntryPoint("Deathmatch", "1.0", "needs no explanation", "The Riptide")]
@@ -152,7 +165,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         void WaitingForPlayers()
         {
-            DataBase.Singleton.Checkpoint();
+            Database.Singleton.Checkpoint();
         }
 
         [PluginEvent(ServerEventType.RoundStart)]
@@ -203,13 +216,13 @@ namespace TheRiptide
         void OnPlayerJoined(Player player)
         {
             players.Add(player.PlayerId);
-            DataBase.Singleton.LoadConfig(player);
+            Database.Singleton.LoadConfig(player);
         }
 
         [PluginEvent(ServerEventType.PlayerLeft)]
         void OnPlayerLeft(Player player)
         {
-            DataBase.Singleton.SaveConfig(player);
+            Database.Singleton.SaveConfig(player);
             players.Remove(player.PlayerId);
         }
 

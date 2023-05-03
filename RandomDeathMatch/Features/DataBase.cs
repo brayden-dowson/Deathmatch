@@ -10,7 +10,7 @@ using PlayerRoles;
 
 namespace TheRiptide
 {
-    public class DataBase
+    public class Database
     {
         //configs collection
         class Config
@@ -86,7 +86,6 @@ namespace TheRiptide
             public System.DateTime start { get; set; } = System.DateTime.Now;
             public System.DateTime end { get; set; } = System.DateTime.Now;
             public int max_players { get; set; } = 0;
-            public int average_players { get; set; } = 0;
         }
 
         public class Session
@@ -115,14 +114,18 @@ namespace TheRiptide
             public Tracking tracking { get; set; } = new Tracking();
         }
 
+
         //ranks collection
-        class Rank
+        public enum RankState { Unranked, Placement, Ranked };
+        public class Rank
         {
             [BsonId]
             public string UserId { get; set; }
-            public float rating { get; set; }
-            public float rd { get; set; }
-            public float rv { get; set; }
+            public RankState state { get; set; } = RankState.Unranked;
+            public int placement_matches { get; set; } = 0;
+            public float rating { get; set; } = 0;
+            public float rd { get; set; } = 0;
+            public float rv { get; set; } = 0;
         }
 
         //experience collecion
@@ -136,20 +139,20 @@ namespace TheRiptide
             public int tier { get; set; } = 0;
         }
 
-        private static DataBase instance = null;
-        public static DataBase Singleton
+        private static Database instance = null;
+        public static Database Singleton
         { 
             get 
             {
                 if (instance == null)
-                    instance = new DataBase();
+                    instance = new Database();
                 return instance;
             }
         }
 
         private LiteDatabase db;
 
-        private DataBase()
+        private Database()
         {
             BsonMapper.Global.RegisterType
             (
@@ -257,33 +260,35 @@ namespace TheRiptide
         {
             DbDelayedAsync(() =>
             {
-                Ranks.Rank player_rank = Ranks.Singleton.GetRank(player);
-                var ranks = db.GetCollection<Rank>("ranks");
-                ranks.EnsureIndex(x => x.UserId);
-                Rank rank = ranks.FindById(player.UserId);
-                Timing.CallDelayed(0.0f, () =>
+                if (!player.DoNotTrack)
                 {
-                    if (rank != null)
+                    Rank player_rank = Ranks.Singleton.GetRank(player);
+                    var ranks = db.GetCollection<Rank>("ranks");
+                    ranks.EnsureIndex(x => x.UserId);
+                    Rank rank = ranks.FindById(player.UserId);
+                    Timing.CallDelayed(0.0f, () =>
                     {
-                        player_rank.rating = rank.rating;
-                        player_rank.rd = rank.rd;
-                        player_rank.rv = rank.rv;
-                    }
-                    player_rank.loaded = true;
-                });
+                        try
+                        {
+                            if (rank != null)
+                                player_rank = rank;
+                            Ranks.Singleton.RankLoaded(player);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.Error("database rank error: " + ex.ToString());
+                        }
+                    });
+                }
             });
         }
 
-        public void SaveRank(string user_id, float rating, float rd, float rv)
+        public void SaveRank(Rank rank)
         {
             DbAsync(() =>
             {
                 var ranks = db.GetCollection<Rank>("ranks");
                 ranks.EnsureIndex(x => x.UserId);
-                Rank rank = new Rank { UserId = user_id };
-                rank.rating = rating;
-                rank.rd = rd;
-                rank.rv = rv;
                 ranks.Upsert(rank);
             });
         }
@@ -292,9 +297,9 @@ namespace TheRiptide
         {
             DbDelayedAsync(() =>
             {
-                Experiences.XP player_xp = Experiences.Singleton.GetXP(player);
                 if (!player.DoNotTrack)
                 {
+                    Experiences.XP player_xp = Experiences.Singleton.GetXP(player);
                     var experiences = db.GetCollection<Experience>("experiences");
                     experiences.EnsureIndex(x => x.UserId);
                     Experience xp = experiences.FindById(player.UserId);
@@ -302,10 +307,18 @@ namespace TheRiptide
                     {
                         Timing.CallDelayed(0.0f, () =>
                         {
-                            player_xp.value = xp.value;
-                            player_xp.level = xp.level;
-                            player_xp.stage = xp.stage;
-                            player_xp.tier = xp.tier;
+                            try
+                            {
+                                player_xp.value = xp.value;
+                                player_xp.level = xp.level;
+                                player_xp.stage = xp.stage;
+                                player_xp.tier = xp.tier;
+                                Experiences.Singleton.XpLoaded(player);
+                            }
+                            catch(System.Exception ex)
+                            {
+                                Log.Error("database experience error: " + ex.ToString());
+                            }
                         });
                     }
                 }
