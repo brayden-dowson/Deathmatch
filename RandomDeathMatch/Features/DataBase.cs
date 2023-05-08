@@ -227,11 +227,57 @@ namespace TheRiptide
             });
         }
 
-        public void SaveConfig(Player player)
+        class ConfigRef
+        {
+            public Loadouts.Loadout loadout = null;
+            public Lobby.Spawn spawn = null;
+            public Killstreaks.Killstreak killstreak = null;
+
+            public bool IsReady { get { return loadout != null && spawn != null && killstreak != null; } }
+        }
+
+        Dictionary<int, ConfigRef> config_cache = new Dictionary<int, ConfigRef>();
+
+        public void SaveConfigLoadout(Player player)
         {
             Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
+            if (!config_cache.ContainsKey(player.PlayerId))
+                config_cache.Add(player.PlayerId, new ConfigRef { loadout = loadout });
+            else
+                config_cache[player.PlayerId].loadout = loadout;
+            if (config_cache[player.PlayerId].IsReady)
+                SaveConfig(player);
+        }
+
+        public void SaveConfigSpawn(Player player)
+        {
             Lobby.Spawn spawn = Lobby.GetSpawn(player);
+            if (!config_cache.ContainsKey(player.PlayerId))
+                config_cache.Add(player.PlayerId, new ConfigRef { spawn = spawn });
+            else
+                config_cache[player.PlayerId].spawn = spawn;
+            if (config_cache[player.PlayerId].IsReady)
+                SaveConfig(player);
+        }
+
+        public void SaveConfigKillstreak(Player player)
+        {
             Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
+            if (!config_cache.ContainsKey(player.PlayerId))
+                config_cache.Add(player.PlayerId, new ConfigRef { killstreak = killstreak });
+            else
+                config_cache[player.PlayerId].killstreak = killstreak;
+            if (config_cache[player.PlayerId].IsReady)
+                SaveConfig(player);
+        }
+
+        private void SaveConfig(Player player)
+        {
+            ConfigRef config_ref = config_cache[player.PlayerId];
+            config_cache.Remove(player.PlayerId);
+            Loadouts.Loadout loadout = config_ref.loadout;
+            Lobby.Spawn spawn = config_ref.spawn;
+            Killstreaks.Killstreak killstreak = config_ref.killstreak;
 
             DbAsync(() =>
             {
@@ -271,7 +317,14 @@ namespace TheRiptide
                         try
                         {
                             if (rank != null)
-                                player_rank = rank;
+                            {
+                                player_rank.UserId = rank.UserId;
+                                player_rank.state = rank.state;
+                                player_rank.placement_matches = rank.placement_matches;
+                                player_rank.rating = rank.rating;
+                                player_rank.rd = rank.rd;
+                                player_rank.rv = rank.rv;
+                            }
                             Ranks.Singleton.RankLoaded(player);
                         }
                         catch (System.Exception ex)
@@ -303,24 +356,24 @@ namespace TheRiptide
                     var experiences = db.GetCollection<Experience>("experiences");
                     experiences.EnsureIndex(x => x.UserId);
                     Experience xp = experiences.FindById(player.UserId);
-                    if (xp != null)
+                    Timing.CallDelayed(0.0f, () =>
                     {
-                        Timing.CallDelayed(0.0f, () =>
+                        try
                         {
-                            try
+                            if (xp != null)
                             {
                                 player_xp.value = xp.value;
                                 player_xp.level = xp.level;
                                 player_xp.stage = xp.stage;
                                 player_xp.tier = xp.tier;
-                                Experiences.Singleton.XpLoaded(player);
                             }
-                            catch(System.Exception ex)
-                            {
-                                Log.Error("database experience error: " + ex.ToString());
-                            }
-                        });
-                    }
+                            Experiences.Singleton.XpLoaded(player);
+                        }
+                        catch(System.Exception ex)
+                        {
+                            Log.Error("database experience error: " + ex.ToString());
+                        }
+                    });
                 }
             });
         }

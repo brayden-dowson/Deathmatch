@@ -157,14 +157,16 @@ namespace TheRiptide
         public static void CloseRoom(RoomIdentifier room)
         {
             foreach (var door in DoorVariant.DoorsByRoom[room])
-                CloseDoor(door);
+                if (door.Rooms.Count() == 2)
+                    CloseDoor(door);
         }
 
         //open all egde room doors/elevators
         public static void OpenRoom(RoomIdentifier room)
         {
             foreach (var door in DoorVariant.DoorsByRoom[room])
-                OpenDoor(door);
+                if (door.Rooms.Count() == 2)
+                    OpenDoor(door);
         }
 
         //close all egde room doors/elevators
@@ -174,7 +176,8 @@ namespace TheRiptide
             foreach (var room in rooms)
                 doors.UnionWith(DoorVariant.DoorsByRoom[room]);
             foreach (var door in doors)
-                CloseDoor(door);
+                if (door.Rooms.Count() == 2)
+                    CloseDoor(door);
         }
 
         //open all egde room doors/elevators
@@ -184,7 +187,8 @@ namespace TheRiptide
             foreach (var room in rooms)
                 doors.UnionWith(DoorVariant.DoorsByRoom[room]);
             foreach (var door in doors)
-                OpenDoor(door);
+                if (door.Rooms.Count() == 2)
+                    OpenDoor(door);
         }
 
         //close all edge room doors shared between rooms/elevators

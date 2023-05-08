@@ -93,6 +93,7 @@
     <Compile Include="Dependencies\BadgeOverride.cs" />
     <Compile Include="Dependencies\BroadcastOverride.cs" />
     <Compile Include="Dependencies\FacilityManager.cs" />
+    <Compile Include="Dependencies\HintOverride.cs" />
     <Compile Include="Dependencies\Teleport.cs" />
     <Compile Include="Features\Database.cs" />
     <Compile Include="Features\Experience.cs" />

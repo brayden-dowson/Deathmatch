@@ -92,6 +92,7 @@ namespace TheRiptide
             EventManager.RegisterEvents<BroadcastOverride>(this);
             EventManager.RegisterEvents<FacilityManager>(this);
             EventManager.RegisterEvents<BadgeOverride>(this);
+            EventManager.RegisterEvents<HintOverride>(this);
             BadgeOverride.Singleton.Init(2);
 
             //features
@@ -139,6 +140,7 @@ namespace TheRiptide
             EventManager.UnregisterEvents<Statistics>(this);
 
             //dependencies
+            EventManager.UnregisterEvents<HintOverride>(this);
             EventManager.UnregisterEvents<BadgeOverride>(this);
             EventManager.UnregisterEvents<FacilityManager>(this);
             EventManager.UnregisterEvents<BroadcastOverride>(this);
@@ -200,8 +202,9 @@ namespace TheRiptide
                 Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
             Timing.CallDelayed(60.0f * config.RoundTime, () => 
             {
-                Ranks.Singleton.CalculateAndSaveRanks();
                 Experiences.Singleton.SaveExperiences();
+                Ranks.Singleton.CalculateAndSaveRanks();
+                HintOverride.Refresh();
                 Statistics.DisplayRoundStats();
                 Timing.CallPeriodically(20.0f, 0.2f, () =>
                 {
@@ -222,7 +225,6 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.PlayerLeft)]
         void OnPlayerLeft(Player player)
         {
-            Database.Singleton.SaveConfig(player);
             players.Remove(player.PlayerId);
         }
 

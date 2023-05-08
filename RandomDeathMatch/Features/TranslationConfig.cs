@@ -1,4 +1,6 @@
-﻿using System;
+﻿using CommandSystem;
+using PluginAPI.Core;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -146,11 +148,45 @@ namespace TheRiptide
         public string RewardXpRoundStart { get; set; } = "gained {xp} Xp from round start bonus";
         public string RewardXpItemUsed { get; set; } = "gained {xp} Xp for using {item}";
         public string RewardXpItemThrown { get; set; } = "gained {xp} Xp for throwing {item}";
+        //public string XpChangedMsg { get; set; } = "<pos=0%><align=center><b><size=48><voffset=1em>{prev_xp}</voffset><pos=0%><voffset=0em>{new_xp}</voffset></size></b></voffset></align>";
+        public string XpMsg { get; set; } = "<align=center><voffset=2em><b><size=48>{xp}</size></b>\n";
 
+        [Description("rank")]
+        //public string RankChangedMsg { get; set; } = "<pos=0%><align=center><b><size=72><voffset=5em><color={prev_color}>{prev_rank}</color></voffset><voffset=4em><color={new_color}>{new_rank}</color></size></b></voffset></align>";
+        public string RankMsg { get; set; } = "<align=center><voffset=1.5em><b><size=72><color={color}>{rank}</color></size></b>\n";
+
+        //string x = "<b><size=72><align=center><voffset=5em><color=#A0A0A0>Silver_I</color></voffset></align><align=center><voffset=4em><color=#4DFFB8>Distinguished_Master_Gaurdian\n</color></voffset></align></size></b>";
     }
 
     public static class Translation
     {
         public static TranslationConfig translation = null;
+    }
+
+
+    [CommandHandler(typeof(RemoteAdminCommandHandler))]
+    public class H : ICommand
+    {
+        public string Command { get; } = "h";
+
+        public string[] Aliases { get; } = new string[] { };
+
+        public string Description { get; } = "send hint";
+
+        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+        {
+            Player player;
+            if (Player.TryGet(sender, out player))
+            {
+                string h = "";
+                foreach (var a in arguments)
+                    h += a;
+                player.ReceiveHint(h, 300);
+                response = "success";
+                return true;
+            }
+            response = "failed";
+            return false;
+        }
     }
 }

@@ -59,7 +59,10 @@ namespace TheRiptide
         void OnPlayerLeft(Player player)
         {
             if (player_loadouts.ContainsKey(player.PlayerId))
+            {
+                Database.Singleton.SaveConfigLoadout(player);
                 player_loadouts.Remove(player.PlayerId);
+            }
         }
 
         [PluginEvent(ServerEventType.PlayerDropItem)]

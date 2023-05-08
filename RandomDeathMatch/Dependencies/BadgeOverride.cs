@@ -1,16 +1,45 @@
 ﻿using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TheRiptide
 {
     class BadgeOverride
     {
+        public static readonly Dictionary<string, string> ColorNameToHex = new Dictionary<string, string>
+        {
+            {"pink", "#FF96DE"},
+            {"red", "#C50000"},
+            {"brown", "#944710"},
+            {"silver", "#A0A0A0"},
+            {"light_green", "#32CD32"},
+            {"crimson", "#DC143C"},
+            {"cyan", "#00B7EB"},
+            {"aqua", "#00FFFF"},
+            {"deep_pink", "#FF1493"},
+            {"tomato", "#FF6448"},
+            {"yellow", "#FAFF86"},
+            {"magenta", "#FF0090"},
+            {"blue_green", "#4DFFB8"},
+            {"orange", "#FF9966"},
+            {"lime", "#BFFF00"},
+            {"green", "#228B22"},
+            {"emerald", "#50C878"},
+            {"carmine", "#960018"},
+            {"nickel", "#727472"},
+            {"mint", "#98FB98"},
+            {"army_green", "#4B5320"},
+            {"pumpkin", "#EE7600"},
+            {"gold", "#EFC01A"},
+            {"teal", "#008080"},
+            {"blue", "#005EBC"},
+            {"purple", "#8137CE"},
+            {"light_red", "#FD8272"},
+            {"silver_blue", "#666699"},
+            {"police_blue", "#002DB3"}
+
+        };
         public static BadgeOverride Singleton { get; private set; }
 
         public class Badge
@@ -58,17 +87,16 @@ namespace TheRiptide
                 player_badges.Remove(id);
         }
 
+
         public void SetBadge(Player player, int slot, string badge)
         {
             player_badges[player.PlayerId].badges[slot] = badge;
-            player.ReferenceHub.serverRoles.Group.BadgeText = player_badges[player.PlayerId].BadgeText();
-            player.ReferenceHub.characterClassManager.UserCode_CmdRequestShowTag(false);
+            player.ReferenceHub.serverRoles.Network_myText = player_badges[player.PlayerId].BadgeText();
         }
 
         public void SetBadgeColor(Player player, string color)
         {
-            player.ReferenceHub.serverRoles.Group.BadgeColor = color;
-            player.ReferenceHub.characterClassManager.UserCode_CmdRequestShowTag(false);
+            player.ReferenceHub.serverRoles.Network_myColor = color;
         }
 
     }
