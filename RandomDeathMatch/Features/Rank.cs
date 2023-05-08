@@ -252,105 +252,12 @@ namespace TheRiptide
             string rank_hint = translation.RankMsg.Replace("{color}", BadgeOverride.ColorNameToHex[color]).Replace("{rank}", tag);
             HintOverride.Add(player, 0, rank_hint, duration);
         }
+    }
 
-            //public class Rank
-            //{
-            //    public float rating;
-            //    public float rd;
-            //    public float rv;
-            //}
-
-            //private Dictionary<int, Rank> player_ranks = new Dictionary<int, Rank>();
-            //private Dictionary<int, GlickoPlayer> player_glikco = new Dictionary<int, GlickoPlayer>();
-            //private Dictionary<int, List<GlickoOpponent>> player_results = new Dictionary<int, List<GlickoOpponent>>();
-
-            //public Ranks()
-            //{
-            //    Singleton = this;
-            //}
-
-            //public void Init(RankConfig config)
-            //{
-            //    this.config = config;
-            //}
-
-            //[PluginEvent(ServerEventType.PlayerJoined)]
-            //void OnPlayerJoined(Player player)
-            //{
-            //    int id = player.PlayerId;
-            //    if (!player_ranks.ContainsKey(id))
-            //        player_ranks.Add(id, new Rank());
-            //    Database.Singleton.LoadRank(player);
-            //}
-
-            //[PluginEvent(ServerEventType.PlayerLeft)]
-            //void OnPlayerLeft(Player player)
-            //{
-            //    int id = player.PlayerId;
-            //    if (player_ranks.ContainsKey(id))
-            //        player_ranks.Remove(id);
-            //}
-
-            //[PluginEvent(ServerEventType.PlayerDeath)]
-            //void OnPlayerDeath(Player target, Player killer, DamageHandlerBase damage)
-            //{
-            //    if(killer != null && target != killer && player_ranks[target.PlayerId].loaded && player_ranks[killer.PlayerId].loaded)
-            //    {
-            //        Rank target_rank = player_ranks[target.PlayerId];
-            //        if (!player_glikco.ContainsKey(target.PlayerId))
-            //        {
-            //            player_glikco.Add(target.PlayerId, new GlickoPlayer(target_rank.rating, target_rank.rd, target_rank.rv));
-            //            player_glikco[target.PlayerId].Name = target.UserId;
-            //            player_results.Add(target.PlayerId, new List<GlickoOpponent>());
-            //        }
-            //        Rank killer_rank = player_ranks[killer.PlayerId];
-            //        if (!player_glikco.ContainsKey(killer.PlayerId))
-            //        {
-            //            player_glikco.Add(killer.PlayerId, new GlickoPlayer(killer_rank.rating, killer_rank.rd, killer_rank.rv));
-            //            player_glikco[killer.PlayerId].Name = killer.UserId;
-            //            player_results.Add(killer.PlayerId, new List<GlickoOpponent>());
-            //        }
-
-            //        player_results[target.PlayerId].Add(new GlickoOpponent(player_glikco[killer.PlayerId], 0));
-            //        player_results[killer.PlayerId].Add(new GlickoOpponent(player_glikco[target.PlayerId], 1));
-            //    }
-            //}
-
-            //public Rank GetRank(Player player)
-            //{
-            //    return player_ranks[player.PlayerId];
-            //}
-
-            //public void CalculateAndSaveRanks()
-            //{
-            //    foreach(var id in player_glikco.Keys.ToList())
-            //    {
-            //        GlickoPlayer new_rank = GlickoCalculator.CalculateRanking(player_glikco[id], player_results[id]);
-            //        Database.Singleton.SaveRank(player_glikco[id].Name, (float)new_rank.Rating, (float)new_rank.RatingDeviation, (float)new_rank.Volatility);
-            //    }
-            //    player_glikco.Clear();
-            //    player_results.Clear();
-            //}
-
-            //public void RankLoaded(Player player)
-            //{
-            //    RankInfo info = config.Ranks.First();
-            //    Rank rank = player_ranks[player.PlayerId];
-            //    int index = 1;
-            //    while(rank.rating > info.Elo && index < config.Ranks.Count)
-            //    {
-            //        info = config.Ranks[index];
-            //        index++;
-            //    }
-            //    BadgeOverride.Singleton.SetBadge(player, 0, string.Format(config.BadgeFormat, info.Tag));
-            //    BadgeOverride.Singleton.SetBadgeColor(player, info.Color);
-            //}
-        }
-
-        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+    [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class SetRank : ICommand
     {
-        public string Command { get; } = "setrank";
+        public string Command { get; } = "dmsetrank";
 
         public string[] Aliases { get; } = new string[] { };
 
@@ -379,7 +286,7 @@ namespace TheRiptide
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class SetRankState : ICommand
     {
-        public string Command { get; } = "setrankstate";
+        public string Command { get; } = "dmsetrankstate";
 
         public string[] Aliases { get; } = new string[] { };
 
@@ -398,7 +305,7 @@ namespace TheRiptide
                 }
                 if(!Enum.IsDefined(typeof(Database.RankState), state))
                 {
-                    response = "undefined state";
+                    response = "valid states are 0 = Unranked 1 = Placement 2 = Ranked";
                     return false;
                 }
                 Ranks.Singleton.GetRank(player).state = (Database.RankState)state;

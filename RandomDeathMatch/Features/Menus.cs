@@ -1,6 +1,5 @@
 ﻿using PlayerRoles;
 using PluginAPI.Core;
-using PluginAPI.Core.Attributes;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -193,13 +192,16 @@ namespace TheRiptide
             Func<Player, ItemType, bool> GunSelected = (player, gun) =>
             {
                 Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
-                Loadouts.SetGun(player, gun);
-                InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
-                MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
-                string gun_name = Enum.GetName(typeof(ItemType), gun).Substring(3);
-                BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.GunSelected.Replace("{gun}", gun_name).Replace("{slot}", loadout.slot.ToString()));
+                if (Loadouts.Singleton.SetGun(player, gun))
+                {
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
+                    MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
+                    string gun_name = Enum.GetName(typeof(ItemType), gun).Substring(3);
+                    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.GunSelected.Replace("{gun}", gun_name).Replace("{slot}", loadout.slot.ToString()));
+                }
                 return false;
             };
+
 
             InventoryMenu.CreateMenu((int)MenuPage.MtfGun, translation.MtfGunMenu, new List<MenuItem>
             {

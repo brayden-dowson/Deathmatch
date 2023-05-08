@@ -16,14 +16,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
 using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
+    public class LoadoutConfig
+    {
+        public bool IsBlackListEnabled { get; set; } = true;
+
+        [Description("put black listed weapons here, see below for all weapons. does not effect weapons granted as a reward only guns on the menu")]
+        public List<ItemType> BlackList { get; set; } = new List<ItemType>();
+
+
+        [Description("list of all the different weapons (changing this does nothing)")]
+        public List<ItemType> AllWeapons { get; set; } = new List<ItemType>
+        {
+            ItemType.GunAK,
+            ItemType.GunCOM15,
+            ItemType.GunCOM18,
+            ItemType.GunCom45,
+            ItemType.GunCrossvec,
+            ItemType.GunE11SR,
+            ItemType.GunFSP9,
+            ItemType.GunLogicer,
+            ItemType.GunRevolver,
+            ItemType.GunShotgun
+        };
+    }
+
     public class Loadouts
     {
+        public static Loadouts Singleton { get; private set; }
+
+        LoadoutConfig config;
+
         public enum GunSlot { Primary, Secondary, Tertiary };
 
         public class Loadout
@@ -40,6 +69,16 @@ namespace TheRiptide
         }
 
         public static Dictionary<int, Loadout> player_loadouts = new Dictionary<int, Loadout>();
+
+        public Loadouts()
+        {
+            Singleton = this;
+        }
+
+        public void Init(LoadoutConfig config)
+        {
+            this.config = config;
+        }
 
         [PluginEvent(ServerEventType.RoundStart)]
         void OnRoundStart()
@@ -168,6 +207,15 @@ namespace TheRiptide
                 return;
 
             Loadout loadout = player_loadouts[player.PlayerId];
+            if (config.IsBlackListEnabled)
+            {
+                if (config.BlackList.Contains(loadout.primary))
+                    loadout.primary = ItemType.None;
+                if (config.BlackList.Contains(loadout.secondary))
+                    loadout.secondary = ItemType.None;
+                if (config.BlackList.Contains(loadout.tertiary))
+                    loadout.tertiary = ItemType.None;
+            }
 
             if (Lobby.GetSpawn(player).role == role)
             {
@@ -266,16 +314,22 @@ namespace TheRiptide
             }
         }
 
-        public static void SetGun(Player player, ItemType gun)
+        public bool SetGun(Player player, ItemType gun)
         {
             Loadout loadout = player_loadouts[player.PlayerId];
 
+            if(config.IsBlackListEnabled && config.BlackList.Contains(gun))
+            {
+                BroadcastOverride.BroadcastLine(player, 2, 5.0f, BroadcastPriority.High, translation.WeaponBanned.Replace("{weapon}", gun.ToString().Substring(3)));
+                return false;
+            }
             if (loadout.slot == GunSlot.Primary)
                 loadout.primary = gun;
             else if (loadout.slot == GunSlot.Secondary)
                 loadout.secondary = gun;
             else if (loadout.slot == GunSlot.Tertiary)
                 loadout.tertiary = gun;
+            return true;
         }
     }
 }

@@ -36,6 +36,9 @@ namespace TheRiptide
         [PluginConfig("killstreak_config.yml")]
         public KillstreakConfig killstreak_config;
 
+        [PluginConfig("loadout_config.yml")]
+        public LoadoutConfig loadout_config;
+
         [PluginConfig("menu_config.yml")]
         public MenuConfig menu_config;
 
@@ -50,6 +53,9 @@ namespace TheRiptide
 
         [PluginConfig("translation_config.yml")]
         public TranslationConfig translation_config;
+
+        [PluginConfig("attachment_blacklist_config.yml")]
+        public AttachmentBlacklistConfig attachment_blacklist_config;
 
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
@@ -108,10 +114,13 @@ namespace TheRiptide
                 EventManager.RegisterEvents<Experiences>(this);
             if (tracking_config.IsEnabled)
                 EventManager.RegisterEvents<Tracking>(this);
+            if (attachment_blacklist_config.IsEnabled)
+                EventManager.RegisterEvents<AttachmentBlacklist>(this);
 
 
             Rooms.Singleton.Init(rooms_config);
             Killstreaks.Singleton.Init(killstreak_config);
+            Loadouts.Singleton.Init(loadout_config);
             DeathmatchMenu.Singleton.Init(menu_config);
             if (rank_config.IsEnabled)
                 Ranks.Singleton.Init(rank_config);
@@ -119,8 +128,10 @@ namespace TheRiptide
                 Experiences.Singleton.Init(experience_config);
             if (tracking_config.IsEnabled)
                 Tracking.Singleton.Init(tracking_config);
-            Translation.translation = translation_config;
+            if (attachment_blacklist_config.IsEnabled)
+                AttachmentBlacklist.Singleton.Init(attachment_blacklist_config, this);
 
+            Translation.translation = translation_config;
             DeathmatchMenu.Singleton.SetupMenus();
         }
 
@@ -129,6 +140,7 @@ namespace TheRiptide
             Database.Singleton.UnLoad();
 
             //features
+            EventManager.UnregisterEvents<AttachmentBlacklist>(this);
             EventManager.UnregisterEvents<Tracking>(this);
             EventManager.UnregisterEvents<Experiences>(this);
             EventManager.UnregisterEvents<Ranks>(this);

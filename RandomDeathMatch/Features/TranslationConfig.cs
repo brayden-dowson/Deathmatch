@@ -41,6 +41,7 @@ namespace TheRiptide
             "<color=#f8d107>Loadout can not be customised after shooting gun/using item</color>",
             "<color=#43BFF0>Wait until next respawn</color>" };
         public string RadioDisableHint { get; set; } = "<color=#FF0000>Radio can be disabled in</color> <b><color=#43BFF0>[MAIN MENU]</color> -> <color=#43BFF0>[PREFERENCES]</color> -> <color=#eb0d47>[GUARD]</color></b>";
+        public string WeaponBanned { get; set; } = "<color=#FF0000>{weapon} is currently banned</color>";
 
         [Description("lobby")]
         public string Teleport { get; set; } = "<color=#43BFF0>you will be teleported after selecting a gun</color>";
@@ -148,14 +149,13 @@ namespace TheRiptide
         public string RewardXpRoundStart { get; set; } = "gained {xp} Xp from round start bonus";
         public string RewardXpItemUsed { get; set; } = "gained {xp} Xp for using {item}";
         public string RewardXpItemThrown { get; set; } = "gained {xp} Xp for throwing {item}";
-        //public string XpChangedMsg { get; set; } = "<pos=0%><align=center><b><size=48><voffset=1em>{prev_xp}</voffset><pos=0%><voffset=0em>{new_xp}</voffset></size></b></voffset></align>";
         public string XpMsg { get; set; } = "<align=center><voffset=2em><b><size=48>{xp}</size></b>\n";
 
         [Description("rank")]
-        //public string RankChangedMsg { get; set; } = "<pos=0%><align=center><b><size=72><voffset=5em><color={prev_color}>{prev_rank}</color></voffset><voffset=4em><color={new_color}>{new_rank}</color></size></b></voffset></align>";
         public string RankMsg { get; set; } = "<align=center><voffset=1.5em><b><size=72><color={color}>{rank}</color></size></b>\n";
 
-        //string x = "<b><size=72><align=center><voffset=5em><color=#A0A0A0>Silver_I</color></voffset></align><align=center><voffset=4em><color=#4DFFB8>Distinguished_Master_Gaurdian\n</color></voffset></align></size></b>";
+        [Description("attachment blacklist")]
+        public string AttachmentBanned { get; set; } = "<color=#FF0000>attachment {attachment} banned</color>";
     }
 
     public static class Translation
