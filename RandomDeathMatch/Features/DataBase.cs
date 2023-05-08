@@ -462,6 +462,21 @@ namespace TheRiptide
             });
         }
 
+        public void DeleteData(Player player)
+        {
+            DbAsync(() =>
+            {
+                var users = db.GetCollection<User>("users");
+                users.Delete(player.UserId);
+                var experiences = db.GetCollection<Experience>("experiences");
+                experiences.Delete(player.UserId);
+                var ranks = db.GetCollection<Rank>("ranks");
+                ranks.Delete(player.UserId);
+                var configs = db.GetCollection<Config>("configs");
+                configs.Delete(player.UserId);
+            });
+        }
+
         private void DbAsync(System.Action action)
         {
             new Task(() =>

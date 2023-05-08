@@ -61,8 +61,8 @@ namespace TheRiptide
         public string SaveAndExit { get; set; } = "<color=#5900ff>[O5]</color> = <b><color=#5900ff>Save and Exit</color></b>";
         public string CustomiseLoadout { get; set; } = "<color=#e7d77b>[SCIENTIST]</color> = <b><color=#FF0000>Customise Loadout - </color><color=#43BFF0>[GUN SLOT]</color></b>";
         public string KillstreakRewardSystem { get; set; } = "<color=#e1ab21>[RESEARCH SUPERVISOR]</color> = <b><color=#43BFF0>[KILLSTREAK REWARD SYSTEM]</color></b>";
-        public string Preferences { get; set; } = "<color=#bd8f86>[CONTAINMENT ENGINEER]</color> = <b><color=#43BFF0>[PREFERENCES]</color></b>";
-        public string Role { get; set; } = "<color=#bd1a4a>[FACILITY MANAGER]</color> = <b><color=#43BFF0>[ROLE]</color></b>";
+        public string Role { get; set; } = "<color=#bd8f86>[CONTAINMENT ENGINEER]</color> = <b><color=#43BFF0>[ROLE]</color></b>";
+        public string Preferences { get; set; } = "<color=#bd1a4a>[FACILITY MANAGER]</color> = <b><color=#43BFF0>[PREFERENCES]</color></b>";
 
         [Description("gun slot menu")]
         public string GunSlotMenu { get; set; } = "<b><color=#43BFF0>[GUN SLOT]</color></b> <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
@@ -108,11 +108,18 @@ namespace TheRiptide
         public string Stats { get; set; } = "<color=#eb0d47>[SCIENTIST]</color> = <b><color=#43BFF0>[STATS]</color></b>";
         public string Spectator { get; set; } = "<color=#eb0d47>[FLASH LIGHT]</color> = <b>Enable spectator mode</b>";
         public string EnableRage { get; set; } = "<color=#eb0d47>[COIN]</color> = <b>Enable [DATA EXPUNGED]</b>";
+        public string DeleteData { get; set; } = "<color=#eb0d47>[JANITOR]</color> = <b>Delete Data stats/configs/ranks/xp/preferences (can not be undone)</b>";
         public string RadioToggled { get; set; } = "<b><color=#43BFF0>Loadout Radio: </color></b> {state}";
 
         [Description("stats menu")]
         public string StatsMenu { get; set; } = "<b><color=#43BFF0>[STATS]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
         public string BackToPreferences { get; set; } = "<color=#5900ff>[O5]</color> = <b>Back to <color=#43BFF0>[PREFERENCES]</color></b>";
+
+        [Description("confirm delete data menu")]
+        public string DeleteDataMenu { get; set; } = "<b><color=#43BFF0>[DATA DELETION CONFIRMATION]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
+        public string AreYouSure { get; set; } = "<b>Are you sure? You must have 'Do Not Track' on for this to work. <color=#FF0000>deletion can not be undone.</color> <color=#43BFF0>If sure, right click on the janitor keycard to delete your data</color></b>";
+        public string FailedToDeleteData { get; set; } = "<b>failed to delete data, you must have 'Do Not Track' on in your settings</b>";
+        public string DeletedData { get; set; } = "data deleted";
 
         [Description("rooms")]
         public string SecondPlayerJoined { get; set; } = "Player <color=#43BFF0>{name}</color> joined, waiting for them to select a loadout";

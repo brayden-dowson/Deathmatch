@@ -29,7 +29,7 @@ namespace TheRiptide
 
         public MenuConfig config;
 
-        public enum MenuPage { None, Main, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, Debug };
+        public enum MenuPage { None, Main, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, DeleteData, Debug };
 
         private DeathmatchMenu() { }
 
@@ -101,14 +101,14 @@ namespace TheRiptide
                     BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.CurrentKillstreakSelected.Replace("{killstreak}", Killstreaks.KillstreakColorCode(player) + killstreak.mode.ToString()));
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardContainmentEngineer, translation.Preferences, (player)=>
-                {
-                    InventoryMenu.ShowMenu(player, (int)MenuPage.Preference);
-                    return false;
-                }),
-                new MenuItem(ItemType.KeycardFacilityManager, translation.Role, (player)=>
+                new MenuItem(ItemType.KeycardContainmentEngineer, translation.Role, (player)=>
                 {
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Role);
+                    return false;
+                }),
+                new MenuItem(ItemType.KeycardFacilityManager, translation.Preferences, (player)=>
+                {
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.Preference);
                     return false;
                 }),
                 //new MenuItem(ItemType.Coin, "<color=#bd8f86>[COIN]</color> = <b><color=#43BFF0>[DEBUG MENU] dont forget to remove!!!</color></b>", (player)=>
@@ -354,6 +354,11 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
                     return false;
                 }),
+                new MenuItem(ItemType.KeycardJanitor, translation.DeleteData, (player)=>
+                {
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.DeleteData);
+                    return false;
+                }),
                 new MenuItem(ItemType.Radio, "", (p) => { return false; })
             });
 
@@ -363,6 +368,30 @@ namespace TheRiptide
                 {
                     BroadcastOverride.ClearLines(player, BroadcastPriority.Highest);
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Preference);
+                    return false;
+                }),
+                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
+            });
+
+            InventoryMenu.CreateMenu((int)MenuPage.DeleteData, translation.DeleteDataMenu, new List<MenuItem>
+            {
+                new MenuItem(ItemType.KeycardO5, translation.BackToPreferences, (player)=>
+                {
+                    BroadcastOverride.ClearLines(player, BroadcastPriority.Highest);
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.Preference);
+                    return false;
+                }),
+                new MenuItem(ItemType.KeycardJanitor, translation.AreYouSure, (player)=>
+                {
+                    if(player.DoNotTrack)
+                    {
+                        Database.Singleton.DeleteData(player);
+                        InventoryMenu.ShowMenu(player, (int)MenuPage.Preference);
+                        MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Preference);
+                        BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500, BroadcastPriority.High, translation.DeletedData);
+                    }
+                    else
+                        BroadcastOverride.BroadcastLine(player, 3, 1500, BroadcastPriority.High, translation.FailedToDeleteData);
                     return false;
                 }),
                 new MenuItem(ItemType.Radio,"",(p)=>{ return false; })

@@ -1,4 +1,6 @@
 ﻿using InventorySystem.Items;
+using InventorySystem.Items.ThrowableProjectiles;
+using InventorySystem.Items.Usables;
 using MEC;
 using PlayerStatsSystem;
 using PluginAPI.Core;
@@ -7,6 +9,7 @@ using PluginAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEngine;
 
 namespace TheRiptide
 {
@@ -85,6 +88,36 @@ namespace TheRiptide
                 allow_drop = menu.items.Find(has_item).on_click(player);
             BroadcastOverride.UpdateIfDirty(player);
             return allow_drop;
+        }
+
+        [PluginEvent(ServerEventType.PlayerUseItem)]
+        bool OnPlayerUseItem(Player player, UsableItem item)
+        {
+            if (!player_menu.ContainsKey(player.PlayerId))
+                return true;
+            if (player_menu[player.PlayerId] != 0)
+                return false;
+            return true;
+        }
+
+        [PluginEvent(ServerEventType.PlayerThrowItem)]
+        bool OnThrowItem(Player player, ItemBase item, Rigidbody rb)
+        {
+            if (!player_menu.ContainsKey(player.PlayerId))
+                return true;
+            if (player_menu[player.PlayerId] != 0)
+                return false;
+            return true;
+        }
+
+        [PluginEvent(ServerEventType.PlayerThrowProjectile)]
+        public bool OnPlayerThrowProjectile(Player player, ThrowableItem item, ThrowableItem.ProjectileSettings projectileSettings, bool fullForce)
+        {//todo fix
+            if (!player_menu.ContainsKey(player.PlayerId))
+                return true;
+            if (player_menu[player.PlayerId] != 0)
+                return false;
+            return true;
         }
 
         [PluginEvent(ServerEventType.PlayerDeath)]
