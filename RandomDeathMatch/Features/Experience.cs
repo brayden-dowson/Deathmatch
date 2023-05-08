@@ -357,86 +357,86 @@ namespace TheRiptide
         }
     }
 
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class DmSetXp : ICommand
-    {
-        public string Command { get; } = "dmsetxp";
-
-        public string[] Aliases { get; } = new string[] { "dxp"};
-
-        public string Description { get; } = "set xp on player. '[player_id] [value] [level] [stage] [tier]', -1 = palceholder, -1 id = self";
-
-        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-        {
-            Player player;
-            if (Player.TryGet(sender, out player))
-            {
-                int id = -1;
-                int value = -1;
-                int level = -1;
-                int stage = -1;
-                int tier = -1;
-                if (!int.TryParse(arguments.ElementAt(0), out id))
-                {
-                    response = "failed to parse id: " + arguments.ElementAt(0);
-                    return false;
-                }
-                if (arguments.Count >= 2)
-                {
-                    if (!int.TryParse(arguments.ElementAt(1), out value))
-                    {
-                        response = "failed to parse value: " + arguments.ElementAt(1);
-                        return false;
-                    }
-                }
-                if (arguments.Count >= 3)
-                {
-                    if (!int.TryParse(arguments.ElementAt(2), out level))
-                    {
-                        response = "failed to parse level: " + arguments.ElementAt(2);
-                        return false;
-                    }
-                }
-                if (arguments.Count >= 4)
-                {
-                    if (!int.TryParse(arguments.ElementAt(3), out stage))
-                    {
-                        response = "failed to parse stage: " + arguments.ElementAt(3);
-                        return false;
-                    }
-                }
-                if (arguments.Count >= 5)
-                {
-                    if (!int.TryParse(arguments.ElementAt(4), out tier))
-                    {
-                        response = "failed to parse tier: " + arguments.ElementAt(4);
-                        return false;
-                    }
-                }
-                Experiences.XP xp = Experiences.Singleton.GetXP(player);
-                if (id != -1)
-                {
-                    Player target = null;
-                    if (!Player.TryGet(id, out target))
-                    {
-                        response = "failed to get player with id: " + id;
-                        return false;
-                    }
-                    xp = Experiences.Singleton.GetXP(target);
-                }
-                if (value != -1)
-                    xp.value = value;
-                if (level != -1)
-                    xp.level = level;
-                if (stage != -1)
-                    xp.stage = stage;
-                if (tier != -1)
-                    xp.tier = tier;
-                response = "successfully set xp: " + xp.value + " level: " + xp.level + " stage: " + xp.stage + " tier: " + xp.tier;
-                return true;
-            }
-            response = "failed";
-            return false;
-        }
-    }
+    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
+    //public class DmSetXp : ICommand
+    //{
+    //    public string Command { get; } = "dmsetxp";
+    //
+    //    public string[] Aliases { get; } = new string[] { "dxp"};
+    //
+    //    public string Description { get; } = "set xp on player. '[player_id] [value] [level] [stage] [tier]', -1 = palceholder, -1 id = self";
+    //
+    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+    //    {
+    //        Player player;
+    //        if (Player.TryGet(sender, out player))
+    //        {
+    //            int id = -1;
+    //            int value = -1;
+    //            int level = -1;
+    //            int stage = -1;
+    //            int tier = -1;
+    //            if (!int.TryParse(arguments.ElementAt(0), out id))
+    //            {
+    //                response = "failed to parse id: " + arguments.ElementAt(0);
+    //                return false;
+    //            }
+    //            if (arguments.Count >= 2)
+    //            {
+    //                if (!int.TryParse(arguments.ElementAt(1), out value))
+    //                {
+    //                    response = "failed to parse value: " + arguments.ElementAt(1);
+    //                    return false;
+    //                }
+    //            }
+    //            if (arguments.Count >= 3)
+    //            {
+    //                if (!int.TryParse(arguments.ElementAt(2), out level))
+    //                {
+    //                    response = "failed to parse level: " + arguments.ElementAt(2);
+    //                    return false;
+    //                }
+    //            }
+    //            if (arguments.Count >= 4)
+    //            {
+    //                if (!int.TryParse(arguments.ElementAt(3), out stage))
+    //                {
+    //                    response = "failed to parse stage: " + arguments.ElementAt(3);
+    //                    return false;
+    //                }
+    //            }
+    //            if (arguments.Count >= 5)
+    //            {
+    //                if (!int.TryParse(arguments.ElementAt(4), out tier))
+    //                {
+    //                    response = "failed to parse tier: " + arguments.ElementAt(4);
+    //                    return false;
+    //                }
+    //            }
+    //            Experiences.XP xp = Experiences.Singleton.GetXP(player);
+    //            if (id != -1)
+    //            {
+    //                Player target = null;
+    //                if (!Player.TryGet(id, out target))
+    //                {
+    //                    response = "failed to get player with id: " + id;
+    //                    return false;
+    //                }
+    //                xp = Experiences.Singleton.GetXP(target);
+    //            }
+    //            if (value != -1)
+    //                xp.value = value;
+    //            if (level != -1)
+    //                xp.level = level;
+    //            if (stage != -1)
+    //                xp.stage = stage;
+    //            if (tier != -1)
+    //                xp.tier = tier;
+    //            response = "successfully set xp: " + xp.value + " level: " + xp.level + " stage: " + xp.stage + " tier: " + xp.tier;
+    //            return true;
+    //        }
+    //        response = "failed";
+    //        return false;
+    //    }
+    //}
 }

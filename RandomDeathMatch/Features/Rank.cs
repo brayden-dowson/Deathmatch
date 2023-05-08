@@ -254,66 +254,66 @@ namespace TheRiptide
         }
     }
 
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class SetRank : ICommand
-    {
-        public string Command { get; } = "dmsetrank";
+    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
+    //public class SetRank : ICommand
+    //{
+    //    public string Command { get; } = "dmsetrank";
+    //
+    //    public string[] Aliases { get; } = new string[] { };
+    //
+    //    public string Description { get; } = "set rank on self";
+    //
+    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+    //    {
+    //        Player player;
+    //        if (Player.TryGet(sender, out player))
+    //        {
+    //            int rating;
+    //            if (!int.TryParse(arguments.ElementAt(0), out rating))
+    //            {
+    //                response = "failed";
+    //                return false;
+    //            }
+    //            Ranks.Singleton.SetRank(player, rating);
+    //            response = "success";
+    //            return true;
+    //        }
+    //        response = "failed";
+    //        return false;
+    //    }
+    //}
 
-        public string[] Aliases { get; } = new string[] { };
-
-        public string Description { get; } = "set rank on self";
-
-        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-        {
-            Player player;
-            if (Player.TryGet(sender, out player))
-            {
-                int rating;
-                if (!int.TryParse(arguments.ElementAt(0), out rating))
-                {
-                    response = "failed";
-                    return false;
-                }
-                Ranks.Singleton.SetRank(player, rating);
-                response = "success";
-                return true;
-            }
-            response = "failed";
-            return false;
-        }
-    }
-
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class SetRankState : ICommand
-    {
-        public string Command { get; } = "dmsetrankstate";
-
-        public string[] Aliases { get; } = new string[] { };
-
-        public string Description { get; } = "set rank state on self";
-
-        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-        {
-            Player player;
-            if (Player.TryGet(sender, out player))
-            {
-                int state;
-                if (!int.TryParse(arguments.ElementAt(0), out state))
-                {
-                    response = "failed";
-                    return false;
-                }
-                if(!Enum.IsDefined(typeof(Database.RankState), state))
-                {
-                    response = "valid states are 0 = Unranked 1 = Placement 2 = Ranked";
-                    return false;
-                }
-                Ranks.Singleton.GetRank(player).state = (Database.RankState)state;
-                response = "success";
-                return true;
-            }
-            response = "failed";
-            return false;
-        }
-    }
+    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
+    //public class SetRankState : ICommand
+    //{
+    //    public string Command { get; } = "dmsetrankstate";
+    //
+    //    public string[] Aliases { get; } = new string[] { };
+    //
+    //    public string Description { get; } = "set rank state on self";
+    //
+    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+    //    {
+    //        Player player;
+    //        if (Player.TryGet(sender, out player))
+    //        {
+    //            int state;
+    //            if (!int.TryParse(arguments.ElementAt(0), out state))
+    //            {
+    //                response = "failed";
+    //                return false;
+    //            }
+    //            if(!Enum.IsDefined(typeof(Database.RankState), state))
+    //            {
+    //                response = "valid states are 0 = Unranked 1 = Placement 2 = Ranked";
+    //                return false;
+    //            }
+    //            Ranks.Singleton.GetRank(player).state = (Database.RankState)state;
+    //            response = "success";
+    //            return true;
+    //        }
+    //        response = "failed";
+    //        return false;
+    //    }
+    //}
 }
