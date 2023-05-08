@@ -352,7 +352,7 @@ namespace TheRiptide
 
         private int XpToNextLevel(XP xp)
         {
-            float exact_value = config.BaseXpLevel * Mathf.Pow(config.LevelExponent, xp.level) * Mathf.Pow(config.StageExponent, xp.stage) * Mathf.Pow(config.TierExponent, xp.tier);
+            float exact_value = config.BaseXpLevel * Mathf.Pow(config.LevelExponent, (float)xp.level) * Mathf.Pow(config.StageExponent, (float)xp.stage) * Mathf.Pow(config.TierExponent, (float)xp.tier);
             return Mathf.RoundToInt(exact_value / config.XpRounding) * config.XpRounding;
         }
     }

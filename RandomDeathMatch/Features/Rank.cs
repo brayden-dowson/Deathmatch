@@ -23,13 +23,13 @@ namespace TheRiptide
         [Description("players start unranked. unranked players cannot influence placement/ranked players. once the MinXpForPlacement is achieved they will progress to placement")]
         public string UnrankedTag { get; set; } = "Rank : --/--/--\n";
         public string UnrankedColor { get; set; } = "nickel";
-        public Experiences.XP MinXpForPlacement { get; set; } = new Experiences.XP { value = 0, level = 0, stage = 1, tier = 0 };
+        public Experiences.XP MinXpForPlacement { get; set; } = new Experiences.XP { value = 0, level = 0, stage = 2, tier = 0 };
 
         [Description("placement players rank is influenced by other placement players and ranked players but ranked players are not influenced by placement players")]
         public string PlacementTag { get; set; } = "Rank : ?\n";
         public string PlacementColor { get; set; } = "magenta";
         [Description("matches referes to kill/deaths against placement and ranked players. this is how many until you become ranked")]
-        public int PlacementMatches { get; set; } = 1000;
+        public int PlacementMatches { get; set; } = 300;
         [Description("glicko-2 params set when a player start placement")]
         public float Rating { get; set; } = 1500;
         public float RatingDeviation { get; set; } = 350;
