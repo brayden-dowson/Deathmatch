@@ -31,7 +31,7 @@ namespace TheRiptide
         private static SortedSet<int> avaliable_spawn_rooms = new SortedSet<int>();
         private static List<GameObject> blocks = new List<GameObject>();
         private static bool round_started = false;
-        private static int spawn_dim = Mathf.CeilToInt(Mathf.Sqrt(Server.MaxPlayers));
+        private static int spawn_dim = 8;
 
         public static void Init()
         {
