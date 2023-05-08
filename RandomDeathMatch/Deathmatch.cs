@@ -36,8 +36,26 @@ namespace TheRiptide
         [PluginConfig("killstreak_config.yml")]
         public KillstreakConfig killstreak_config;
 
+        [PluginConfig("loadout_config.yml")]
+        public LoadoutConfig loadout_config;
+
         [PluginConfig("menu_config.yml")]
         public MenuConfig menu_config;
+
+        [PluginConfig("experience_config.yml")]
+        public ExperienceConfig experience_config;
+
+        [PluginConfig("rank_config.yml")]
+        public RankConfig rank_config;
+
+        [PluginConfig("tracking_config.yml")]
+        public TrackingConfig tracking_config;
+
+        [PluginConfig("translation_config.yml")]
+        public TranslationConfig translation_config;
+
+        [PluginConfig("attachment_blacklist_config.yml")]
+        public AttachmentBlacklistConfig attachment_blacklist_config;
 
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
@@ -67,47 +85,82 @@ namespace TheRiptide
         {
             Singleton = this;
             Killfeeds.Init(2, 5, 20);
-            DeathmatchMenu.SetupMenus();
             Lobby.Init();
         }
 
         public void Start()
         {
+            Database.Singleton.Load();
+
             EventManager.RegisterEvents(this);
             //dependencies
             EventManager.RegisterEvents<InventoryMenu>(this);
             EventManager.RegisterEvents<BroadcastOverride>(this);
             EventManager.RegisterEvents<FacilityManager>(this);
+            EventManager.RegisterEvents<BadgeOverride>(this);
+            EventManager.RegisterEvents<HintOverride>(this);
+            BadgeOverride.Singleton.Init(2);
 
             //features
-            EventManager.RegisterEvents<DataBase>(this);
             EventManager.RegisterEvents<Statistics>(this);
             EventManager.RegisterEvents<Killfeeds>(this);
             EventManager.RegisterEvents<Killstreaks>(this);
             EventManager.RegisterEvents<Loadouts>(this);
             EventManager.RegisterEvents<Lobby>(this);
             EventManager.RegisterEvents<Rooms>(this);
+            if (rank_config.IsEnabled)
+                EventManager.RegisterEvents<Ranks>(this);
+            if (experience_config.IsEnabled)
+                EventManager.RegisterEvents<Experiences>(this);
+            if (tracking_config.IsEnabled)
+                EventManager.RegisterEvents<Tracking>(this);
+            if (attachment_blacklist_config.IsEnabled)
+                EventManager.RegisterEvents<AttachmentBlacklist>(this);
+
+
+            Rooms.Singleton.Init(rooms_config);
+            Killstreaks.Singleton.Init(killstreak_config);
+            Loadouts.Singleton.Init(loadout_config);
+            DeathmatchMenu.Singleton.Init(menu_config);
+            if (rank_config.IsEnabled)
+                Ranks.Singleton.Init(rank_config);
+            if (experience_config.IsEnabled)
+                Experiences.Singleton.Init(experience_config);
+            if (tracking_config.IsEnabled)
+                Tracking.Singleton.Init(tracking_config);
+            if (attachment_blacklist_config.IsEnabled)
+                AttachmentBlacklist.Singleton.Init(attachment_blacklist_config, this);
+
+            Translation.translation = translation_config;
+            DeathmatchMenu.Singleton.SetupMenus();
         }
 
         public void Stop()
         {
-            DataBase.PluginUnload();
+            Database.Singleton.UnLoad();
 
             //features
+            EventManager.UnregisterEvents<AttachmentBlacklist>(this);
+            EventManager.UnregisterEvents<Tracking>(this);
+            EventManager.UnregisterEvents<Experiences>(this);
+            EventManager.UnregisterEvents<Ranks>(this);
             EventManager.UnregisterEvents<Rooms>(this);
             EventManager.UnregisterEvents<Lobby>(this);
             EventManager.UnregisterEvents<Loadouts>(this);
             EventManager.UnregisterEvents<Killstreaks>(this);
             EventManager.UnregisterEvents<Killfeeds>(this);
             EventManager.UnregisterEvents<Statistics>(this);
-            EventManager.UnregisterEvents<DataBase>(this);
 
             //dependencies
+            EventManager.UnregisterEvents<HintOverride>(this);
+            EventManager.UnregisterEvents<BadgeOverride>(this);
             EventManager.UnregisterEvents<FacilityManager>(this);
             EventManager.UnregisterEvents<BroadcastOverride>(this);
             EventManager.UnregisterEvents<InventoryMenu>(this);
 
             EventManager.UnregisterEvents(this);
+
+            DeathmatchMenu.Singleton.ClearMenus();
         }
 
         [PluginEntryPoint("Deathmatch", "1.0", "needs no explanation", "The Riptide")]
@@ -126,6 +179,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         void WaitingForPlayers()
         {
+            Database.Singleton.Checkpoint();
         }
 
         [PluginEvent(ServerEventType.RoundStart)]
@@ -160,6 +214,9 @@ namespace TheRiptide
                 Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
             Timing.CallDelayed(60.0f * config.RoundTime, () => 
             {
+                Experiences.Singleton.SaveExperiences();
+                Ranks.Singleton.CalculateAndSaveRanks();
+                HintOverride.Refresh();
                 Statistics.DisplayRoundStats();
                 Timing.CallPeriodically(20.0f, 0.2f, () =>
                 {
@@ -174,6 +231,7 @@ namespace TheRiptide
         void OnPlayerJoined(Player player)
         {
             players.Add(player.PlayerId);
+            Database.Singleton.LoadConfig(player);
         }
 
         [PluginEvent(ServerEventType.PlayerLeft)]

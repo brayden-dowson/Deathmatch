@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
@@ -31,11 +32,6 @@ namespace TheRiptide
         private static List<GameObject> blocks = new List<GameObject>();
         private static bool round_started = false;
         private static int spawn_dim = Mathf.CeilToInt(Mathf.Sqrt(Server.MaxPlayers));
-
-        public static string teleport_msg = "<color=#43BFF0>you will be teleported after selecting a gun</color>";
-        public static List<string> waiting_for_players_msg = new List<string>(){
-            "<color=#43BFF0>Waiting for 1 player to join</color>",
-            "<color=#43BFF0>You get to choose the starting area!</color>"};
 
         public static void Init()
         {
@@ -88,6 +84,7 @@ namespace TheRiptide
             if (player_spawns.ContainsKey(player.PlayerId))
             {
                 avaliable_spawn_rooms.Add(player_spawns[player.PlayerId].spawn_room);
+                Database.Singleton.SaveConfigSpawn(player);
                 player_spawns.Remove(player.PlayerId);
             }
             if(Player.Count == 2)
@@ -108,6 +105,8 @@ namespace TheRiptide
                 Killfeeds.PushKill(target, killer, damage);
             }
             Killfeeds.UpdateAllDirty();
+            BroadcastOverride.BroadcastLine(target, 1, 300, BroadcastPriority.Low, translation.Respawn);
+            BroadcastOverride.BroadcastLine(target, 2, 300, BroadcastPriority.Low, translation.Attachments);
             BroadcastOverride.UpdateAllDirty();
         }
 
@@ -168,12 +167,12 @@ namespace TheRiptide
 
                 if (!Loadouts.ValidateLoadout(player))
                 {
-                    BroadcastOverride.BroadcastLine(player, 2, 300, BroadcastPriority.High, teleport_msg);
+                    BroadcastOverride.BroadcastLine(player, 2, 300, BroadcastPriority.High, translation.Teleport);
                 }
                 else
                 {
-                    BroadcastOverride.BroadcastLine(player, 1, 7, BroadcastPriority.Low, "<color=#43BFF0>Teleporting in 7 seconds</color>");
-                    BroadcastOverride.BroadcastLine(player, 2, 7, BroadcastPriority.Low, "<color=#43BFF0>Open [MAIN MENU] to cancel</color>");
+                    BroadcastOverride.BroadcastLine(player, 1, 7, BroadcastPriority.Low, translation.Teleporting);
+                    BroadcastOverride.BroadcastLine(player, 2, 7, BroadcastPriority.Low, translation.TeleportCancel);
                     Timing.KillCoroutines(spawn.teleport_handle);
                     spawn.teleport_handle = Timing.CallDelayed(7.0f, () =>
                     {
@@ -181,7 +180,7 @@ namespace TheRiptide
                             return;
                         if (Player.GetPlayers().Count == 1)
                         {
-                            BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, waiting_for_players_msg);
+                            BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, translation.WaitingForPlayers);
                             BroadcastOverride.UpdateIfDirty(player);
                         }
                         else if (Player.GetPlayers().Count >= 2 && !Deathmatch.GameStarted)
@@ -233,7 +232,7 @@ namespace TheRiptide
             if (!Loadouts.ValidateLoadout(player))
             {
                 if (spawn.in_spawn)
-                    BroadcastOverride.BroadcastLine(player, 2, 300, BroadcastPriority.High, teleport_msg);
+                    BroadcastOverride.BroadcastLine(player, 2, 300, BroadcastPriority.High, translation.Teleport);
             }
             else
             {
@@ -241,13 +240,13 @@ namespace TheRiptide
                 {
                     if (player.Role == spawn.role)
                     {
-                        BroadcastOverride.BroadcastLine(player, 1, 3, BroadcastPriority.VeryLow, "<color=#43BFF0>loadout set, teleporting in 3 seconds</color>");
+                        BroadcastOverride.BroadcastLine(player, 1, 3, BroadcastPriority.VeryLow, translation.FastTeleport);
                         Timing.KillCoroutines(spawn.teleport_handle);
                         spawn.teleport_handle = Timing.CallDelayed(3.0f, () =>
                         {
                             if (Player.GetPlayers().Count == 1)
                             {
-                                BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, waiting_for_players_msg);
+                                BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, translation.WaitingForPlayers);
                                 BroadcastOverride.UpdateIfDirty(player);
                             }
                             else if (Player.GetPlayers().Count >= 2 && !Deathmatch.GameStarted)
@@ -266,7 +265,7 @@ namespace TheRiptide
                 {
                     if (Player.GetPlayers().Count == 1)
                     {
-                        BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, waiting_for_players_msg);
+                        BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, translation.WaitingForPlayers);
                         BroadcastOverride.UpdateIfDirty(player);
                     }
                     else if (Player.GetPlayers().Count >= 2 && !Deathmatch.GameStarted)
@@ -296,7 +295,7 @@ namespace TheRiptide
             {
                 BroadcastOverride.ClearLines(player, BroadcastPriority.High);
                 Killfeeds.SetBroadcastKillfeedLayout(player);
-                BroadcastOverride.BroadcastLine(player, 1, 10, BroadcastPriority.High, "spectator mode is currently bugged, you may need to leave and rejoin to respawn");
+                BroadcastOverride.BroadcastLine(player, 1, 10, BroadcastPriority.High, translation.SpectatorMode);
                 player.SetRole(RoleTypeId.Spectator);
             }
         }
@@ -422,6 +421,7 @@ namespace TheRiptide
                         else
                             ApplyGameNotStartedEffects(player);
                         spawn.in_spawn = false;
+                        Tracking.Singleton.PlayerSpawn(player);
                     }
                     else
                     {

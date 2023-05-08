@@ -16,13 +16,43 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
+using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
+    public class LoadoutConfig
+    {
+        public bool IsBlackListEnabled { get; set; } = true;
+
+        [Description("put black listed weapons here, see below for all weapons. does not effect weapons granted as a reward only guns on the menu")]
+        public List<ItemType> BlackList { get; set; } = new List<ItemType>();
+
+
+        [Description("list of all the different weapons (changing this does nothing)")]
+        public List<ItemType> AllWeapons { get; set; } = new List<ItemType>
+        {
+            ItemType.GunAK,
+            ItemType.GunCOM15,
+            ItemType.GunCOM18,
+            ItemType.GunCom45,
+            ItemType.GunCrossvec,
+            ItemType.GunE11SR,
+            ItemType.GunFSP9,
+            ItemType.GunLogicer,
+            ItemType.GunRevolver,
+            ItemType.GunShotgun
+        };
+    }
+
     public class Loadouts
     {
+        public static Loadouts Singleton { get; private set; }
+
+        LoadoutConfig config;
+
         public enum GunSlot { Primary, Secondary, Tertiary };
 
         public class Loadout
@@ -40,11 +70,15 @@ namespace TheRiptide
 
         public static Dictionary<int, Loadout> player_loadouts = new Dictionary<int, Loadout>();
 
-        public static string loadout_customisation_hint = "<b>CHECK INVENTORY! <color=#FF0000>Right Click O5 to select gun</color></b>";
+        public Loadouts()
+        {
+            Singleton = this;
+        }
 
-        public static List<string> loadout_customisation_denied = new List<string>() {
-            "<color=#f8d107>Loadout can not be customised after shooting gun/using item</color>",
-            "<color=#43BFF0>Wait until next respawn</color>" };
+        public void Init(LoadoutConfig config)
+        {
+            this.config = config;
+        }
 
         [PluginEvent(ServerEventType.RoundStart)]
         void OnRoundStart()
@@ -64,7 +98,10 @@ namespace TheRiptide
         void OnPlayerLeft(Player player)
         {
             if (player_loadouts.ContainsKey(player.PlayerId))
+            {
+                Database.Singleton.SaveConfigLoadout(player);
                 player_loadouts.Remove(player.PlayerId);
+            }
         }
 
         [PluginEvent(ServerEventType.PlayerDropItem)]
@@ -97,18 +134,18 @@ namespace TheRiptide
                         if (IsLoadoutEmpty(player))
                         {
                             BroadcastOverride.ClearLines(player, BroadcastPriority.High);
-                            BroadcastOverride.BroadcastLine(player, 1, 300, BroadcastPriority.High, loadout_customisation_hint);
+                            BroadcastOverride.BroadcastLine(player, 1, 300, BroadcastPriority.High, translation.CustomisationHint);
                             if (Lobby.InSpawn(player))
                             {
                                 Lobby.CancelTeleport(player);
-                                BroadcastOverride.BroadcastLine(player, 2, 300, BroadcastPriority.High, Lobby.teleport_msg);
+                                BroadcastOverride.BroadcastLine(player, 2, 300, BroadcastPriority.High, translation.Teleport);
                             }
                         }
                     }
                     else
                     {
                         BroadcastOverride.ClearLines(player, BroadcastPriority.High);
-                        BroadcastOverride.BroadcastLines(player, 1, 3, BroadcastPriority.High, loadout_customisation_denied);
+                        BroadcastOverride.BroadcastLines(player, 1, 3, BroadcastPriority.High, translation.CustomisationDenied);
                     }
                 }
                 else if (item.Category != ItemCategory.Armor)
@@ -116,7 +153,7 @@ namespace TheRiptide
                     if (item.ItemTypeId == ItemType.Radio)
                     {
                         RemoveItem(player, ItemType.Radio);
-                        BroadcastOverride.BroadcastLine(player, 1, 5, BroadcastPriority.High, "<color=#FF0000>Radio can be disabled in</color> <b><color=#43BFF0>[MAIN MENU]</color> -> <color=#43BFF0>[PREFERENCES]</color> -> <color=#eb0d47>[GUARD]</color></b>");
+                        BroadcastOverride.BroadcastLine(player, 1, 5, BroadcastPriority.High, translation.RadioDisableHint);
                     }
                     else if (loadout.locked)
                         drop_allowed = true;
@@ -170,6 +207,15 @@ namespace TheRiptide
                 return;
 
             Loadout loadout = player_loadouts[player.PlayerId];
+            if (config.IsBlackListEnabled)
+            {
+                if (config.BlackList.Contains(loadout.primary))
+                    loadout.primary = ItemType.None;
+                if (config.BlackList.Contains(loadout.secondary))
+                    loadout.secondary = ItemType.None;
+                if (config.BlackList.Contains(loadout.tertiary))
+                    loadout.tertiary = ItemType.None;
+            }
 
             if (Lobby.GetSpawn(player).role == role)
             {
@@ -195,7 +241,7 @@ namespace TheRiptide
         {
             if (IsLoadoutEmpty(player))
             {
-                BroadcastOverride.BroadcastLine(player, 1, 300, BroadcastPriority.High, loadout_customisation_hint);
+                BroadcastOverride.BroadcastLine(player, 1, 300, BroadcastPriority.High, translation.CustomisationHint);
                 return false;
             }
             else
@@ -219,7 +265,7 @@ namespace TheRiptide
             else
             {
                 BroadcastOverride.ClearLines(player, BroadcastPriority.High);
-                BroadcastOverride.BroadcastLines(player, 1, 3, BroadcastPriority.High, loadout_customisation_denied);
+                BroadcastOverride.BroadcastLines(player, 1, 3, BroadcastPriority.High, translation.CustomisationDenied);
                 return false;
             }
         }
@@ -268,16 +314,22 @@ namespace TheRiptide
             }
         }
 
-        public static void SetGun(Player player, ItemType gun)
+        public bool SetGun(Player player, ItemType gun)
         {
             Loadout loadout = player_loadouts[player.PlayerId];
 
+            if(config.IsBlackListEnabled && config.BlackList.Contains(gun))
+            {
+                BroadcastOverride.BroadcastLine(player, 2, 5.0f, BroadcastPriority.High, translation.WeaponBanned.Replace("{weapon}", gun.ToString().Substring(3)));
+                return false;
+            }
             if (loadout.slot == GunSlot.Primary)
                 loadout.primary = gun;
             else if (loadout.slot == GunSlot.Secondary)
                 loadout.secondary = gun;
             else if (loadout.slot == GunSlot.Tertiary)
                 loadout.tertiary = gun;
+            return true;
         }
     }
 }

@@ -11,6 +11,7 @@ using PluginAPI.Core;
 using CustomPlayerEffects;
 using PlayerStatsSystem;
 using System.ComponentModel;
+using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
@@ -32,6 +33,8 @@ namespace TheRiptide
 
     public class Rooms
     {
+        public static Rooms Singleton { get; private set; }
+
         public RoomsConfig config;
 
         private static Dictionary<RoomIdentifier, int> opened_rooms = new Dictionary<RoomIdentifier, int>();
@@ -46,7 +49,12 @@ namespace TheRiptide
 
         public Rooms()
         {
-            config = Deathmatch.Singleton.rooms_config;
+            Singleton = this;
+        }
+
+        public void Init(RoomsConfig config)
+        {
+            this.config = config;
         }
 
         [PluginEvent(ServerEventType.RoundStart)]
@@ -73,12 +81,12 @@ namespace TheRiptide
                     {
                         if(SearchForStartRoom(p))
                         {
-                            BroadcastOverride.BroadcastLine(p, 1, 300.0f, BroadcastPriority.Low, "Player <color=#43BFF0>" + player.Nickname + "</color> joined, waiting for them to select a loadout");
+                            BroadcastOverride.BroadcastLine(p, 1, 300.0f, BroadcastPriority.Low, translation.SecondPlayerJoined.Replace("{name}", player.Nickname));
                             BroadcastOverride.UpdateIfDirty(p);
                             Timing.CallDelayed(10.0f, () =>
                             {
                                 if (ValidPlayerInRoom(p) && Loadouts.GetLoadout(p).radio && Deathmatch.IsPlayerValid(player) && !Deathmatch.GameStarted)
-                                    BroadcastOverride.BroadcastLine(p, 2, 290.0f, BroadcastPriority.Low, "<color=#43BFF0>" + player.Nickname + "</color> is struggling to set his loadout please help him with your radio");
+                                    BroadcastOverride.BroadcastLine(p, 2, 290.0f, BroadcastPriority.Low, translation.SecondPlayerHelp.Replace("{name}", player.Nickname));
                                 BroadcastOverride.UpdateIfDirty(p);
                             });
                         }
@@ -287,7 +295,7 @@ namespace TheRiptide
                     {
                         if (ValidPlayerInRoom(player) && closed_rooms.Keys.Contains(player.Room))
                         {
-                            BroadcastOverride.BroadcastLine(player, 1, delta, BroadcastPriority.High, "<color=#FF0000>DECONTAMINATNG!</color>");
+                            BroadcastOverride.BroadcastLine(player, 1, delta, BroadcastPriority.High, translation.Decontaminating);
                             BroadcastOverride.UpdateIfDirty(player);
                             player.EffectsManager.EnableEffect<Decontaminating>(1);
                         }
@@ -347,11 +355,11 @@ namespace TheRiptide
                             if (Math.Abs(time - Math.Round(time)) <= (delta / 2.0f) || danger >= time)
                             {
                                 if (caution >= time && time > warning)
-                                    BroadcastOverride.BroadcastLine(player, 1, 1.0f + delta, BroadcastPriority.Low, "<color=#FFFF00>Caution! Room decontamination in " + Math.Floor(time - 1.0f).ToString("0") + "</color>");
+                                    BroadcastOverride.BroadcastLine(player, 1, 1.0f + delta, BroadcastPriority.Low, translation.Caution.Replace("{time}", Math.Floor(time - 1.0f).ToString("0")));
                                 else if (warning >= time && time > danger)
-                                    BroadcastOverride.BroadcastLine(player, 1, 1.0f + delta, BroadcastPriority.Medium, "<color=#FF8000>Warning! Room decontamination in " + Math.Floor(time - 1.0f).ToString("0") + "</color>");
+                                    BroadcastOverride.BroadcastLine(player, 1, 1.0f + delta, BroadcastPriority.Medium, translation.Warning.Replace("{time}", Math.Floor(time - 1.0f).ToString("0")));
                                 else if (danger >= time)
-                                    BroadcastOverride.BroadcastLine(player, 1, delta, BroadcastPriority.High, "<color=#FF0000>DANGER! DECONTAMINATION IMMINENT! " + time.ToString("0.000") + "</color>");
+                                    BroadcastOverride.BroadcastLine(player, 1, delta, BroadcastPriority.High, translation.Danger.Replace("{time}", time.ToString("0.000")));
                                 BroadcastOverride.UpdateIfDirty(player);
                             }
                         }

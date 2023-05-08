@@ -5,12 +5,11 @@ using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Unity.Mathematics;
 using UnityEngine;
 using CustomPlayerEffects;
+using PlayerRoles;
+using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
@@ -86,26 +85,18 @@ namespace TheRiptide
                 stats.killstreak++;
                 if (stats.killstreak > stats.highest_killstreak)
                     stats.highest_killstreak = stats.killstreak;
-                if (stats.killstreak % 5 == 0)
-                    BroadcastOverride.BroadcastLine(1, stats.killstreak, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> is on a <b><color=#FF0000>" + stats.killstreak.ToString() + "</color></b> kill streak");
-                else
-                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, "Kill streak <b><color=#FF0000>" + stats.killstreak.ToString() + "</color></b>");
             }
             if (player_stats.ContainsKey(target.PlayerId))
             {
                 Stats stats = player_stats[target.PlayerId];
-                if (stats.killstreak >= 5)
-                    BroadcastOverride.BroadcastLine(2, stats.killstreak, BroadcastPriority.Medium, "<b><color=#43BFF0>" + killer.Nickname + "</color></b> ended <b><color=#43BFF0>" + target.Nickname + "'s </color></b>" + "<b><color=#FF0000>" + stats.killstreak.ToString() + "</color></b> kill streak");
 
                 stats.time_alive += (int)Math.Round(Time.time - stats.start_time);
                 stats.killstreak = 0;
                 stats.deaths++;
-                BroadcastOverride.BroadcastLine(target, 1, 300, BroadcastPriority.Low, "<b><color=#FFFF00>Left/Right click to respawn</color></b>");
-                BroadcastOverride.BroadcastLine(target, 2, 300, BroadcastPriority.Low, "<b><color=#FF0000>Tab to edit attachments/presets</color></b>");
 
                 if(killer != null && player_stats.ContainsKey(killer.PlayerId))
                 {
-                    string hint = "\n<b>" + Killstreaks.KillstreakColorCode(killer) + killer.Nickname + "</color></b>" + " <color=#43BFF0>HP: " + killer.Health.ToString("0") + "</color>";
+                    string hint = translation.DeathMsgKiller.Replace("{killer}", "<b>" + Killstreaks.KillstreakColorCode(killer) + killer.Nickname + "</color></b>").Replace("{health}", killer.Health.ToString("0"));
                     //if (killer.ArtificialHealth != 0)
                     //    hint += " <color=008f1c>AH: " + killer.ArtificialHealth + "</color>";
 
@@ -113,7 +104,7 @@ namespace TheRiptide
                     if (killer.EffectsManager.TryGetEffect(out damage_reduction))
                     {
                         if (damage_reduction.IsEnabled && damage_reduction.Intensity != 0)
-                            hint += " <color=#5900ff> DR: " + (damage_reduction.Intensity / 2.0f).ToString("0.0") + "%</color>";
+                            hint += translation.DeathMsgDamageReduction.Replace("{reduction}", (damage_reduction.Intensity / 2.0f).ToString("0.0"));
                     }
 
                     BodyshotReduction bodyshot_reduction = null;
@@ -130,20 +121,21 @@ namespace TheRiptide
                                 percentage = 12.5f;
                             else if (bodyshot_reduction.Intensity >= 4)
                                 percentage = 15.0f;
-                            hint += " <color=#e7d77b> BSR: " + percentage.ToString("0.0") + "%</color>";
+                            hint += translation.DeathMsgBodyshotReduction.Replace("{reduction}", percentage.ToString("0.0"));
                         }
                     }
-
-                    hint += "\n";
 
                     if (attacker_stats[target.PlayerId].ContainsKey(killer.PlayerId))
                     {
                         LifeStats life_stats = attacker_stats[target.PlayerId][killer.PlayerId];
-                        hint += "<color=#43BFF0> DMG: " + life_stats.damage.ToString("0") + "</color> <color=#FF0000>HS: " + life_stats.head_shots +
-                            "</color> <color=#36a832>BS: " + life_stats.body_shots + "</color> <color=#43BFF0>LS: " +
-                            life_stats.limb_shots + "</color>";
+                        hint += translation.DeathMsgDamageDelt.
+                            Replace("{damage}", life_stats.damage.ToString("0")).
+                            Replace("{head_shots}", life_stats.head_shots.ToString()).
+                            Replace("{body_shots}", life_stats.body_shots.ToString()).
+                            Replace("{limb_shots}", life_stats.limb_shots.ToString());
                         if (life_stats.other_hits != 0)
-                            hint += " Other: " + life_stats.other_hits;
+                            hint += translation.DeathMsgDamageOther.
+                                Replace("{other_hits}", life_stats.other_hits.ToString());
                     }
 
                     target.ReceiveHint(hint, 7.0f);
@@ -244,8 +236,18 @@ namespace TheRiptide
             float accuracy = (float)stats.shots_hit / stats.shots;
             float score = kd * HsK * accuracy / mins_alive;
 
-            string stats_msg_1 = "<color=#76b8b5>Kills:</color> <color=#FF0000>" + stats.kills + "</color>    <color=#76b8b5>Deaths:</color> <color=#FF0000>" + stats.deaths + "</color>    <color=#76b8b5>K/D:</color> <color=#FF0000>" + kd.ToString("0.0") + "</color>    <color=#76b8b5>Highest Killstreak:</color> <color=#FF0000>" + stats.highest_killstreak + "</color>" + "</color>    <color=#76b8b5>Score:</color> <color=#FF0000>" + score.ToString("0.0") + "</color>";
-            string stats_msg_2 = "<color=#76b8b5>Hs Kills:</color> <color=#FF0000>" + (HsK * 100.0f).ToString("0") + "%</color>    <color=#76b8b5>Hs:</color> <color=#FF0000>" + (((float)stats.headshots / stats.shots_hit) * 100.0f).ToString("0.0") + "%</color>    <color=#76b8b5>Accuracy:</color> <color=#FF0000>" + (accuracy * 100.0f).ToString("0") + "%</color>    <color=#76b8b5>Dmg Delt:</color> <color=#FF0000>" + stats.damage_delt + "</color>    <color=#76b8b5>Dmg Taken:</color> <color=#FF0000>" + stats.damage_recieved + "</color>";
+            string stats_msg_1 = translation.PlayerStatsLine1.
+                Replace("{kills}", stats.kills.ToString()).
+                Replace("{deaths}", stats.deaths.ToString()).
+                Replace("{kd}", kd.ToString("0.0")).
+                Replace("{top_ks}", stats.highest_killstreak.ToString()).
+                Replace("{score}", score.ToString("0.0"));
+            string stats_msg_2 = translation.PlayerStatsLine2.
+                Replace("{hsk}", (HsK * 100.0f).ToString("0")).
+                Replace("{hs}", (((float)stats.headshots / stats.shots_hit) * 100.0f).ToString("0.0")).
+                Replace("{accuracy}", (accuracy * 100.0f).ToString("0")).
+                Replace("{dmg_delt}", stats.damage_delt.ToString()).
+                Replace("{dmg_taken}", stats.damage_recieved.ToString());
             BroadcastOverride.BroadcastLine(player, line, 300, BroadcastPriority.Highest, stats_msg_1);
             BroadcastOverride.BroadcastLine(player, line + 1, 300, BroadcastPriority.Highest, stats_msg_2);
         }
@@ -290,9 +292,9 @@ namespace TheRiptide
             }
 
 
-            string highest_killstreak_msg = "<b><color=#43BFF0>" + highest_killstreak_name + "</color></b> <color=#d4af37>had the highest killstreak of</color> <b><color=#FF0000>" + highest_killstreak.ToString() + "</color></b>";
-            string most_kills_msg = "<b><color=#43BFF0>" + most_kills_name + "</color></b> <color=#c0c0c0>had the most kills</color> <b><color=#FF0000>" + most_kills.ToString() + "</color></b>";
-            string highest_score_msg = "<b><color=#43BFF0>" + best_player_name + "</color></b> <color=#a97142> was the best player with a score of </color> <b><color=#FF0000>" + most_score.ToString("0.0") + "</color></b>";
+            string highest_killstreak_msg = translation.HighestKillstreak.Replace("{name}", highest_killstreak_name).Replace("{streak}", highest_killstreak.ToString());
+            string most_kills_msg = translation.HighestKills.Replace("{name}", most_kills_name).Replace("{kills}", most_kills.ToString()); 
+            string highest_score_msg = translation.HighestScore.Replace("{name}", best_player_name).Replace("{score}", most_score.ToString());
 
             foreach (Player player in Player.GetPlayers())
                 BroadcastOverride.SetEvenLineSizes(player, 5);

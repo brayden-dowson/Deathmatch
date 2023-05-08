@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Linq;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
+using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
@@ -16,6 +17,10 @@ namespace TheRiptide
     {
         public string name { get; set; }
         public byte intensity { get; set; }
+
+        public Effect()
+        {
+        }
 
         public Effect(string name, byte intensity)
         {
@@ -234,7 +239,11 @@ namespace TheRiptide
         public Killstreaks()
         {
             Singleton = this;
-            config = Deathmatch.Singleton.killstreak_config;
+        }
+
+        public void Init(KillstreakConfig config)
+        {
+            this.config = config;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
@@ -248,7 +257,10 @@ namespace TheRiptide
         void OnPlayerLeft(Player player)
         {
             if (player_killstreak.ContainsKey(player.PlayerId))
+            {
+                Database.Singleton.SaveConfigKillstreak(player);
                 player_killstreak.Remove(player.PlayerId);
+            }
         }
 
         [PluginEvent(ServerEventType.PlayerDeath)]
@@ -325,6 +337,18 @@ namespace TheRiptide
                 }
 
                 AddItems(killer, reward_items);
+                killstreak.count++;
+                if (killstreak.count % 5 == 0)
+                    BroadcastOverride.BroadcastLine(1, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreak.Replace("{name}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()));
+                else
+                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, translation.PrivateKillstreak.Replace("{streak}", killstreak.count.ToString()));
+            }
+            if (player_killstreak.ContainsKey(target.PlayerId))
+            {
+                Killstreak killstreak = player_killstreak[target.PlayerId];
+                if (killstreak.count >= 5)
+                    BroadcastOverride.BroadcastLine(2, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{name}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()).Replace("{victim}",target.Nickname));
+                killstreak.count = 0;
             }
         }
 
