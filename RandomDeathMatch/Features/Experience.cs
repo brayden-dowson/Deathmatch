@@ -174,8 +174,10 @@ namespace TheRiptide
         {
             int id = player.PlayerId;
             if (!player_xp.ContainsKey(id))
+            {
                 player_xp.Add(id, new XP());
-            Database.Singleton.LoadExperience(player);
+                Database.Singleton.LoadExperience(player);
+            }
 
             if (!player_tracking.ContainsKey(id))
                 player_tracking.Add(id, new Tracking());
