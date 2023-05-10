@@ -443,7 +443,6 @@ namespace TheRiptide
         {
             player.EffectsManager.ChangeState<CustomPlayerEffects.MovementBoost>(255, 0);
             player.EffectsManager.ChangeState<CustomPlayerEffects.DamageReduction>(255, 0);
-            player.EffectsManager.ChangeState<CustomPlayerEffects.Scp207>(255, 0);
         }
     }
 }
