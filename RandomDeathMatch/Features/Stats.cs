@@ -42,7 +42,6 @@ namespace TheRiptide
         }
 
         public static Dictionary<int, Dictionary<int, LifeStats>> attacker_stats = new Dictionary<int, Dictionary<int, LifeStats>>();
-        public static Dictionary<int, Dictionary<int, LifeStats>> victim_stats = new Dictionary<int, Dictionary<int, LifeStats>>();
 
         public static Dictionary<int, Stats> player_stats = new Dictionary<int, Stats>();
 
@@ -55,8 +54,6 @@ namespace TheRiptide
 
             if (!attacker_stats.ContainsKey(id))
                 attacker_stats.Add(id, new Dictionary<int, LifeStats>());
-            if (!victim_stats.ContainsKey(id))
-                victim_stats.Add(id, new Dictionary<int, LifeStats>());
         }
 
         [PluginEvent(ServerEventType.PlayerLeft)]
@@ -68,8 +65,6 @@ namespace TheRiptide
 
             if (attacker_stats.ContainsKey(id))
                 attacker_stats.Remove(id);
-            if (victim_stats.ContainsKey(id))
-                victim_stats.Remove(id);
         }
 
         [PluginEvent(ServerEventType.PlayerDeath)]
@@ -139,13 +134,12 @@ namespace TheRiptide
                     }
 
                     victim.ReceiveHint(hint, 7.0f);
-
                 }
 
-
                 attacker_stats[victim.PlayerId].Clear();
-                foreach (var attacker_stats in victim_stats.Values)
-                    attacker_stats.Remove(victim.PlayerId);
+                foreach (var p in Player.GetPlayers())
+                    if (attacker_stats.ContainsKey(p.PlayerId))
+                        attacker_stats[p.PlayerId].Remove(victim.PlayerId);
             }
         }
 
@@ -185,11 +179,6 @@ namespace TheRiptide
                     attacker_stats[aid].Add(vid, life_stats);
                 else
                     life_stats = attacker_stats[aid][vid];
-
-                if (!victim_stats[vid].ContainsKey(aid))
-                    victim_stats[vid].Add(aid, life_stats);
-                else
-                    life_stats = victim_stats[vid][aid];
 
                 if (damage is FirearmDamageHandler firearm)
                 {

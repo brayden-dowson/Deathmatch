@@ -126,7 +126,7 @@ namespace TheRiptide
             if (!player_menu.ContainsKey(target.PlayerId))
                 return;
 
-            if(player_menu[target.PlayerId] != 0);
+            if(player_menu[target.PlayerId] != 0)
             {
                 BroadcastOverride.ClearLines(target, BroadcastPriority.High);
                 player_menu[target.PlayerId] = 0;
