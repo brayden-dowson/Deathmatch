@@ -1,18 +1,12 @@
 ﻿using InventorySystem.Items;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
-using InventorySystem.Items.Firearms.Attachments.Components;
-using MapGeneration;
-using Mirror;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static TheRiptide.Translation;
 
 namespace TheRiptide
@@ -80,23 +74,24 @@ namespace TheRiptide
 
         private void RemoveBanned(Player player, Firearm firearm)
         {
-            List<Attachment> banned = new List<Attachment>();
+            int bit_pos = 0;
+            uint code_mask = 0;
             foreach (var a in firearm.Attachments)
             {
                 if (config.BlackList.Contains(a.Name))
                 {
                     BroadcastOverride.BroadcastLine(player, 1, 3.0f, BroadcastPriority.Medium, translation.AttachmentBanned.Replace("{attachment}", a.Name.ToString()));
-                    banned.Add(a);
+                    code_mask |= (1U << bit_pos);
                 }
+                bit_pos++;
             }
 
-            if (!banned.IsEmpty())
+            BroadcastOverride.UpdateIfDirty(player);
+
+            if (code_mask != 0)
             {
-                Attachment[] attachments = firearm.Attachments;
-                firearm.Attachments = firearm.Attachments.Except(banned).ToArray();
-                uint code = firearm.GetCurrentAttachmentsCode();
-                firearm.Attachments = attachments;
-                firearm.Status = new FirearmStatus(firearm.Status.Ammo, firearm.Status.Flags, code);
+                var o = firearm.Status;
+                firearm.Status = new FirearmStatus(o.Ammo, o.Flags, o.Attachments & ~code_mask);
             }
         }
     }

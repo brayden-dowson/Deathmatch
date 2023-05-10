@@ -22,7 +22,7 @@ namespace TheRiptide
         public int SpawnColorRed{ get; set; } = 67;
         public int SpawnColorGreen { get; set; } = 191;
         public int SpawnColorBlue { get; set; } = 240;
-        public float SpawnLightIntensity { get; set; } = 32.00f;
+        public float SpawnLightIntensity { get; set; } = 100.00f;
         [Description("max players should be less than SpawnDimX x SpawnDimY")]
         public int SpawnDimX { get; set; } = 8;
         public int SpawnDimY { get; set; } = 8;
