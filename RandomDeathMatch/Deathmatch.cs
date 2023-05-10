@@ -221,7 +221,7 @@ namespace TheRiptide
                 Timing.CallPeriodically(20.0f, 0.2f, () =>
                 {
                     foreach (var p in Player.GetPlayers())
-                        p.EffectsManager.ChangeState<CustomPlayerEffects.DamageReduction>(200, 20.0f, false);
+                        p.IsGodModeEnabled = true;
                 });
                 Timing.CallDelayed(20.0f, () => Round.Restart(false));
             });
