@@ -127,7 +127,7 @@ namespace TheRiptide
             }
             else
             {
-                if (new_target.PlayerId == Server.Instance.PlayerId || old_target.PlayerId == Server.Instance.PlayerId)
+                if (new_target == null || new_target.PlayerId == Server.Instance.PlayerId || old_target.PlayerId == Server.Instance.PlayerId)
                 {
                     spawn.in_spectator_mode = false;
                     RespawnPlayer(player);

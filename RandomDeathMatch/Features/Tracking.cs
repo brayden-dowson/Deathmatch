@@ -121,7 +121,7 @@ namespace TheRiptide
                     victim_life.received.Add(hit);
                     attacker_life.delt.Add(hit);
                     hit.health = (byte)victim.Health;
-                    hit.damage = (byte)standard.Damage;
+                    hit.damage = (byte)standard.DealtHealthDamage;
                     hit.hitbox = (byte)standard.Hitbox;
                     hit.weapon = (byte)GetItemFromDamageHandler(damage);
                 }
