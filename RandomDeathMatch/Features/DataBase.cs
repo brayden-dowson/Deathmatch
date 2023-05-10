@@ -159,6 +159,7 @@ namespace TheRiptide
                 serialize: (Hit h) =>
                 {
                     BsonValue doc = new BsonDocument();
+                    doc["_id"] = h.HitId;
                     doc["data"] = System.BitConverter.ToInt32(new byte[] { h.health, h.damage, h.hitbox, h.weapon }, 0);
                     return doc;
                 },
@@ -166,7 +167,7 @@ namespace TheRiptide
                 {
                     BsonDocument doc = value.AsDocument;
                     byte[] data = System.BitConverter.GetBytes(doc["data"].AsInt32);
-                    return new Hit { health = data[0], damage = data[1], hitbox = data[2], weapon = data[4] };
+                    return new Hit { HitId = doc["_id"], health = data[0], damage = data[1], hitbox = data[2], weapon = data[4] };
                 }
             );
         }
