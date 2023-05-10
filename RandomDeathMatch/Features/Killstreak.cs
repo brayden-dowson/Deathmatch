@@ -347,7 +347,7 @@ namespace TheRiptide
             {
                 Killstreak killstreak = player_killstreak[target.PlayerId];
                 if (killstreak.count >= 5)
-                    BroadcastOverride.BroadcastLine(2, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{name}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()).Replace("{victim}",target.Nickname));
+                    BroadcastOverride.BroadcastLine(2, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{killer}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()).Replace("{victim}",target.Nickname));
                 killstreak.count = 0;
             }
         }

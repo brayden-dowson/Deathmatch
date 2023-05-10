@@ -31,7 +31,7 @@ namespace TheRiptide
         public string SelfKill { get; set; } = "<b><color=#eb0d47>{victim}</color></b> humiliated  themselves";
 
         [Description("killstreak")]
-        public string GlobalKillstreak { get; set; } = "<b><color=#43BFF0>{name}</color></b> is on a <b><color=#FF0000>{streak}</color></b> kill streak";
+        public string GlobalKillstreak { get; set; } = "<b><color=#43BFF0>{killer}</color></b> is on a <b><color=#FF0000>{streak}</color></b> kill streak";
         public string PrivateKillstreak { get; set; } = "Kill streak <b><color=#FF0000>{streak}</color></b>";
         public string GlobalKillstreakEnded { get; set; } = "<b><color=#43BFF0>{killer}</color></b> ended <b><color=#43BFF0>{victim}'s </color></b>" + "<b><color=#FF0000>{streak}</color></b> kill streak";
 
@@ -130,7 +130,7 @@ namespace TheRiptide
         public string Danger { get; set; } = "<color=#FF0000>DANGER! DECONTAMINATION IMMINENT! {time}</color>";
 
         [Description("stats")]
-        public string DeathMsgKiller { get; set; } = "\n{killer} <color=#43BFF0>HP: {health}</color>";
+        public string DeathMsgKiller { get; set; } = "\n\n\n{killer} <color=#43BFF0>HP: {health}</color>";
         public string DeathMsgDamageReduction { get; set; } = " <color=#5900ff> DR: {reduction}%</color>";
         public string DeathMsgBodyshotReduction { get; set; } = " <color=#e7d77b> BSR: {reduction}%</color>";
         public string DeathMsgDamageDelt { get; set; } = "\n<color=#43BFF0> DMG: {damage}</color> <color=#FF0000>HS: {head_shots}</color> <color=#36a832>BS: {body_shots}</color> <color=#43BFF0>LS: {limb_shots}</color>";
