@@ -5,8 +5,10 @@ using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using static TheRiptide.Translation;
 
 namespace TheRiptide
@@ -26,6 +28,7 @@ namespace TheRiptide
     class AttachmentBlacklist
     {
         public static AttachmentBlacklist Singleton { get; private set; }
+        private Dictionary<ItemType, uint> BannedWeaponCodes = new Dictionary<ItemType,  uint>();
 
         AttachmentBlacklistConfig config;
 
@@ -74,24 +77,37 @@ namespace TheRiptide
 
         private void RemoveBanned(Player player, Firearm firearm)
         {
-            int bit_pos = 0;
-            uint code_mask = 0;
-            foreach (var a in firearm.Attachments)
+            if(!BannedWeaponCodes.ContainsKey(firearm.ItemTypeId))
             {
-                if (config.BlackList.Contains(a.Name))
+                int bit_pos = 0;
+                uint code_mask = 0;
+                foreach (var a in firearm.Attachments)
                 {
-                    BroadcastOverride.BroadcastLine(player, 1, 3.0f, BroadcastPriority.Medium, translation.AttachmentBanned.Replace("{attachment}", a.Name.ToString()));
-                    code_mask |= (1U << bit_pos);
+                    if(config.BlackList.Contains(a.Name))
+                        code_mask |= (1U << bit_pos);
+                    bit_pos++;
                 }
-                bit_pos++;
+                BannedWeaponCodes.Add(firearm.ItemTypeId, ~code_mask);
             }
 
-            BroadcastOverride.UpdateIfDirty(player);
-
-            if (code_mask != 0)
+            var s = firearm.Status;
+            uint new_code = s.Attachments & BannedWeaponCodes[firearm.ItemTypeId];
+            if(new_code != s.Attachments)
             {
-                var o = firearm.Status;
-                firearm.Status = new FirearmStatus(o.Ammo, o.Flags, o.Attachments & ~code_mask);
+                BitArray ba = new BitArray(BitConverter.GetBytes(~BannedWeaponCodes[firearm.ItemTypeId]));
+                List<string> attachments = new List<string>();
+                int index = 0;
+                foreach(bool b in ba)
+                {
+                    if (b)
+                        attachments.Add(firearm.Attachments[index].Name.ToString());
+                    index++;
+                    if (index >= firearm.Attachments.Length)
+                        break;
+                }
+                BroadcastOverride.BroadcastLine(player, 1, 3.0f, BroadcastPriority.Medium, translation.AttachmentBanned.Replace("{attachment}", string.Join(", ", attachments)));
+                BroadcastOverride.UpdateIfDirty(player);
+                firearm.Status = new FirearmStatus(s.Ammo, s.Flags, new_code);
             }
         }
     }
