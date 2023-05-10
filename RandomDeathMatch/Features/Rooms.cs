@@ -281,7 +281,7 @@ namespace TheRiptide
 
         public static bool ValidPlayerInRoom(Player player)
         {
-            return player.IsAlive && player.Room != null && Deathmatch.IsPlayerValid(player) && !Lobby.InSpawn(player);
+            return player.IsAlive && player.Room != null && Deathmatch.IsPlayerValid(player) && !Lobby.Singleton.InSpawn(player);
         }
 
         private static IEnumerator<float> _UpdateDecontaminator()

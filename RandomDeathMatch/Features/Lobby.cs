@@ -10,14 +10,30 @@ using PluginAPI.Enums;
 using Respawning;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using UnityEngine;
 using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
+    public class LobbyConfig
+    {
+        public int SpawnColorRed{ get; set; } = 67;
+        public int SpawnColorGreen { get; set; } = 191;
+        public int SpawnColorBlue { get; set; } = 240;
+        public float SpawnLightIntensity { get; set; } = 32.00f;
+        [Description("max players should be less than SpawnDimX x SpawnDimY")]
+        public int SpawnDimX { get; set; } = 8;
+        public int SpawnDimY { get; set; } = 8;
+    }
+
     class Lobby
     {
+        public static Lobby Singleton { get; private set; }
+
+        LobbyConfig config;
+
         public class Spawn
         {
             public RoleTypeId role = RoleTypeId.ClassD;
@@ -27,23 +43,32 @@ namespace TheRiptide
             public int spawn_room = -1;
         }
 
-        public static Dictionary<int, Spawn> player_spawns = new Dictionary<int, Spawn>();
-        private static SortedSet<int> avaliable_spawn_rooms = new SortedSet<int>();
-        private static List<GameObject> blocks = new List<GameObject>();
-        private static bool round_started = false;
-        private static int spawn_dim = 8;
+        public Dictionary<int, Spawn> player_spawns = new Dictionary<int, Spawn>();
+        private SortedSet<int> avaliable_spawn_rooms = new SortedSet<int>();
+        private List<GameObject> blocks = new List<GameObject>();
+        private bool round_started = false;
 
-        public static void Init()
+        public Lobby()
         {
-            for (int i = 0; i < 64; i++)
+            Singleton = this;
+        }
+
+        public void Init(LobbyConfig config)
+        {
+            this.config = config;
+            avaliable_spawn_rooms.Clear();
+            for (int i = 0; i < config.SpawnDimX * config.SpawnDimY; i++)
                 avaliable_spawn_rooms.Add(i);
         }
 
         [PluginEvent(ServerEventType.MapGenerated)]
         void OnMapGenerated()
         {
-            BuildSpawn(spawn_dim, spawn_dim);
+            BuildSpawn(config.SpawnDimX, config.SpawnDimY);
             round_started = false;
+
+            //foreach (var c in NetworkManager.singleton.spawnPrefabs)
+            //    Log.Info(c.name);
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
@@ -127,7 +152,7 @@ namespace TheRiptide
             }
             else
             {
-                if (new_target == null || new_target.PlayerId == Server.Instance.PlayerId || old_target.PlayerId == Server.Instance.PlayerId)
+                if (new_target == null || new_target.PlayerId == Server.Instance.PlayerId)
                 {
                     spawn.in_spectator_mode = false;
                     RespawnPlayer(player);
@@ -196,8 +221,8 @@ namespace TheRiptide
                 BroadcastOverride.UpdateIfDirty(player);
                 Timing.CallDelayed(0.0f, () =>
                 {
-                    int x = spawn.spawn_room % spawn_dim;
-                    int y = spawn.spawn_room / spawn_dim;
+                    int x = spawn.spawn_room % config.SpawnDimX;
+                    int y = spawn.spawn_room / config.SpawnDimY;
                     player.Position = offset + new Vector3(1.0f + x * 2.0f, 0.5f, 1.0f + y * 2.0f);
                 });
             }
@@ -215,17 +240,17 @@ namespace TheRiptide
             return false;
         }
 
-        public static Spawn GetSpawn(Player player)
+        public Spawn GetSpawn(Player player)
         {
             return player_spawns[player.PlayerId];
         }
 
-        public static void CancelTeleport(Player player)
+        public void CancelTeleport(Player player)
         {
             Timing.KillCoroutines(player_spawns[player.PlayerId].teleport_handle);
         }
 
-        public static void TeleportOutOfSpawn(Player player)
+        public void TeleportOutOfSpawn(Player player)
         {
             Spawn spawn = player_spawns[player.PlayerId];
 
@@ -278,17 +303,17 @@ namespace TheRiptide
             }
         }
 
-        public static bool InSpawn(Player player)
+        public bool InSpawn(Player player)
         {
             return player_spawns[player.PlayerId].in_spawn;
         }
 
-        public static void SetRole(Player player, RoleTypeId role)
+        public void SetRole(Player player, RoleTypeId role)
         {
             player_spawns[player.PlayerId].role = role;
         }
 
-        public static void SetSpectatorMode(Player player, bool is_spectator)
+        public void SetSpectatorMode(Player player, bool is_spectator)
         {
             player_spawns[player.PlayerId].in_spectator_mode = is_spectator;
             if(is_spectator)
@@ -300,7 +325,7 @@ namespace TheRiptide
             }
         }
 
-        private static void BuildBlock(Vector3 offset, Vector3 size)
+        private void BuildBlock(Vector3 offset, Vector3 size)
         {
             Vector3 mid = (offset + (offset + size)) / 2.0f;
             GameObject obj = NetworkManager.Instantiate(NetworkManager.singleton.spawnPrefabs[7], mid, Quaternion.Euler(Vector3.zero));
@@ -313,8 +338,20 @@ namespace TheRiptide
             blocks.Add(obj);
         }
 
+        private void AddLight(Vector3 position, Color color, float intensity, float range)
+        {
+            GameObject obj = NetworkManager.Instantiate(NetworkManager.singleton.spawnPrefabs.Where((x) => x.name == "LightSourceToy").First(), position, Quaternion.Euler(Vector3.zero));
+            LightSourceToy toy = obj.GetComponent<LightSourceToy>();
+            toy.LightColor = color;
+            toy.LightIntensity = intensity;
+            toy.LightRange = range;
+            toy.LightShadows = false;
+            NetworkServer.Spawn(obj);
+        }
+
         static Vector3 offset = new Vector3(42.656f, 1007.25f, -47.25f);
-        private static void BuildSpawn(int x, int y)
+
+        private void BuildSpawn(int x, int y)
         {
             BuildBlock(offset, new Vector3(2.0f * x, -0.1f, 2.0f * y));
             //BuildBlock(offset + new Vector3(0.0f, 3.0f, 0.0f), new Vector3(16.0f, 0.1f, 16.0f));
@@ -326,6 +363,7 @@ namespace TheRiptide
             {
                 BuildBlock(offset + new Vector3(0.0f, 0.0f, i * 2.0f), new Vector3(2.0f * x, 2.125f, 0.1f));
             }
+            AddLight(offset + new Vector3(x, x + y, y), new Color((float)config.SpawnColorRed / 255.0f, (float)config.SpawnColorGreen / 255.0f, (float)config.SpawnColorBlue / 255.0f), config.SpawnLightIntensity, (x + y) * 2.0f);
         }
 
         private void RespawnPlayer(Player player)
@@ -336,7 +374,7 @@ namespace TheRiptide
             }
         }
 
-        private static void TeleportRandom(Player player)
+        private void TeleportRandom(Player player)
         {
             try
             {

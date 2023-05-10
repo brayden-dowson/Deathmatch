@@ -192,7 +192,7 @@ namespace TheRiptide
             DbDelayedAsync(() =>
             {
                 Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
-                Lobby.Spawn spawn = Lobby.GetSpawn(player);
+                Lobby.Spawn spawn = Lobby.Singleton.GetSpawn(player);
                 Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
 
                 var configs = db.GetCollection<Config>("configs");
@@ -245,7 +245,7 @@ namespace TheRiptide
 
         public void SaveConfigSpawn(Player player)
         {
-            Lobby.Spawn spawn = Lobby.GetSpawn(player);
+            Lobby.Spawn spawn = Lobby.Singleton.GetSpawn(player);
             if (!config_cache.ContainsKey(player.PlayerId))
                 config_cache.Add(player.PlayerId, new ConfigRef { spawn = spawn });
             else

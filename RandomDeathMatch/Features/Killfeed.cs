@@ -245,7 +245,7 @@ namespace TheRiptide
             {
                 Statistics.Stats stats = Statistics.GetStats(victim);
                 Loadouts.Loadout loadout = Loadouts.GetLoadout(victim);
-                if (Lobby.InSpawn(victim) && Loadouts.IsLoadoutEmpty(victim) && stats.kills == 0 && stats.deaths == 0 && !loadout.customising)
+                if (Lobby.Singleton.InSpawn(victim) && Loadouts.IsLoadoutEmpty(victim) && stats.kills == 0 && stats.deaths == 0 && !loadout.customising)
                     kill_msg = translation.FailedFirstGrade.Replace("{victim}", victim_name);
                 else
                     kill_msg = translation.SelfKill.Replace("{victim}", victim_name);

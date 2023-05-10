@@ -2,6 +2,8 @@
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
 using InventorySystem.Items.Firearms.Attachments.Components;
+using MapGeneration;
+using Mirror;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
@@ -48,50 +50,53 @@ namespace TheRiptide
             handler.SaveConfig(plugin, "attachment_blacklist_config");
         }
 
+        [PluginEvent(ServerEventType.RoundStart)]
+        void OnRoundStart()
+        {
+            //foreach(RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
+            //{
+            //    WorkstationController wc = room.GetComponentInChildren<WorkstationController>();
+            //    if (wc != null)
+            //    NetworkServer.UnSpawn(wc.gameObject);
+            //}
+        }
+
         [PluginEvent(ServerEventType.PlayerChangeItem)]
-        void OnPlayerChangesItem(Player player, ushort old_item, ushort new_item)
+        void OnPlayerChangeItem(Player player, ushort old_item, ushort new_item)
         {
             if(player.ReferenceHub.inventory.UserInventory.Items.ContainsKey(new_item))
             {
                 ItemBase item = player.ReferenceHub.inventory.UserInventory.Items[new_item];
                 if(item is Firearm firearm)
-                {
-                    List<Attachment> to_remove = new List<Attachment>();
-                    foreach (var a in firearm.Attachments)
-                    {
-                        if (config.BlackList.Contains(a.Name))
-                        {
-                            BroadcastOverride.BroadcastLine(player, 1, 3.0f, BroadcastPriority.Medium, translation.AttachmentBanned.Replace("{attachment}", a.Name.ToString()));
-                            to_remove.Add(a);
-                        }
-                    }
-
-                    if (!to_remove.IsEmpty())
-                    {
-                        firearm.Attachments = firearm.Attachments.Except(to_remove).ToArray();
-                        firearm.Status = new FirearmStatus(firearm.Status.Ammo, firearm.Status.Flags, firearm.GetCurrentAttachmentsCode());
-                    }
-                }
+                    RemoveBanned(player, firearm);
             }
         }
 
         [PluginEvent(ServerEventType.PlayerShotWeapon)]
         void OnShotWeapon(Player player, Firearm firearm)
         {
-            List<Attachment> to_remove = new List<Attachment>();
+            RemoveBanned(player, firearm);
+        }
+
+        private void RemoveBanned(Player player, Firearm firearm)
+        {
+            List<Attachment> banned = new List<Attachment>();
             foreach (var a in firearm.Attachments)
             {
                 if (config.BlackList.Contains(a.Name))
                 {
                     BroadcastOverride.BroadcastLine(player, 1, 3.0f, BroadcastPriority.Medium, translation.AttachmentBanned.Replace("{attachment}", a.Name.ToString()));
-                    to_remove.Add(a);
+                    banned.Add(a);
                 }
             }
 
-            if (!to_remove.IsEmpty())
+            if (!banned.IsEmpty())
             {
-                firearm.Attachments = firearm.Attachments.Except(to_remove).ToArray();
-                firearm.Status = new FirearmStatus(firearm.Status.Ammo, firearm.Status.Flags, firearm.GetCurrentAttachmentsCode());
+                Attachment[] attachments = firearm.Attachments;
+                firearm.Attachments = firearm.Attachments.Except(banned).ToArray();
+                uint code = firearm.GetCurrentAttachmentsCode();
+                firearm.Attachments = attachments;
+                firearm.Status = new FirearmStatus(firearm.Status.Ammo, firearm.Status.Flags, code);
             }
         }
     }

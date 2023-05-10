@@ -154,7 +154,7 @@ namespace TheRiptide
                 }
                 else
                     player_life.Add(player.PlayerId, life);
-                life.role = Lobby.GetSpawn(player).role;
+                life.role = Lobby.Singleton.GetSpawn(player).role;
                 if (config.TrackLoadouts)
                 {
                     if (loadout == null)

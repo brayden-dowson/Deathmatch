@@ -62,7 +62,7 @@ namespace TheRiptide
 
                     player.ClearInventory();
                     Loadouts.AddLoadoutStartItems(player);
-                    Lobby.TeleportOutOfSpawn(player);
+                    Lobby.Singleton.TeleportOutOfSpawn(player);
                     return false;
                 }),
                 new MenuItem(ItemType.KeycardScientist, translation.CustomiseLoadout, (player)=>
@@ -279,7 +279,7 @@ namespace TheRiptide
             Func<Player, RoleTypeId, bool> RoleSelected = (player, role) =>
             {
                 InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
-                Lobby.SetRole(player, role);
+                Lobby.Singleton.SetRole(player, role);
                 MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
                 BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.RoleSelected.Replace("{role}", role.ToString()));
                 return false;
@@ -345,7 +345,7 @@ namespace TheRiptide
                 }),
                 new MenuItem(ItemType.Flashlight, translation.Spectator, (player)=>
                 {
-                    Lobby.SetSpectatorMode(player, true);
+                    Lobby.Singleton.SetSpectatorMode(player, true);
                     return false;
                 }),
                 new MenuItem(ItemType.Coin, translation.EnableRage, (player)=>

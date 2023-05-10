@@ -135,9 +135,9 @@ namespace TheRiptide
                         {
                             BroadcastOverride.ClearLines(player, BroadcastPriority.High);
                             BroadcastOverride.BroadcastLine(player, 1, 300, BroadcastPriority.High, translation.CustomisationHint);
-                            if (Lobby.InSpawn(player))
+                            if (Lobby.Singleton.InSpawn(player))
                             {
-                                Lobby.CancelTeleport(player);
+                                Lobby.Singleton.CancelTeleport(player);
                                 BroadcastOverride.BroadcastLine(player, 2, 300, BroadcastPriority.High, translation.Teleport);
                             }
                         }
@@ -217,7 +217,7 @@ namespace TheRiptide
                     loadout.tertiary = ItemType.None;
             }
 
-            if (Lobby.GetSpawn(player).role == role)
+            if (Lobby.Singleton.GetSpawn(player).role == role)
             {
                 loadout.locked = false;
 
@@ -262,7 +262,7 @@ namespace TheRiptide
             if (!loadout.locked)
             {
                 loadout.customising = true;
-                Lobby.CancelTeleport(player);
+                Lobby.Singleton.CancelTeleport(player);
                 return true;
             }
             else

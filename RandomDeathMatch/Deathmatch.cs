@@ -39,6 +39,9 @@ namespace TheRiptide
         [PluginConfig("loadout_config.yml")]
         public LoadoutConfig loadout_config;
 
+        [PluginConfig("lobby_config.yml")]
+        public LobbyConfig lobby_config;
+
         [PluginConfig("menu_config.yml")]
         public MenuConfig menu_config;
 
@@ -85,7 +88,6 @@ namespace TheRiptide
         {
             Singleton = this;
             Killfeeds.Init(2, 5, 20);
-            Lobby.Init();
         }
 
         public void Start()
@@ -121,6 +123,7 @@ namespace TheRiptide
             Rooms.Singleton.Init(rooms_config);
             Killstreaks.Singleton.Init(killstreak_config);
             Loadouts.Singleton.Init(loadout_config);
+            Lobby.Singleton.Init(lobby_config);
             DeathmatchMenu.Singleton.Init(menu_config);
             if (rank_config.IsEnabled)
                 Ranks.Singleton.Init(rank_config);
