@@ -234,7 +234,10 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.PlayerUsingRadio)]
         void OnPlayerUsingRadio(Player player, RadioItem radio, float drain)
         {
-            radio.BatteryPercent = 100;
+            if(player != null && radio != null)
+            {
+                radio.BatteryPercent = 100;
+            }
         }
 
         public static bool ValidateLoadout(Player player)

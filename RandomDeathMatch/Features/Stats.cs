@@ -73,7 +73,7 @@ namespace TheRiptide
         }
 
         [PluginEvent(ServerEventType.PlayerDeath)]
-        void OnPlayerDeath(Player target, Player killer, DamageHandlerBase damage)
+        void OnPlayerDeath(Player victim, Player killer, DamageHandlerBase damage)
         {
             if (killer != null && killer.IsAlive && player_stats.ContainsKey(killer.PlayerId))
             {
@@ -86,9 +86,9 @@ namespace TheRiptide
                 if (stats.killstreak > stats.highest_killstreak)
                     stats.highest_killstreak = stats.killstreak;
             }
-            if (player_stats.ContainsKey(target.PlayerId))
+            if (player_stats.ContainsKey(victim.PlayerId))
             {
-                Stats stats = player_stats[target.PlayerId];
+                Stats stats = player_stats[victim.PlayerId];
 
                 stats.time_alive += (int)Math.Round(Time.time - stats.start_time);
                 stats.killstreak = 0;
@@ -125,9 +125,9 @@ namespace TheRiptide
                         }
                     }
 
-                    if (attacker_stats[target.PlayerId].ContainsKey(killer.PlayerId))
+                    if (attacker_stats[victim.PlayerId].ContainsKey(killer.PlayerId))
                     {
-                        LifeStats life_stats = attacker_stats[target.PlayerId][killer.PlayerId];
+                        LifeStats life_stats = attacker_stats[victim.PlayerId][killer.PlayerId];
                         hint += translation.DeathMsgDamageDelt.
                             Replace("{damage}", life_stats.damage.ToString("0")).
                             Replace("{head_shots}", life_stats.head_shots.ToString()).
@@ -138,14 +138,14 @@ namespace TheRiptide
                                 Replace("{other_hits}", life_stats.other_hits.ToString());
                     }
 
-                    target.ReceiveHint(hint, 7.0f);
+                    victim.ReceiveHint(hint, 7.0f);
 
                 }
 
 
-                attacker_stats[target.PlayerId].Clear();
+                attacker_stats[victim.PlayerId].Clear();
                 foreach (var attacker_stats in victim_stats.Values)
-                    attacker_stats.Remove(target.PlayerId);
+                    attacker_stats.Remove(victim.PlayerId);
             }
         }
 
