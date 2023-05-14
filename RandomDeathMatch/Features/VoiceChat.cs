@@ -38,14 +38,14 @@ namespace TheRiptide
         {
             if (role.GetTeam() != Team.Dead)
             {
-                Timing.CallDelayed(0.0f, () =>
+                Timing.CallDelayed(1.0f, () =>
                 {
                     player.VoiceModule.CurrentChannel = config.AliveOverrideChannel;
                 });
             }
             else
             {
-                Timing.CallDelayed(0.0f, () =>
+                Timing.CallDelayed(1.0f, () =>
                 {
                     player.VoiceModule.CurrentChannel = config.DeadOverrideChannel;
                 });

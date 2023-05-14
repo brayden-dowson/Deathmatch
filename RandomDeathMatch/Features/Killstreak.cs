@@ -29,6 +29,415 @@ namespace TheRiptide
         }
     }
 
+    public enum InventoryAction { Add, Remove }
+    public class ItemReward
+    {
+        public InventoryAction Action { get; set; } = InventoryAction.Add;
+        public ItemType Item { get; set; }
+    }
+
+    public enum EffectAction { Enable, Disable, Change }
+    public class EffectReward
+    {
+        public EffectAction Action { get; set; } = EffectAction.Change;
+        public string Effect { get; set; }
+        public byte Intensity { get; set; }
+        public byte Duration { get; set; }
+    }
+
+    public enum AmmoAction { Add, Remove, Set }
+    public enum AmmoStat { Inventory, Gun }
+    public class AmmoReward
+    {
+        public AmmoAction Action { get; set; } = AmmoAction.Add;
+        public AmmoStat Stat { get; set; }
+        public float Proportion { get; set; }
+    }
+
+    public enum PlayerAction { Add, Remove, Set, AddTemp}
+    public enum PlayerStat { HP, AHP, Stamina }
+    public class PlayerReward
+    {
+        public PlayerAction Action { get; set; } = PlayerAction.Add;
+        public PlayerStat Stat { get; set; }
+        public float Value { get; set; }
+    }
+
+    public enum OverflowAction { End, Rollover, Clamp}
+    public class KillstreakRewardTable
+    {
+        public ItemType MenuItem { get; set; }
+        public string MenuDescription { get; set; }
+
+        public bool LoadoutLock { get; set; }
+        public string ColorHex { get; set; }
+
+        public OverflowAction ItemOverflowAction { get; set; }
+        public SortedDictionary<int, List<ItemReward>> ItemTable { get; set; }
+
+        public OverflowAction EffectOverflowAction { get; set; }
+        public SortedDictionary<int, List<EffectReward>> EffectTable { get; set; }
+
+        public OverflowAction AmmoOverflowAction { get; set; }
+        public SortedDictionary<int, List<AmmoReward>> AmmoTable { get; set; }
+
+        public OverflowAction PlayerOverflowAction { get; set; }
+        public SortedDictionary<int, List<PlayerReward>> PlayerTable { get; set; }
+    }
+
+    public class KillstreakConfig
+    {
+        Dictionary<string, KillstreakRewardTable> KillstreakTables = new Dictionary<string, KillstreakRewardTable>
+        {
+            {
+                "Noob",
+                new KillstreakRewardTable
+                {
+                    MenuItem = ItemType.KeycardJanitor,
+                    MenuDescription = "",
+                    LoadoutLock = false,
+                    ColorHex = "#FFFFFF",
+
+                    ItemOverflowAction = OverflowAction.End,
+                    ItemTable = new SortedDictionary<int, List<ItemReward>>
+                    {
+                        { 0, new List<ItemReward>{ new ItemReward {Item = ItemType.ArmorHeavy }, new ItemReward {Item = ItemType.Medkit }, new ItemReward{ Item = ItemType.Medkit }, new ItemReward { Item = ItemType.Medkit } } },
+                        { 2, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 5, new List<ItemReward>{ new ItemReward {Item = ItemType.GrenadeFlash } } }
+                    },
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>{},
+
+                    AmmoOverflowAction = OverflowAction.Rollover,
+                    AmmoTable = new SortedDictionary<int, List<AmmoReward>>
+                    {
+                        {0, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Set, Stat = AmmoStat.Inventory, Proportion = 1.0f } } },
+                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.1f } } }
+                    },
+
+                    PlayerOverflowAction = OverflowAction.End,
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{}
+                }
+            },
+            {
+                "Novice",
+                new KillstreakRewardTable
+                {
+                    MenuItem = ItemType.KeycardScientist,
+                    MenuDescription = "",
+                    LoadoutLock = false,
+                    ColorHex = "#FFFFFF",
+
+                    ItemOverflowAction = OverflowAction.End,
+                    ItemTable = new SortedDictionary<int, List<ItemReward>>
+                    {
+                        { 0, new List<ItemReward>{ new ItemReward {Item = ItemType.ArmorCombat }, new ItemReward {Item = ItemType.Medkit }, new ItemReward{ Item = ItemType.Painkillers } } },
+                        { 2, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 4, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit } } },
+                        { 6, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 8, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit } } },
+                        { 10, new List<ItemReward>{ new ItemReward {Item = ItemType.GrenadeHE } } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>{},
+
+                    AmmoOverflowAction = OverflowAction.Rollover,
+                    AmmoTable = new SortedDictionary<int, List<AmmoReward>>
+                    {
+                        {0, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Set, Stat = AmmoStat.Inventory, Proportion = 1.0f } } },
+                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.15f } } }
+                    },
+
+                    PlayerOverflowAction = OverflowAction.End,
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{}
+                }
+            },
+            {
+                "Intermediate",
+                new KillstreakRewardTable
+                {
+                    MenuItem = ItemType.KeycardNTFOfficer,
+                    MenuDescription = "",
+                    LoadoutLock = false,
+                    ColorHex = "#FFFFFF",
+
+                    ItemOverflowAction = OverflowAction.End,
+                    ItemTable = new SortedDictionary<int, List<ItemReward>>
+                    {
+                        { 0, new List<ItemReward>{ new ItemReward {Item = ItemType.ArmorCombat }, new ItemReward { Item = ItemType.Painkillers } } },
+                        { 3, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 6, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit } } },
+                        { 8, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 10, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit }, new ItemReward { Item = ItemType.GrenadeFlash } } },
+                        { 12, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 13, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit }, new ItemReward { Item = ItemType.SCP2176 } } },
+                        { 14, new List<ItemReward>{ new ItemReward {Item = ItemType.Adrenaline } } },
+                        { 15, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers }, new ItemReward { Item = ItemType.ParticleDisruptor } } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>{},
+
+                    AmmoOverflowAction = OverflowAction.Rollover,
+                    AmmoTable = new SortedDictionary<int, List<AmmoReward>>
+                    {
+                        {0, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Set, Stat = AmmoStat.Inventory, Proportion = 0.5f } } },
+                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.2f } } }
+                    },
+
+                    PlayerOverflowAction = OverflowAction.End,
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{}
+                }
+            },
+            {
+                "Advanced",
+                new KillstreakRewardTable
+                {
+                    MenuItem = ItemType.KeycardNTFLieutenant,
+                    MenuDescription = "",
+                    LoadoutLock = false,
+                    ColorHex = "#FFFFFF",
+
+                    ItemOverflowAction = OverflowAction.Clamp,
+                    ItemTable = new SortedDictionary<int, List<ItemReward>>
+                    {
+                        { 0, new List<ItemReward>{ new ItemReward {Item = ItemType.ArmorLight } } },
+                        { 1, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 2, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 } } },
+                        { 3, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit } } },
+                        { 4, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 } } },
+                        { 5, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers },                                   new ItemReward { Item = ItemType.SCP1853 } } },
+                        { 6, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 },                                        new ItemReward { Item = ItemType.SCP330 } } },
+                        { 7, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit },                                        new ItemReward { Item = ItemType.SCP330 } } },
+                        { 8, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 },                                        new ItemReward { Item = ItemType.SCP330 } } },
+                        { 9, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 10, new List<ItemReward>{ new ItemReward {Action = InventoryAction.Remove, Item = ItemType.ArmorLight },  new ItemReward { Item = ItemType.ArmorCombat },   new ItemReward { Item = ItemType.ParticleDisruptor } } },
+                        { 11, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit } } },
+                        { 12, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 },                                       new ItemReward { Item = ItemType.SCP330 },        new ItemReward { Item = ItemType.Adrenaline } } },
+                        { 13, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers },                                  new ItemReward { Item = ItemType.Adrenaline } } },
+                        { 14, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 },                                       new ItemReward { Item = ItemType.SCP330 },        new ItemReward { Item = ItemType.Adrenaline } } },
+                        { 15, new List<ItemReward>{ new ItemReward {Action = InventoryAction.Remove, Item = ItemType.ArmorCombat }, new ItemReward { Item = ItemType.ArmorHeavy },    new ItemReward { Item = ItemType.SCP244a } } },
+                        { 16, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 },                                       new ItemReward { Item = ItemType.SCP330 },        new ItemReward { Item = ItemType.Adrenaline } } },
+                        { 17, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers },                                  new ItemReward { Item = ItemType.Jailbird } } },
+                        { 18, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 },                                       new ItemReward { Item = ItemType.SCP330 },        new ItemReward { Item = ItemType.Adrenaline } } },
+                        { 19, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit },                                       new ItemReward { Item = ItemType.SCP244b } } },
+                        { 20, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP500 },                                       new ItemReward { Item = ItemType.SCP330 },        new ItemReward { Item = ItemType.SCP330 },                new ItemReward { Item = ItemType.Adrenaline } } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>
+                    {
+                        {7, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
+                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 15 } } },
+                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 } } }
+                    },
+
+                    AmmoOverflowAction = OverflowAction.Rollover,
+                    AmmoTable = new SortedDictionary<int, List<AmmoReward>>
+                    {
+                        {0, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Set, Stat = AmmoStat.Inventory, Proportion = 1.0f } } },
+                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.25f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.25f } } }
+                    },
+
+                    PlayerOverflowAction = OverflowAction.Clamp,
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>
+                    {
+                        {5, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {6, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {7, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {8, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {9, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {10, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {11, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {12, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {13, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {14, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {15, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {16, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {17, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {18, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {19, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {20, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                    }
+                }
+            },
+            {
+                "Expert",
+                new KillstreakRewardTable
+                {
+                    MenuItem = ItemType.KeycardNTFCommander,
+                    MenuDescription = "",
+                    LoadoutLock = true,
+                    ColorHex = "#FFFFFF",
+
+                    ItemOverflowAction = OverflowAction.Clamp,
+                    ItemTable = new SortedDictionary<int, List<ItemReward>>
+                    {
+                        { 0, new List<ItemReward>{ new ItemReward {Item = ItemType.ArmorLight },                                        new ItemReward {Item = ItemType.GunFSP9 } } },
+                        { 2, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers } } },
+                        { 4, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 } } },
+                        { 5, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunFSP9 },         new ItemReward { Item = ItemType.GunCrossvec } } },
+                        { 6, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers } } },
+                        { 8, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 },                                           new ItemReward { Item = ItemType.ParticleDisruptor } } },
+                        { 10, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunCrossvec },    new ItemReward { Item = ItemType.GunE11SR },        new ItemReward { Item = ItemType.Painkillers },         new ItemReward { Item = ItemType.SCP244a } } },
+                        { 11, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 12, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.ArmorLight },     new ItemReward { Item = ItemType.ArmorCombat },     new ItemReward { Item = ItemType.Painkillers },         new ItemReward { Item = ItemType.GunCom45 } } },
+                        { 13, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 14, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers } } },
+                        { 15, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunE11SR },       new ItemReward { Item = ItemType.GunAK },           new ItemReward { Item = ItemType.Adrenaline },          new ItemReward { Item = ItemType.SCP330 },                  new ItemReward { Item = ItemType.SCP268 } } },
+                        { 16, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.Jailbird } } },
+                        { 17, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 18, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP330 } } },
+                        { 19, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 20, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunAK },          new ItemReward { Item = ItemType.GunLogicer },      new ItemReward{Item = ItemType.SCP018 },                new ItemReward {Item = ItemType.ParticleDisruptor } } },
+                        { 21, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 22, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.SCP330 } } },
+                        { 23, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 24, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.Jailbird } } },
+                        { 25, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.ArmorCombat },    new ItemReward { Item = ItemType.ArmorHeavy },      new ItemReward { Item = ItemType.GunShotgun },          new ItemReward { Item = ItemType.SCP500 },                  new ItemReward { Item = ItemType.Adrenaline },      new ItemReward { Item = ItemType.SCP330 }, new ItemReward { Item = ItemType.SCP244b } } },
+                        { 26, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.Adrenaline },      new ItemReward { Item = ItemType.SCP330 } } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.Clamp,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>
+                    {
+                        {5, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
+                        {10, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 1 } } },
+                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 30 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 2 }, new EffectReward { Effect = "Scp1853", Intensity = 1 } } },
+                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {21, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {22, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {23, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {24, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {25, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 50 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 4 }, new EffectReward { Effect = "Scp1853", Intensity = 3 } } },
+                    },
+
+                    AmmoOverflowAction = OverflowAction.Rollover,
+                    AmmoTable = new SortedDictionary<int, List<AmmoReward>>
+                    {
+                        {0, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Set, Stat = AmmoStat.Inventory, Proportion = 1.0f } } },
+                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.3f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.3f } } }
+                    },
+
+                    PlayerOverflowAction = OverflowAction.Clamp,
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>
+                    {
+                        {5, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {6, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {7, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {8, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {9, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {10, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {11, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {12, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {13, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {14, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {15, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {16, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {17, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {18, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {19, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {20, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {21, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {22, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {23, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {24, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {25, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 100 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 40 }, new PlayerReward {Stat = PlayerStat.HP, Value = 45} } },
+                    }
+                }
+            },
+            {
+                "RAGE",
+                new KillstreakRewardTable
+                {
+                    MenuItem = ItemType.KeycardChaosInsurgency,
+                    MenuDescription = "",
+                    LoadoutLock = true,
+                    ColorHex = "#FFFFFF",
+
+                    ItemOverflowAction = OverflowAction.Clamp,
+                    ItemTable = new SortedDictionary<int, List<ItemReward>>
+                    {
+                        { 0, new List<ItemReward>{ new ItemReward { Item = ItemType.ArmorLight },                                       new ItemReward {Item = ItemType.GunCOM15 } } },
+                        { 2, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers } } },
+                        { 3, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunCOM15 },        new ItemReward { Item = ItemType.GunCOM18 } } },
+                        { 4, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 } } },
+                        { 5, new List<ItemReward>{ } },
+                        { 6, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunCOM18 },        new ItemReward { Item = ItemType.GunRevolver },     new ItemReward { Item = ItemType.Painkillers } } },
+                        { 8, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 },                                           new ItemReward { Item = ItemType.ParticleDisruptor } } },
+                        { 9, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunRevolver },     new ItemReward { Item = ItemType.GunFSP9 } } },
+                        { 10, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP244a } } },
+                        { 11, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 12, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunFSP9 },        new ItemReward { Item = ItemType.GunCrossvec },     new ItemReward { Action = InventoryAction.Remove, Item = ItemType.ArmorLight },     new ItemReward { Item = ItemType.ArmorCombat },     new ItemReward { Item = ItemType.Painkillers },         new ItemReward { Item = ItemType.GunCom45 } } },
+                        { 13, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 14, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers } } },
+                        { 15, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunCrossvec },    new ItemReward { Item = ItemType.GunE11SR },        new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.SCP268 } } },
+                        { 16, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.Jailbird } } },
+                        { 17, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 18, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP330 } } },
+                        { 19, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 20, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP018 },                                          new ItemReward { Item = ItemType.ParticleDisruptor } } },
+                        { 21, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 22, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.SCP330 } } },
+                        { 23, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 24, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.Jailbird } } },
+                        { 25, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.ArmorCombat },    new ItemReward { Item = ItemType.ArmorHeavy },      new ItemReward { Item = ItemType.GunShotgun },                                      new ItemReward { Item = ItemType.SCP500 },          new ItemReward { Item = ItemType.Adrenaline },          new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.SCP244b } } },
+                        { 26, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.Adrenaline },      new ItemReward { Item = ItemType.SCP330 } } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.Clamp,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>
+                    {
+                        {5, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
+                        {10, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 1 } } },
+                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 30 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 2 }, new EffectReward { Effect = "Scp1853", Intensity = 1 } } },
+                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {21, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {22, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {23, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {24, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {25, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 50 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 4 }, new EffectReward { Effect = "Scp1853", Intensity = 3 } } },
+                    },
+
+                    AmmoOverflowAction = OverflowAction.Rollover,
+                    AmmoTable = new SortedDictionary<int, List<AmmoReward>>
+                    {
+                        {0, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Set, Stat = AmmoStat.Inventory, Proportion = 1.0f } } },
+                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.3f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.3f } } }
+                    },
+
+                    PlayerOverflowAction = OverflowAction.Clamp,
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>
+                    {
+                        {5, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {6, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {7, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {8, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {9, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 20 } } },
+                        {10, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {11, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {12, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {13, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {14, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 40 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 10 } } },
+                        {15, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {16, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {17, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {18, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {19, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
+                        {20, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {21, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {22, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {23, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {24, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                        {25, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 100 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 40 }, new PlayerReward {Stat = PlayerStat.HP, Value = 45} } },
+                    }
+                }
+            }
+        };
+    }
+
     public class KillstreakConfig
     {
         public List<List<ItemType>> EasyKillstreakTable { get; set; } = new List<List<ItemType>>
