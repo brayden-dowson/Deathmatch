@@ -155,7 +155,7 @@ namespace TheRiptide
                 {
                     if (standard.Hitbox == HitboxType.Headshot)
                         stats.headshots++;
-                    stats.damage_delt += (int)math.round(standard.DealtHealthDamage);
+                    stats.damage_delt += (int)math.round(standard.Damage);
                 }
             }
 
@@ -165,7 +165,7 @@ namespace TheRiptide
                 Stats stats = player_stats[victim.PlayerId];
                 if (damage is StandardDamageHandler standard)
                 {
-                    stats.damage_recieved += (int)math.round(standard.DealtHealthDamage);
+                    stats.damage_recieved += (int)math.round(standard.Damage);
                 }
             }
 
@@ -182,7 +182,7 @@ namespace TheRiptide
 
                 if (damage is FirearmDamageHandler firearm)
                 {
-                    life_stats.damage += firearm.DealtHealthDamage;
+                    life_stats.damage += firearm.Damage;
                     if (firearm.Hitbox == HitboxType.Headshot)
                         life_stats.head_shots++;
                     else if (firearm.Hitbox == HitboxType.Body)
@@ -194,7 +194,7 @@ namespace TheRiptide
                 }
                 else if(damage is StandardDamageHandler standard)
                 {
-                    life_stats.damage += standard.DealtHealthDamage;
+                    life_stats.damage += standard.Damage;
                     life_stats.other_hits++;
                 }
             }
