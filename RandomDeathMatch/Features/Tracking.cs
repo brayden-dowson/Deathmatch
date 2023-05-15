@@ -178,7 +178,7 @@ namespace TheRiptide
                     if (weapon_attachments.ContainsKey(player_loadout.tertiary))
                         new_loadout.tertiary_attachment_code = weapon_attachments[player_loadout.tertiary];
 
-                    if (loadout == null || new_loadout != loadout)
+                    if (loadout == null || !new_loadout.Equals(loadout))
                         life.loadout = new_loadout;
                     else
                         life.loadout = loadout;

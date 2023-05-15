@@ -41,7 +41,7 @@ namespace TheRiptide
             public byte weapon { get; set; } = 0;
         }
 
-        public class Loadout
+        public class Loadout : System.IEquatable<Loadout>
         {
             public long LoadoutId { get; set; }
             public string killstreak_mode { get; set; } = "";
@@ -51,6 +51,17 @@ namespace TheRiptide
             public uint secondary_attachment_code { get; set; } = 0;
             public ItemType tertiary { get; set; } = ItemType.None;
             public uint tertiary_attachment_code { get; set; } = 0;
+
+            public bool Equals(Loadout other)
+            {
+                return killstreak_mode == other.killstreak_mode &&
+                    primary == other.primary &&
+                    primary_attachment_code == other.primary_attachment_code &&
+                    secondary == other.secondary &&
+                    secondary_attachment_code == other.secondary_attachment_code &&
+                    tertiary == other.tertiary &&
+                    tertiary_attachment_code == other.tertiary_attachment_code;
+            }
         }
 
         public class Kill
