@@ -557,22 +557,27 @@ namespace TheRiptide
                 else
                     BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, translation.PrivateKillstreak.Replace("{count}", killstreak.count.ToString()));
             }
-            if (player_killstreak.ContainsKey(victim.PlayerId))
+            if (victim != null && player_killstreak.ContainsKey(victim.PlayerId))
             {
                 Killstreak victim_killstreak = player_killstreak[victim.PlayerId];
                 string victim_killstreak_name = "<color=" + config.KillstreakTables[victim_killstreak.name].ColorHex + ">" + victim_killstreak.name + "</color>";
 
                 if (victim_killstreak.count >= 5)
                 {
+                    string killer_name = "";
                     string killer_killstreak_name = "";
                     if (killer == null)
+                    {
                         killer_killstreak_name = victim_killstreak_name;
+                        killer_name = victim.Nickname;
+                    }
                     else
                     {
                         Killstreak killer_killstreak = player_killstreak[killer.PlayerId];
                         killer_killstreak_name = "<color=" + config.KillstreakTables[killer_killstreak.name].ColorHex + ">" + killer_killstreak.name + "</color>";
+                        killer_name = killer.Nickname;
                     }
-                    BroadcastOverride.BroadcastLine(2, victim_killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{victim_killstreak}", victim_killstreak_name).Replace("{killer_killstreak}", killer_killstreak_name).Replace("{killer}", killer.Nickname).Replace("{count}", victim_killstreak.count.ToString()).Replace("{victim}", victim.Nickname));
+                    BroadcastOverride.BroadcastLine(2, victim_killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{victim_killstreak}", victim_killstreak_name).Replace("{killer_killstreak}", killer_killstreak_name).Replace("{killer}", killer_name).Replace("{count}", victim_killstreak.count.ToString()).Replace("{victim}", victim.Nickname));
                 }
                 victim_killstreak.count = 0;
             }

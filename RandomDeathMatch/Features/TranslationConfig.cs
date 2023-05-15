@@ -51,7 +51,7 @@ namespace TheRiptide
         public string Respawn { get; set; } = "<b><color=#FFFF00>Left/Right click to respawn</color></b>";
         public string Attachments { get; set; } = "<b><color=#FF0000>Tab to edit attachments/presets</color></b>";
         public string Teleporting { get; set; } = "<color=#43BFF0>Teleporting in 7 seconds</color>";
-        public string TeleportCancel { get; set; } = "<color=#43BFF0>Open [MAIN MENU] to cancel</color>";
+        public string TeleportCancel { get; set; } = "<color=#43BFF0>Open [MAIN MENU] to cancel</color> - <color=#FF0000>Right Click O5</color>";
         public string FastTeleport { get; set; } = "<color=#43BFF0>loadout set, teleporting in 3 seconds</color>";
         public string SpectatorMode { get; set; } = "spectator mode is currently bugged, you may need to leave and rejoin to respawn";
 
@@ -84,10 +84,6 @@ namespace TheRiptide
 
         [Description("killstreak reward system menu")]
         public string KillstreakRewardMenu { get; set; } = "<b><color=#43BFF0>[KILLSTREAK REWARD SYSTEM]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
-        //public string Easy { get; set; } = "<color=#eb0d47>[HEAVY ARMOR]</color> = <b><color=#5900ff>Easy</color>: low risk low reward, good loadout but bad killstreak rewards</b>";
-        //public string Standard { get; set; } = "<color=#eb0d47>[COMBAT ARMOR]</color> = <b><color=#43BFF0>Standard</color>: medium risk medium reward, ok loadout and ok killsteak rewards</b>";
-        //public string Expert { get; set; } = "<color=#eb0d47>[LIGHT ARMOR]</color> = <b><color=#36a832>Expert</color>: high risk high reward, bad loadout but good killstreak rewards </b>";
-        //public string Rage { get; set; } = "<color=#eb0d47>[COM 45]</color> = <b><color=#FF0000>RAGE</color> - [DATA EXPUNGED]</b>";
         public string KillstreakSelected { get; set; } = "{killstreak} selected as your killstreak reward system";
         public string CurrentKillstreakSelected { get; set; } = "Current killstreak reward system selected: {killstreak}</color>";
 
