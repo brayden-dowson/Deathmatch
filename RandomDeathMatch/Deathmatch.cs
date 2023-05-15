@@ -107,7 +107,7 @@ namespace TheRiptide
 
         public void Start()
         {
-            Database.Singleton.Load();
+            Database.Singleton.Load(PluginHandler.Get(this).MainConfigPath);
 
             EventManager.RegisterEvents(this);
             //dependencies

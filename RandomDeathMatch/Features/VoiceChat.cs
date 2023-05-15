@@ -20,22 +20,18 @@ namespace TheRiptide
     //    public global::VoiceChat.VoiceChatChannel AliveOverrideChannel { get; set; } = global::VoiceChat.VoiceChatChannel.Radio;
     //    public global::VoiceChat.VoiceChatChannel DeadOverrideChannel { get; set; } = global::VoiceChat.VoiceChatChannel.Spectator;
     //}
-
     //class VoiceChat
     //{
     //    public static VoiceChat Singleton { get; private set; }
     //    VoiceChatConfig config;
-
     //    public VoiceChat()
     //    {
     //        Singleton = this;
     //    }
-
     //    public void Init(VoiceChatConfig config)
     //    {
     //        this.config = config;
     //    }
-
     //    [PluginEvent(ServerEventType.PlayerSpawn)]
     //    void OnPlayerSpawn(Player player, RoleTypeId role)
     //    {
@@ -47,7 +43,6 @@ namespace TheRiptide
     //                {
     //                    fpc.VoiceModule = new SpectatorVoiceModule();
     //                }
-
     //                //player.VoiceModule.CurrentChannel = config.AliveOverrideChannel;
     //                //player.VoiceModule.Update();
     //            });

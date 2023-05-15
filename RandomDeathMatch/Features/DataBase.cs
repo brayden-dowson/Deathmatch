@@ -183,9 +183,10 @@ namespace TheRiptide
             );
         }
 
-        public void Load()
+        public void Load(string config_path)
         {
-            db = new LiteDatabase(@".config/SCP Secret Laboratory/PluginAPI/plugins/" + ServerStatic.ServerPort.ToString() + "/Deathmatch/Deathmatch.db");
+
+            db = new LiteDatabase(config_path.Replace("config.yml", "") + "Deathmatch.db");
         }
 
         public void UnLoad()
