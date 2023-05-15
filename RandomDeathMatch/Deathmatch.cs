@@ -225,16 +225,23 @@ namespace TheRiptide
                 Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
             Timing.CallDelayed(60.0f * config.RoundTime, () => 
             {
-                Experiences.Singleton.SaveExperiences();
-                Ranks.Singleton.CalculateAndSaveRanks();
-                HintOverride.Refresh();
-                Statistics.DisplayRoundStats();
-                Timing.CallPeriodically(20.0f, 0.2f, () =>
+                try
                 {
-                    foreach (var p in Player.GetPlayers())
-                        p.IsGodModeEnabled = true;
-                });
-                Timing.CallDelayed(20.0f, () => Round.Restart(false));
+                    Timing.CallDelayed(20.0f, () => Round.Restart(false));
+                    Timing.CallPeriodically(20.0f, 0.2f, () =>
+                    {
+                        foreach (var p in Player.GetPlayers())
+                            p.IsGodModeEnabled = true;
+                    });
+                    Statistics.DisplayRoundStats();
+                    Experiences.Singleton.SaveExperiences();
+                    Ranks.Singleton.CalculateAndSaveRanks();
+                    HintOverride.Refresh();
+                }
+                catch(Exception ex)
+                {
+                    Log.Error("round end Error: " + ex.ToString());
+                }
             });
         }
 

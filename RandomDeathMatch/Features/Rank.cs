@@ -258,11 +258,11 @@ namespace TheRiptide
     //public class SetRank : ICommand
     //{
     //    public string Command { get; } = "dmsetrank";
-    //
+
     //    public string[] Aliases { get; } = new string[] { };
-    //
+
     //    public string Description { get; } = "set rank on self";
-    //
+
     //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     //    {
     //        Player player;
@@ -287,11 +287,11 @@ namespace TheRiptide
     //public class SetRankState : ICommand
     //{
     //    public string Command { get; } = "dmsetrankstate";
-    //
+
     //    public string[] Aliases { get; } = new string[] { };
-    //
+
     //    public string Description { get; } = "set rank state on self";
-    //
+
     //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     //    {
     //        Player player;
@@ -303,7 +303,7 @@ namespace TheRiptide
     //                response = "failed";
     //                return false;
     //            }
-    //            if(!Enum.IsDefined(typeof(Database.RankState), state))
+    //            if (!Enum.IsDefined(typeof(Database.RankState), state))
     //            {
     //                response = "valid states are 0 = Unranked 1 = Placement 2 = Ranked";
     //                return false;

@@ -363,11 +363,11 @@ namespace TheRiptide
     //public class DmSetXp : ICommand
     //{
     //    public string Command { get; } = "dmsetxp";
-    //
-    //    public string[] Aliases { get; } = new string[] { "dxp"};
-    //
+
+    //    public string[] Aliases { get; } = new string[] { "dxp" };
+
     //    public string Description { get; } = "set xp on player. '[player_id] [value] [level] [stage] [tier]', -1 = palceholder, -1 id = self";
-    //
+
     //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     //    {
     //        Player player;

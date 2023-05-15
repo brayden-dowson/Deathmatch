@@ -31,9 +31,9 @@ namespace TheRiptide
         public string SelfKill { get; set; } = "<b><color=#eb0d47>{victim}</color></b> humiliated  themselves";
 
         [Description("killstreak")]
-        public string GlobalKillstreak { get; set; } = "<b>{killstreak}<color=#43BFF0>{killer}</color></b> is on a <b><color=#FF0000>{count}</color></b> kill streak";
+        public string GlobalKillstreak { get; set; } = "<b>{killstreak} <color=#43BFF0>{name}</color></b> is on a <b><color=#FF0000>{count}</color></b> kill streak";
         public string PrivateKillstreak { get; set; } = "Kill streak <b><color=#FF0000>{count}</color></b>";
-        public string GlobalKillstreakEnded { get; set; } = "<b>{killer_killstreak}<color=#43BFF0>{killer}</color></b> ended <b>{victim_killstreak}<color=#43BFF0>{victim}'s </color></b>" + "<b><color=#FF0000>{count}</color></b> kill streak";
+        public string GlobalKillstreakEnded { get; set; } = "<b>{killer_killstreak} <color=#43BFF0>{killer}</color></b> ended <b>{victim_killstreak} <color=#43BFF0>{victim}'s </color></b>" + "<b><color=#FF0000>{count}</color></b> kill streak";
 
         [Description("loadout")]
         public string CustomisationHint { get; set; } = "<b>CHECK INVENTORY! <color=#FF0000>Right Click O5 to select gun</color></b>";

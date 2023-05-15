@@ -14,7 +14,7 @@ namespace TheRiptide
     public class VoiceChatConfig
     {
         public bool IsEnabled { get; set; } = true;
-        public global::VoiceChat.VoiceChatChannel AliveOverrideChannel { get; set; } = global::VoiceChat.VoiceChatChannel.Spectator;
+        public global::VoiceChat.VoiceChatChannel AliveOverrideChannel { get; set; } = global::VoiceChat.VoiceChatChannel.Radio;
         public global::VoiceChat.VoiceChatChannel DeadOverrideChannel { get; set; } = global::VoiceChat.VoiceChatChannel.Spectator;
     }
 
@@ -41,6 +41,7 @@ namespace TheRiptide
                 Timing.CallDelayed(1.0f, () =>
                 {
                     player.VoiceModule.CurrentChannel = config.AliveOverrideChannel;
+                    player.VoiceModule.Update();
                 });
             }
             else
@@ -48,6 +49,7 @@ namespace TheRiptide
                 Timing.CallDelayed(1.0f, () =>
                 {
                     player.VoiceModule.CurrentChannel = config.DeadOverrideChannel;
+                    player.VoiceModule.Update();
                 });
             }
         }
