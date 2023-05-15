@@ -169,11 +169,11 @@ namespace TheRiptide
             string kill_msg = "[plugin error] unknown kill pushed: " + damage.CassieDeathAnnouncement.Announcement;
             string killer_name = "";
             if (killer != null)
-                killer_name = "<b>" + Killstreaks.KillstreakColorCode(killer) + killer.Nickname + "</color></b>";
+                killer_name = "<b><color=" + Killstreaks.Singleton.KillstreakColorCode(killer) + ">" + killer.Nickname + "</color></b>";
 
             string victim_name = "";
             if (victim != null)
-                victim_name = "<b>" + Killstreaks.KillstreakColorCode(victim) + victim.Nickname + "</color></b>";
+                victim_name = "<b><color=" + Killstreaks.Singleton.KillstreakColorCode(victim) + ">" + victim.Nickname + "</color></b>";
 
             if (damage is FirearmDamageHandler firearm)
             {

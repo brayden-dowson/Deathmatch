@@ -133,9 +133,12 @@ namespace TheRiptide
         {
             if(player != null)
             {
-                Database.Life life = player_life[player.PlayerId];
-                if (life != null)
-                    life.shots++;
+                if (player_life.ContainsKey(player.PlayerId))
+                {
+                    Database.Life life = player_life[player.PlayerId];
+                    if (life != null)
+                        life.shots++;
+                }
             }
         }
 
@@ -164,7 +167,7 @@ namespace TheRiptide
                     Loadouts.Loadout player_loadout = Loadouts.GetLoadout(player);
                     Database.Loadout new_loadout = new Database.Loadout();
 
-                    new_loadout.killstreak_mode = Killstreaks.GetKillstreak(player).mode.ToString();
+                    new_loadout.killstreak_mode = Killstreaks.GetKillstreak(player).name;
                     new_loadout.primary = player_loadout.primary;
                     if (weapon_attachments.ContainsKey(player_loadout.primary))
                         new_loadout.primary_attachment_code = weapon_attachments[player_loadout.primary];
@@ -175,7 +178,7 @@ namespace TheRiptide
                     if (weapon_attachments.ContainsKey(player_loadout.tertiary))
                         new_loadout.tertiary_attachment_code = weapon_attachments[player_loadout.tertiary];
 
-                    if (loadout == null || new_loadout != loadout)
+                    if (loadout == null || !new_loadout.Equals(loadout))
                         life.loadout = new_loadout;
                     else
                         life.loadout = loadout;

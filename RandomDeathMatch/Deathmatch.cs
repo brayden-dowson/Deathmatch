@@ -9,6 +9,8 @@ using PluginAPI.Events;
 using PlayerRoles;
 using UnityEngine;
 using System.ComponentModel;
+using CustomPlayerEffects;
+using InventorySystem.Items.Firearms.Attachments;
 
 //todo voice and spectate cmd
 namespace TheRiptide
@@ -23,12 +25,23 @@ namespace TheRiptide
         public string DummyPlayerName { get; set; } = "[THE RIPTIDE]";
     }
 
+    public class GlobalReferenceConfig
+    {
+        [Description("[AUTO GENERATED FILE] may contain types which no longer work. A reference list of types to be used in other configs (do not edit)")]
+        public List<ItemType> AllItems { get; set; } = new List<ItemType>();
+        public List<string> AllEffects { get; set; } = new List<string>();
+        public List<AttachmentName> AllAttachments { get; set; } = new List<AttachmentName>();
+    }
+
     public class Deathmatch
     {
         public static Deathmatch Singleton { get; private set; }
 
         [PluginConfig("main_config.yml")]
         public MainConfig config;
+
+        [PluginConfig("global_reference_config.yml")]
+        public GlobalReferenceConfig global_reference_config;
 
         [PluginConfig("rooms_config.yml")]
         public RoomsConfig rooms_config;
@@ -41,9 +54,6 @@ namespace TheRiptide
 
         [PluginConfig("lobby_config.yml")]
         public LobbyConfig lobby_config;
-
-        [PluginConfig("menu_config.yml")]
-        public MenuConfig menu_config;
 
         [PluginConfig("experience_config.yml")]
         public ExperienceConfig experience_config;
@@ -65,6 +75,8 @@ namespace TheRiptide
 
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
+        private CoroutineHandle restart_handle;
+        private CoroutineHandle round_timer_handle;
 
         public static bool GameStarted
         {
@@ -75,7 +87,7 @@ namespace TheRiptide
                 {
                     foreach (var player in Player.GetPlayers())
                         if (player.IsAlive)
-                            Killstreaks.Singleton.AddKillstreakEffects(player);
+                            Killstreaks.Singleton.AddKillstreakStartEffects(player);
                 }
                 else
                 {
@@ -129,7 +141,6 @@ namespace TheRiptide
             Killstreaks.Singleton.Init(killstreak_config);
             Loadouts.Singleton.Init(loadout_config);
             Lobby.Singleton.Init(lobby_config);
-            DeathmatchMenu.Singleton.Init(menu_config);
             if (rank_config.IsEnabled)
                 Ranks.Singleton.Init(rank_config);
             if (experience_config.IsEnabled)
@@ -137,7 +148,7 @@ namespace TheRiptide
             if (tracking_config.IsEnabled)
                 Tracking.Singleton.Init(tracking_config);
             if (attachment_blacklist_config.IsEnabled)
-                AttachmentBlacklist.Singleton.Init(attachment_blacklist_config, this);
+                AttachmentBlacklist.Singleton.Init(attachment_blacklist_config);
             //if (voice_chat_config.IsEnabled)
             //    VoiceChat.Singleton.Init(voice_chat_config);
 
@@ -190,6 +201,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         void WaitingForPlayers()
         {
+            GenerateGlobalReferenceConfig();
             Database.Singleton.Checkpoint();
         }
 
@@ -202,6 +214,7 @@ namespace TheRiptide
             Server.FriendlyFire = true;
             FriendlyFireConfig.PauseDetector = true;
             Server.IsHeavilyModded = true;
+            Round.IsLocked = true;
 
             Timing.CallDelayed(1.0f, () =>
             {
@@ -223,18 +236,26 @@ namespace TheRiptide
                 Timing.CallDelayed(60.0f * (config.RoundTime - 5.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 5 minutes</color>"); });
             if (config.RoundTime > 1.0f)
                 Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
-            Timing.CallDelayed(60.0f * config.RoundTime, () => 
+            round_timer_handle = Timing.CallDelayed(60.0f * config.RoundTime, () => 
             {
-                Experiences.Singleton.SaveExperiences();
-                Ranks.Singleton.CalculateAndSaveRanks();
-                HintOverride.Refresh();
-                Statistics.DisplayRoundStats();
-                Timing.CallPeriodically(20.0f, 0.2f, () =>
+                try
                 {
-                    foreach (var p in Player.GetPlayers())
-                        p.IsGodModeEnabled = true;
-                });
-                Timing.CallDelayed(20.0f, () => Round.Restart(false));
+                    restart_handle = Timing.CallDelayed(20.0f, () => Round.Restart(false));
+                    Timing.CallPeriodically(20.0f, 0.2f, () =>
+                    {
+                        foreach (var p in Player.GetPlayers())
+                            p.IsGodModeEnabled = true;
+                    });
+                    Statistics.DisplayRoundStats();
+                    Experiences.Singleton.SaveExperiences();
+                    Ranks.Singleton.CalculateAndSaveRanks();
+                    HintOverride.Refresh();
+                    Server.Instance.SetRole(RoleTypeId.Spectator);
+                }
+                catch(Exception ex)
+                {
+                    Log.Error("round end Error: " + ex.ToString());
+                }
             });
         }
 
@@ -256,15 +277,33 @@ namespace TheRiptide
         {
             return RoundEndConditionsCheckCancellationData.Override(false);
         }
+
         [PluginEvent(ServerEventType.RoundRestart)]
         void OnRoundRestart()
         {
+            Timing.KillCoroutines(round_timer_handle);
+            Timing.KillCoroutines(restart_handle);
             Timing.KillCoroutines();
         }
 
         public static bool IsPlayerValid(Player player)
         {
             return players.Contains(player.PlayerId);
+        }
+
+        private void GenerateGlobalReferenceConfig()
+        {
+            global_reference_config.AllItems.Clear();
+            foreach (ItemType item in Enum.GetValues(typeof(ItemType)))
+                global_reference_config.AllItems.Add(item);
+
+            global_reference_config.AllEffects.Clear();
+            foreach (StatusEffectBase effect in Server.Instance.GameObject.GetComponentsInChildren<StatusEffectBase>(true))
+                global_reference_config.AllEffects.Add(effect.name);
+            global_reference_config.AllAttachments.Clear();
+            foreach (AttachmentName name in Enum.GetValues(typeof(AttachmentName)))
+                global_reference_config.AllAttachments.Add(name);
+            PluginHandler.Get(this).SaveConfig(this, nameof(global_reference_config));
         }
     }
 }

@@ -91,7 +91,7 @@ namespace TheRiptide
             { new RoomID(FacilityZone.Entrance, RoomName.EzOfficeLarge, RoomShape.Straight),
                 new List<Vector3>{ new Vector3(-3.102f, 0.960f, 5.552f) }},
             { new RoomID(FacilityZone.Entrance, RoomName.EzOfficeSmall, RoomShape.Straight),
-                new List<Vector3>{ new Vector3(2.168f, -0.468f, 1.645f) } },
+                new List<Vector3>{ new Vector3(4.102f, -0.468f, -0.129f) } },
             { new RoomID(FacilityZone.Surface, RoomName.Outside, RoomShape.Undefined),
                 new List<Vector3>{ new Vector3(0.000f, 0.960f, 0.000f), new Vector3(-39.895f, -12.066f, -42.703f),
                     new Vector3(28.125f, -8.115f, -28.320f), new Vector3(108.659f, -4.306f, -33.340f),

@@ -9,11 +9,6 @@ using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
-    public class MenuConfig
-    {
-        public bool RageEnabled { get; set; } = true;
-    }
-
     public class DeathmatchMenu
     {
         private static DeathmatchMenu instance = null;
@@ -27,16 +22,9 @@ namespace TheRiptide
             }
         }
 
-        public MenuConfig config;
-
-        public enum MenuPage { None, Main, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, DeleteData, Debug };
+        public enum MenuPage { None, Main, GunSlot1, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, DeleteData, Debug };
 
         private DeathmatchMenu() { }
-
-        public void Init(MenuConfig config)
-        {
-            this.config = config;
-        }
 
         public void SetupMenus()
         {
@@ -68,11 +56,14 @@ namespace TheRiptide
                 new MenuItem(ItemType.KeycardScientist, translation.CustomiseLoadout, (player)=>
                 {
                     Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
-                    if (killstreak.mode != Killstreaks.KillstreakMode.Rage)
+                    if (!Killstreaks.Singleton.IsLoadoutLocked(player))
                     {
-                        if (killstreak.mode == Killstreaks.KillstreakMode.Expert || killstreak.mode == Killstreaks.KillstreakMode.Standard)
+                        ItemType armor = Killstreaks.Singleton.ArmorType(player);
+                        if(armor == ItemType.None)
+                            InventoryMenu.ShowMenu(player, (int)MenuPage.GunSlot1);
+                        else if(armor == ItemType.ArmorLight || armor == ItemType.ArmorCombat)
                             InventoryMenu.ShowMenu(player, (int)MenuPage.GunSlot2);
-                        else
+                        else if(armor == ItemType.ArmorHeavy)
                             InventoryMenu.ShowMenu(player, (int)MenuPage.GunSlot3);
                     }
                     else
@@ -87,7 +78,7 @@ namespace TheRiptide
                     Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
                     Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
                     MenuInfo info;
-                    if (loadout.rage_mode_enabled && Singleton.config.RageEnabled)
+                    if (loadout.rage_mode_enabled && Killstreaks.Singleton.config.RageEnabled)
                     {
                         InventoryMenu.ShowMenu(player, (int)MenuPage.KillstreakModeSecret);
                         info = InventoryMenu.GetInfo((int)MenuPage.KillstreakModeSecret);
@@ -98,7 +89,7 @@ namespace TheRiptide
                         info = InventoryMenu.GetInfo((int)MenuPage.KillstreakMode);
                     }
 
-                    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.CurrentKillstreakSelected.Replace("{killstreak}", Killstreaks.KillstreakColorCode(player) + killstreak.mode.ToString()));
+                    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.CurrentKillstreakSelected.Replace("{killstreak}", "<color=" + Killstreaks.Singleton.KillstreakColorCode(player) + ">" + killstreak.name + "</color>"));
                     return false;
                 }),
                 new MenuItem(ItemType.KeycardContainmentEngineer, translation.Role, (player)=>
@@ -116,6 +107,22 @@ namespace TheRiptide
                 //    InventoryMenu.ShowMenu(player, (int)MenuPage.Debug);
                 //    return false;
                 //}),
+                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
+            });
+
+            InventoryMenu.CreateMenu((int)MenuPage.GunSlot1, translation.GunSlotMenu, new List<MenuItem>
+            {
+                new MenuItem(ItemType.KeycardO5, translation.BackToMainMenu, (player)=>
+                {
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
+                    return false;
+                }),
+                new MenuItem(ItemType.KeycardFacilityManager, translation.Primary, (player)=>
+                {
+                    Loadouts.GetLoadout(player).slot = Loadouts.GunSlot.Primary;
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.GunClass);
+                    return false;
+                }),
                 new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
             });
 
@@ -202,7 +209,6 @@ namespace TheRiptide
                 return false;
             };
 
-
             InventoryMenu.CreateMenu((int)MenuPage.MtfGun, translation.MtfGunMenu, new List<MenuItem>
             {
                 new MenuItem(ItemType.KeycardO5, translation.BackToMainMenu, (player)=>
@@ -232,43 +238,82 @@ namespace TheRiptide
                 new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
             });
 
-            Func<Player, Killstreaks.KillstreakMode, bool> KillstreakModeSelected = (player, mode) =>
-            {
-                Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
-                killstreak.mode = mode;
-                InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
-                MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
-                BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.KillstreakSelected.Replace("{killstreak}", Killstreaks.KillstreakColorCode(player) + Enum.GetName(typeof(Killstreaks.KillstreakMode), killstreak.mode)));
-                return false;
-            };
-
             List<MenuItem> killstreak_items = new List<MenuItem>()
-            { 
+            {
                 new MenuItem(ItemType.KeycardO5, translation.BackToMainMenu, (player)=>
                 {
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
                     return false;
-                }),
-                new MenuItem(ItemType.ArmorHeavy, translation.Easy, (player)=>
-                {
-                    return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Easy);
-                }),
-                new MenuItem(ItemType.ArmorCombat, translation.Standard, (player)=>
-                {
-                    return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Standard);
-                }),
-                new MenuItem(ItemType.ArmorLight, translation.Expert, (player)=>
-                {
-                    return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Expert);
                 })
             };
 
-            List<MenuItem> killstreak_items_secret = killstreak_items.ToList();
-            killstreak_items_secret.Add(
-            new MenuItem(ItemType.GunCom45, translation.Rage, (player) =>
+            foreach(var kvp in Killstreaks.Singleton.config.KillstreakTables)
             {
-                return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Rage);
-            }));
+                if (kvp.Key != "RAGE")
+                {
+                    killstreak_items.Add(new MenuItem(kvp.Value.MenuItem, kvp.Value.MenuDescription, (player) =>
+                    {
+                        Killstreaks.GetKillstreak(player).name = kvp.Key;
+                        InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
+                        MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
+                        BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.KillstreakSelected.Replace("{killstreak}", "<color=" + kvp.Value.ColorHex + ">" + kvp.Key + "</color>"));
+                        return false;
+                    }));
+                }
+            }
+
+            List<MenuItem> killstreak_items_secret = killstreak_items.ToList();
+            if(Killstreaks.Singleton.config.KillstreakTables.ContainsKey("RAGE"))
+            {
+                KillstreakRewardTable table = Killstreaks.Singleton.config.KillstreakTables["RAGE"];
+                killstreak_items_secret.Add(
+                new MenuItem(table.MenuItem, table.MenuDescription, (player) =>
+                {
+                    Killstreaks.GetKillstreak(player).name = "RAGE";
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
+                    MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
+                    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.KillstreakSelected.Replace("{killstreak}", "<color=" + table.ColorHex + ">RAGE</color>"));
+                    return false;
+                }));
+            }
+
+            //Func<Player, Killstreaks.KillstreakMode, bool> KillstreakModeSelected = (player, mode) =>
+            //{
+            //    Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
+            //    killstreak.mode = mode;
+            //    InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
+            //    MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
+            //    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.KillstreakSelected.Replace("{killstreak}", Killstreaks.KillstreakColorCode(player) + Enum.GetName(typeof(Killstreaks.KillstreakMode), killstreak.mode)));
+            //    return false;
+            //};
+
+            //List<MenuItem> killstreak_items = new List<MenuItem>()
+            //{ 
+            //    new MenuItem(ItemType.KeycardO5, translation.BackToMainMenu, (player)=>
+            //    {
+            //        InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
+            //        return false;
+            //    }),
+            //    new MenuItem(ItemType.ArmorHeavy, translation.Easy, (player)=>
+            //    {
+            //        return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Easy);
+            //    }),
+            //    new MenuItem(ItemType.ArmorCombat, translation.Standard, (player)=>
+            //    {
+            //        return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Standard);
+            //    }),
+            //    new MenuItem(ItemType.ArmorLight, translation.Expert, (player)=>
+            //    {
+            //        return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Expert);
+            //    })
+            //};
+
+            //List<MenuItem> killstreak_items_secret = killstreak_items.ToList();
+            //killstreak_items_secret.Add(
+            //new MenuItem(ItemType.GunCom45, translation.Rage, (player) =>
+            //{
+            //    return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Rage);
+            //}));
 
             killstreak_items.Add(new MenuItem(ItemType.Radio, "", (p) => { return false; }));
             killstreak_items_secret.Add(new MenuItem(ItemType.Radio, "", (p) => { return false; }));

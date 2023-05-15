@@ -28,7 +28,7 @@ namespace TheRiptide
             public RoleTypeId role { get; set; } = RoleTypeId.ClassD;
 
             //killstreak
-            public Killstreaks.KillstreakMode killstreak_mode { get; set; } = Killstreaks.KillstreakMode.Standard;
+            public string killstreak_mode { get; set; } = "";
         }
 
         //users collection
@@ -41,16 +41,27 @@ namespace TheRiptide
             public byte weapon { get; set; } = 0;
         }
 
-        public class Loadout
+        public class Loadout : System.IEquatable<Loadout>
         {
             public long LoadoutId { get; set; }
-            public string killstreak_mode { get; set; } = Killstreaks.KillstreakMode.Standard.ToString();
+            public string killstreak_mode { get; set; } = "";
             public ItemType primary { get; set; } = ItemType.None;
             public uint primary_attachment_code { get; set; } = 0;
             public ItemType secondary { get; set; } = ItemType.None;
             public uint secondary_attachment_code { get; set; } = 0;
             public ItemType tertiary { get; set; } = ItemType.None;
             public uint tertiary_attachment_code { get; set; } = 0;
+
+            public bool Equals(Loadout other)
+            {
+                return killstreak_mode == other.killstreak_mode &&
+                    primary == other.primary &&
+                    primary_attachment_code == other.primary_attachment_code &&
+                    secondary == other.secondary &&
+                    secondary_attachment_code == other.secondary_attachment_code &&
+                    tertiary == other.tertiary &&
+                    tertiary_attachment_code == other.tertiary_attachment_code;
+            }
         }
 
         public class Kill
@@ -211,7 +222,8 @@ namespace TheRiptide
                             loadout.radio = config.radio;
                             loadout.rage_mode_enabled = config.rage_enabled;
                             spawn.role = config.role;
-                            killstreak.mode = config.killstreak_mode;
+                            killstreak.name = config.killstreak_mode;
+                            Killstreaks.Singleton.KillstreakLoaded(player);
                         });
                     }
                 }
@@ -287,7 +299,7 @@ namespace TheRiptide
                     config.radio = loadout.radio;
                     config.rage_enabled = loadout.rage_mode_enabled;
                     config.role = spawn.role;
-                    config.killstreak_mode = killstreak.mode;
+                    config.killstreak_mode = killstreak.name;
                     configs.Upsert(config);
                 }
                 else

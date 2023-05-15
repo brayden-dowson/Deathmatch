@@ -26,6 +26,7 @@ namespace TheRiptide
         [Description("max players should be less than SpawnDimX x SpawnDimY")]
         public int SpawnDimX { get; set; } = 8;
         public int SpawnDimY { get; set; } = 8;
+        public float SpawnProtection { get; set; } = 3.0f;
     }
 
     class Lobby
@@ -214,7 +215,6 @@ namespace TheRiptide
                             BroadcastOverride.ClearLines(BroadcastPriority.Low);
                             BroadcastOverride.UpdateAllDirty();
                         }
-                        player.EffectsManager.ChangeState<CustomPlayerEffects.SpawnProtected>(1, 1);
                         TeleportRandom(player);
                     });
                 }
@@ -357,11 +357,11 @@ namespace TheRiptide
             //BuildBlock(offset + new Vector3(0.0f, 3.0f, 0.0f), new Vector3(16.0f, 0.1f, 16.0f));
             for (int i = 0; i < x + 1; i++)
             {
-                BuildBlock(offset + new Vector3(i * 2.0f, 0.0f, 0.0f), new Vector3(0.1f, 2.125f, 2.0f * y));
+                BuildBlock(offset + new Vector3(i * 2.0f, 0.0f, 0.0f), new Vector3(0.1f, 2.25f, 2.0f * y));
             }
             for (int i = 0; i < y + 1; i++)
             {
-                BuildBlock(offset + new Vector3(0.0f, 0.0f, i * 2.0f), new Vector3(2.0f * x, 2.125f, 0.1f));
+                BuildBlock(offset + new Vector3(0.0f, 0.0f, i * 2.0f), new Vector3(2.0f * x, 2.25f, 0.1f));
             }
             AddLight(offset + new Vector3(x, x + y, y), new Color((float)config.SpawnColorRed / 255.0f, (float)config.SpawnColorGreen / 255.0f, (float)config.SpawnColorBlue / 255.0f), config.SpawnLightIntensity, (x + y) * 2.0f);
         }
@@ -394,8 +394,6 @@ namespace TheRiptide
 
                 if (spawn.in_spawn)
                 {
-                    ServerConsole.AddLog("teleporting player: " + player.Nickname);
-
                     RoomIdentifier surface = RoomIdentifier.AllRoomIdentifiers.Where((r) => r.Zone == FacilityZone.Surface).First();
                     List<Vector3> positions = Teleport.RoomPositions(surface);
                     List<bool> occupied_positions = new List<bool>(positions.Count);
@@ -429,16 +427,25 @@ namespace TheRiptide
                     if (occupied_positions.All((occupied) => occupied))
                         occupied_positions.Add(surface);
 
+                    HashSet<RoomIdentifier> occupied_adjacent_rooms = new HashSet<RoomIdentifier>();
+                    foreach(var o in occupied_rooms)
+                    {
+                        occupied_adjacent_rooms.Add(o);
+                        foreach (var adj in FacilityManager.GetAdjacent(o).Keys)
+                            occupied_adjacent_rooms.Add(adj);
+                    }
+
                     IEnumerable<RoomIdentifier> opened_rooms = Rooms.OpenedRooms;
-                    IEnumerable<RoomIdentifier> available_rooms = opened_rooms.Except(occupied_rooms);
-                    ServerConsole.AddLog("opened rooms: " + opened_rooms.Count() + " available rooms: " + available_rooms.Count());
+                    IEnumerable<RoomIdentifier> available_rooms = opened_rooms.Except(occupied_adjacent_rooms);
+                    if (available_rooms.IsEmpty())
+                        available_rooms = opened_rooms.Except(occupied_rooms);
+                    if (available_rooms.IsEmpty())
+                        available_rooms = opened_rooms;
 
                     System.Random random = new System.Random();
                     RoomIdentifier room = null;
                     if (!available_rooms.IsEmpty())
                         room = available_rooms.ElementAt(random.Next(available_rooms.Count()));
-                    else if(!opened_rooms.IsEmpty())
-                        room = opened_rooms.ElementAt(random.Next(opened_rooms.Count()));
                     if(room != null)
                     {
                         if (room.Zone != FacilityZone.Surface)
@@ -454,12 +461,13 @@ namespace TheRiptide
                         if (Deathmatch.GameStarted)
                         {
                             Statistics.SetPlayerStartTime(player, Time.time);
-                            Killstreaks.Singleton.AddKillstreakEffects(player);
+                            Killstreaks.Singleton.AddKillstreakStartEffects(player);
                         }
                         else
                             ApplyGameNotStartedEffects(player);
                         spawn.in_spawn = false;
                         Tracking.Singleton.PlayerSpawn(player);
+                        player.EffectsManager.ChangeState<CustomPlayerEffects.SpawnProtected>(1, config.SpawnProtection);
                     }
                     else
                     {
