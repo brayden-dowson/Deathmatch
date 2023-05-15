@@ -28,7 +28,7 @@ namespace TheRiptide
             public RoleTypeId role { get; set; } = RoleTypeId.ClassD;
 
             //killstreak
-            public Killstreaks.KillstreakMode killstreak_mode { get; set; } = Killstreaks.KillstreakMode.Standard;
+            public string killstreak_mode { get; set; } = "";
         }
 
         //users collection
@@ -44,7 +44,7 @@ namespace TheRiptide
         public class Loadout
         {
             public long LoadoutId { get; set; }
-            public string killstreak_mode { get; set; } = Killstreaks.KillstreakMode.Standard.ToString();
+            public string killstreak_mode { get; set; } = "";
             public ItemType primary { get; set; } = ItemType.None;
             public uint primary_attachment_code { get; set; } = 0;
             public ItemType secondary { get; set; } = ItemType.None;
@@ -210,7 +210,7 @@ namespace TheRiptide
                             loadout.radio = config.radio;
                             loadout.rage_mode_enabled = config.rage_enabled;
                             spawn.role = config.role;
-                            killstreak.mode = config.killstreak_mode;
+                            killstreak.name = config.killstreak_mode;
                         });
                     }
                 }
@@ -286,7 +286,7 @@ namespace TheRiptide
                     config.radio = loadout.radio;
                     config.rage_enabled = loadout.rage_mode_enabled;
                     config.role = spawn.role;
-                    config.killstreak_mode = killstreak.mode;
+                    config.killstreak_mode = killstreak.name;
                     configs.Upsert(config);
                 }
                 else

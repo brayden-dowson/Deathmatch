@@ -112,6 +112,9 @@ namespace TheRiptide
                 case ItemType.GunLogicer:
                     result = true;
                     break;
+                case ItemType.ParticleDisruptor:
+                    result = true;
+                    break;
             }
             return result;
         }

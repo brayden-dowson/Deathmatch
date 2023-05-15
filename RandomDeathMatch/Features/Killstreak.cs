@@ -1,4 +1,6 @@
 ﻿using InventorySystem.Items;
+using InventorySystem.Items.Firearms;
+using InventorySystem.Items.Firearms.Attachments;
 using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
@@ -13,22 +15,14 @@ using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
-    public class Effect
-    {
-        public string name { get; set; }
-        public byte intensity { get; set; }
-
-        public Effect()
-        {
-        }
-
-        public Effect(string name, byte intensity)
-        {
-            this.name = name;
-            this.intensity = intensity;
-        }
-    }
-
+    //colors https://colorswall.com/palette/171311
+    //#9b5fe0
+    //#16a4d8 
+    //#60dbe8 
+    //#8bd346 
+    //#efdf48 
+    //#f9a52c 
+    //#d64e12 
     public enum InventoryAction { Add, Remove }
     public class ItemReward
     {
@@ -36,10 +30,8 @@ namespace TheRiptide
         public ItemType Item { get; set; }
     }
 
-    public enum EffectAction { Enable, Disable, Change }
     public class EffectReward
     {
-        public EffectAction Action { get; set; } = EffectAction.Change;
         public string Effect { get; set; }
         public byte Intensity { get; set; }
         public byte Duration { get; set; }
@@ -54,13 +46,15 @@ namespace TheRiptide
         public float Proportion { get; set; }
     }
 
-    public enum PlayerAction { Add, Remove, Set, AddTemp}
+    public enum PlayerAction { Add, Remove, Set }
     public enum PlayerStat { HP, AHP, Stamina }
     public class PlayerReward
     {
         public PlayerAction Action { get; set; } = PlayerAction.Add;
         public PlayerStat Stat { get; set; }
         public float Value { get; set; }
+        public float Sustain { get; set; }
+        public bool Persistent { get; set; }
     }
 
     public enum OverflowAction { End, Rollover, Clamp}
@@ -75,28 +69,30 @@ namespace TheRiptide
         public OverflowAction ItemOverflowAction { get; set; }
         public SortedDictionary<int, List<ItemReward>> ItemTable { get; set; }
 
-        public OverflowAction EffectOverflowAction { get; set; }
-        public SortedDictionary<int, List<EffectReward>> EffectTable { get; set; }
-
         public OverflowAction AmmoOverflowAction { get; set; }
         public SortedDictionary<int, List<AmmoReward>> AmmoTable { get; set; }
 
         public OverflowAction PlayerOverflowAction { get; set; }
         public SortedDictionary<int, List<PlayerReward>> PlayerTable { get; set; }
+
+        public OverflowAction EffectOverflowAction { get; set; }
+        public SortedDictionary<int, List<EffectReward>> EffectTable { get; set; }
     }
 
     public class KillstreakConfig
     {
-        Dictionary<string, KillstreakRewardTable> KillstreakTables = new Dictionary<string, KillstreakRewardTable>
+        public string DefaultKillstreak { get; set; } = "Novice";
+
+        public Dictionary<string, KillstreakRewardTable> KillstreakTables { get; set; } = new Dictionary<string, KillstreakRewardTable>
         {
             {
                 "Noob",
                 new KillstreakRewardTable
                 {
                     MenuItem = ItemType.KeycardJanitor,
-                    MenuDescription = "",
+                    MenuDescription = "<color=#bdafe4>[JANITOR]</color> = <b><color=#16a4d8>Noob</color> - spawn with heavy armor and 3x medkits, max killstreak cap 5</b>",
                     LoadoutLock = false,
-                    ColorHex = "#FFFFFF",
+                    ColorHex = "#16a4d8",
 
                     ItemOverflowAction = OverflowAction.End,
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
@@ -106,9 +102,6 @@ namespace TheRiptide
                         { 5, new List<ItemReward>{ new ItemReward {Item = ItemType.GrenadeFlash } } }
                     },
 
-                    EffectOverflowAction = OverflowAction.End,
-                    EffectTable = new SortedDictionary<int, List<EffectReward>>{},
-
                     AmmoOverflowAction = OverflowAction.Rollover,
                     AmmoTable = new SortedDictionary<int, List<AmmoReward>>
                     {
@@ -117,7 +110,10 @@ namespace TheRiptide
                     },
 
                     PlayerOverflowAction = OverflowAction.End,
-                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{}
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{},
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>{}
                 }
             },
             {
@@ -125,9 +121,9 @@ namespace TheRiptide
                 new KillstreakRewardTable
                 {
                     MenuItem = ItemType.KeycardScientist,
-                    MenuDescription = "",
+                    MenuDescription = "<color=#e7d77b>[SCIENTIST]</color> = <b><color=#60dbe8>Novice</color> - spawn with combat armor, medkit and painkillers, max killstreak cap 10</b>",
                     LoadoutLock = false,
-                    ColorHex = "#FFFFFF",
+                    ColorHex = "#60dbe8",
 
                     ItemOverflowAction = OverflowAction.End,
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
@@ -140,9 +136,6 @@ namespace TheRiptide
                         { 10, new List<ItemReward>{ new ItemReward {Item = ItemType.GrenadeHE } } },
                     },
 
-                    EffectOverflowAction = OverflowAction.End,
-                    EffectTable = new SortedDictionary<int, List<EffectReward>>{},
-
                     AmmoOverflowAction = OverflowAction.Rollover,
                     AmmoTable = new SortedDictionary<int, List<AmmoReward>>
                     {
@@ -151,7 +144,10 @@ namespace TheRiptide
                     },
 
                     PlayerOverflowAction = OverflowAction.End,
-                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{}
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{},
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>{}
                 }
             },
             {
@@ -159,9 +155,9 @@ namespace TheRiptide
                 new KillstreakRewardTable
                 {
                     MenuItem = ItemType.KeycardNTFOfficer,
-                    MenuDescription = "",
+                    MenuDescription = "<color=#accfe1>[PRIVATE]</color> = <b><color=#8bd346>Intermediate</color> - spawn with combat armor and painkillers, max killstreak cap 15</b>",
                     LoadoutLock = false,
-                    ColorHex = "#FFFFFF",
+                    ColorHex = "#8bd346",
 
                     ItemOverflowAction = OverflowAction.End,
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
@@ -177,9 +173,6 @@ namespace TheRiptide
                         { 15, new List<ItemReward>{ new ItemReward {Item = ItemType.Painkillers }, new ItemReward { Item = ItemType.ParticleDisruptor } } },
                     },
 
-                    EffectOverflowAction = OverflowAction.End,
-                    EffectTable = new SortedDictionary<int, List<EffectReward>>{},
-
                     AmmoOverflowAction = OverflowAction.Rollover,
                     AmmoTable = new SortedDictionary<int, List<AmmoReward>>
                     {
@@ -188,7 +181,10 @@ namespace TheRiptide
                     },
 
                     PlayerOverflowAction = OverflowAction.End,
-                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{}
+                    PlayerTable = new SortedDictionary<int, List<PlayerReward>>{},
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>{}
                 }
             },
             {
@@ -196,9 +192,9 @@ namespace TheRiptide
                 new KillstreakRewardTable
                 {
                     MenuItem = ItemType.KeycardNTFLieutenant,
-                    MenuDescription = "",
+                    MenuDescription = "<color=#177dde>[SERGEANT]</color> = <b><color=#efdf48>Advanced</color> - spawn with light armor, max killstreak 20+</b>",
                     LoadoutLock = false,
-                    ColorHex = "#FFFFFF",
+                    ColorHex = "#efdf48",
 
                     ItemOverflowAction = OverflowAction.Clamp,
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
@@ -224,14 +220,6 @@ namespace TheRiptide
                         { 18, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP330 },                                       new ItemReward { Item = ItemType.SCP330 },        new ItemReward { Item = ItemType.Adrenaline } } },
                         { 19, new List<ItemReward>{ new ItemReward {Item = ItemType.Medkit },                                       new ItemReward { Item = ItemType.SCP244b } } },
                         { 20, new List<ItemReward>{ new ItemReward {Item = ItemType.SCP500 },                                       new ItemReward { Item = ItemType.SCP330 },        new ItemReward { Item = ItemType.SCP330 },                new ItemReward { Item = ItemType.Adrenaline } } },
-                    },
-
-                    EffectOverflowAction = OverflowAction.End,
-                    EffectTable = new SortedDictionary<int, List<EffectReward>>
-                    {
-                        {7, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
-                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 15 } } },
-                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 } } }
                     },
 
                     AmmoOverflowAction = OverflowAction.Rollover,
@@ -260,6 +248,14 @@ namespace TheRiptide
                         {18, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
                         {19, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 60 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 20 }, new PlayerReward {Stat = PlayerStat.HP, Value = 15} } },
                         {20, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.End,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>
+                    {
+                        {7, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
+                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 15 } } },
+                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 } } }
                     }
                 }
             },
@@ -268,9 +264,9 @@ namespace TheRiptide
                 new KillstreakRewardTable
                 {
                     MenuItem = ItemType.KeycardNTFCommander,
-                    MenuDescription = "",
+                    MenuDescription = "<color=#1b43cb>[CAPTAIN]</color> = <b><color=#f9a52c>Expert</color> - spawn with light armor, max killstreak 25+</b>",
                     LoadoutLock = true,
-                    ColorHex = "#FFFFFF",
+                    ColorHex = "#f9a52c",
 
                     ItemOverflowAction = OverflowAction.Clamp,
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
@@ -300,20 +296,6 @@ namespace TheRiptide
                         { 26, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.Adrenaline },      new ItemReward { Item = ItemType.SCP330 } } },
                     },
 
-                    EffectOverflowAction = OverflowAction.Clamp,
-                    EffectTable = new SortedDictionary<int, List<EffectReward>>
-                    {
-                        {5, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
-                        {10, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 1 } } },
-                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 30 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 2 }, new EffectReward { Effect = "Scp1853", Intensity = 1 } } },
-                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {21, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {22, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {23, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {24, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {25, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 50 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 4 }, new EffectReward { Effect = "Scp1853", Intensity = 3 } } },
-                    },
-
                     AmmoOverflowAction = OverflowAction.Rollover,
                     AmmoTable = new SortedDictionary<int, List<AmmoReward>>
                     {
@@ -345,6 +327,20 @@ namespace TheRiptide
                         {23, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
                         {24, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
                         {25, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 100 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 40 }, new PlayerReward {Stat = PlayerStat.HP, Value = 45} } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.Clamp,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>
+                    {
+                        {5, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
+                        {10, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 1 } } },
+                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 30 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 2 }, new EffectReward { Effect = "Scp1853", Intensity = 1 } } },
+                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {21, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {22, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {23, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {24, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {25, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 50 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 4 }, new EffectReward { Effect = "Scp1853", Intensity = 3 } } },
                     }
                 }
             },
@@ -353,9 +349,9 @@ namespace TheRiptide
                 new KillstreakRewardTable
                 {
                     MenuItem = ItemType.KeycardChaosInsurgency,
-                    MenuDescription = "",
+                    MenuDescription = "<color=#008f1c>[CHAOS]</color> = <b><color=#d64e12>[DATA EXPUNGED]</color></b>",
                     LoadoutLock = true,
-                    ColorHex = "#FFFFFF",
+                    ColorHex = "#d64e12",
 
                     ItemOverflowAction = OverflowAction.Clamp,
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
@@ -376,36 +372,46 @@ namespace TheRiptide
                         { 15, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunCrossvec },    new ItemReward { Item = ItemType.GunE11SR },        new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.SCP268 } } },
                         { 16, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.Jailbird } } },
                         { 17, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
-                        { 18, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP330 } } },
+                        { 18, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunE11SR },       new ItemReward { Item = ItemType.GunAK },           new ItemReward { Item = ItemType.Painkillers },                                     new ItemReward { Item = ItemType.SCP330 } } },
                         { 19, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
                         { 20, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP018 },                                          new ItemReward { Item = ItemType.ParticleDisruptor } } },
-                        { 21, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
+                        { 21, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunAK },          new ItemReward { Item = ItemType.GunLogicer },      new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
                         { 22, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.SCP330 } } },
                         { 23, new List<ItemReward>{ new ItemReward { Item = ItemType.Adrenaline },                                      new ItemReward { Item = ItemType.SCP330 } } },
-                        { 24, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.Jailbird } } },
+                        { 24, new List<ItemReward>{ new ItemReward { Item = ItemType.GunShotgun },                                      new ItemReward { Item = ItemType.SCP500 },          new ItemReward { Item = ItemType.SCP330 },                                          new ItemReward { Item = ItemType.Jailbird } } },
                         { 25, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.ArmorCombat },    new ItemReward { Item = ItemType.ArmorHeavy },      new ItemReward { Item = ItemType.GunShotgun },                                      new ItemReward { Item = ItemType.SCP500 },          new ItemReward { Item = ItemType.Adrenaline },          new ItemReward { Item = ItemType.SCP330 },          new ItemReward { Item = ItemType.SCP244b } } },
                         { 26, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP500 },                                          new ItemReward { Item = ItemType.Adrenaline },      new ItemReward { Item = ItemType.SCP330 } } },
                     },
 
-                    EffectOverflowAction = OverflowAction.Clamp,
-                    EffectTable = new SortedDictionary<int, List<EffectReward>>
-                    {
-                        {5, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
-                        {10, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 1 } } },
-                        {15, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 30 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 2 }, new EffectReward { Effect = "Scp1853", Intensity = 1 } } },
-                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {21, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {22, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {23, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {24, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
-                        {25, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 50 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 4 }, new EffectReward { Effect = "Scp1853", Intensity = 3 } } },
-                    },
-
-                    AmmoOverflowAction = OverflowAction.Rollover,
+                    AmmoOverflowAction = OverflowAction.Clamp,
                     AmmoTable = new SortedDictionary<int, List<AmmoReward>>
                     {
                         {0, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Set, Stat = AmmoStat.Inventory, Proportion = 1.0f } } },
-                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.3f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.3f } } }
+                        {1, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.2f } } },
+                        {2, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.2f } } },
+                        {3, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.2f } } },
+                        {4, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.25f } } },
+                        {5, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.25f } } },
+                        {6, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.25f } } },
+                        {7, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.3f } } },
+                        {8, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.3f } } },
+                        {9, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.3f } } },
+                        {10, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.35f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.35f } } },
+                        {11, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.35f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.35f } } },
+                        {12, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.35f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.35f } } },
+                        {13, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.1f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.1f } } },
+                        {14, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.1f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.1f } } },
+                        {15, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.1f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.1f } } },
+                        {16, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.15f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.15f } } },
+                        {17, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.15f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.15f } } },
+                        {18, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.15f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.15f } } },
+                        {19, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.25f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.25f } } },
+                        {20, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.25f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.25f } } },
+                        {21, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.25f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.25f } } },
+                        {22, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.4f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.4f } } },
+                        {23, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.4f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.4f } } },
+                        {24, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.4f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.4f } } },
+                        {25, new List<AmmoReward>{ new AmmoReward {Action = AmmoAction.Add, Stat = AmmoStat.Inventory, Proportion = 0.5f }, new AmmoReward { Action= AmmoAction.Add, Stat = AmmoStat.Gun, Proportion = 0.5f } } }
                     },
 
                     PlayerOverflowAction = OverflowAction.Clamp,
@@ -432,188 +438,28 @@ namespace TheRiptide
                         {23, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
                         {24, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 80 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 30 }, new PlayerReward {Stat = PlayerStat.HP, Value = 30} } },
                         {25, new List<PlayerReward>{ new PlayerReward {Stat = PlayerStat.Stamina, Value = 100 }, new PlayerReward {Stat = PlayerStat.AHP, Value = 40 }, new PlayerReward {Stat = PlayerStat.HP, Value = 45} } },
+                    },
+
+                    EffectOverflowAction = OverflowAction.Clamp,
+                    EffectTable = new SortedDictionary<int, List<EffectReward>>
+                    {
+                        {0, new List<EffectReward>{ new EffectReward {Effect ="Hemorrhage", Intensity = 1 }, new EffectReward { Effect = "Burned", Intensity = 1}, new EffectReward { Effect = "Exhasted", Intensity = 1 },new EffectReward { Effect = "Disabled", Intensity = 1}, new EffectReward { Effect = "Bleeding", Intensity = 1} } },
+                        {3, new List<EffectReward>{ new EffectReward {Effect = "Bleeding", Intensity = 0 } } },
+                        {5, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 10 } } },
+                        {6, new List<EffectReward>{ new EffectReward {Effect = "Disabled", Intensity = 0 } } },
+                        {9, new List<EffectReward>{ new EffectReward {Effect = "Exhausted", Intensity = 0 } } },
+                        {10, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 20 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 1 } } },
+                        {12, new List<EffectReward>{ new EffectReward {Effect = "Burned", Intensity = 0 } } },
+                        {15, new List<EffectReward>{ new EffectReward {Effect = "Heomorrhage", Intensity = 0 }, new EffectReward {Effect = "MovementBoost", Intensity = 30 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 2 }, new EffectReward { Effect = "Scp1853", Intensity = 1 } } },
+                        {20, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {21, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {22, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {23, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {24, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 40 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 3 }, new EffectReward { Effect = "Scp1853", Intensity = 2 } } },
+                        {25, new List<EffectReward>{ new EffectReward {Effect = "MovementBoost", Intensity = 50 }, new EffectReward { Effect = "BodyshotReduction", Intensity = 4 }, new EffectReward { Effect = "Scp1853", Intensity = 3 } } },
                     }
                 }
             }
-        };
-    }
-
-    public class KillstreakConfig
-    {
-        public List<List<ItemType>> EasyKillstreakTable { get; set; } = new List<List<ItemType>>
-        {
-            new List<ItemType>{ItemType.Painkillers},                                                                               //1
-            new List<ItemType>{},                                                                                                   //2
-            new List<ItemType>{ItemType.Medkit},                                                                                    //3
-            new List<ItemType>{},                                                                                                   //4
-            new List<ItemType>{ItemType.GrenadeFlash},                                                                              //5
-            new List<ItemType>{},                                                                                                   //6
-            new List<ItemType>{ItemType.Medkit},                                                                                    //7
-            new List<ItemType>{},                                                                                                   //8
-            new List<ItemType>{ItemType.Painkillers},                                                                               //9
-            new List<ItemType>{ItemType.GrenadeHE},                                                                                 //10
-            new List<ItemType>{ItemType.Medkit},                                                                                    //11
-            new List<ItemType>{},                                                                                                   //12
-            new List<ItemType>{ItemType.Painkillers},                                                                               //13
-            new List<ItemType>{},                                                                                                   //14
-            new List<ItemType>{ItemType.Adrenaline},                                                                                //15
-            new List<ItemType>{},                                                                                                   //16
-            new List<ItemType>{ItemType.Painkillers},                                                                               //17
-            new List<ItemType>{},                                                                                                   //18
-            new List<ItemType>{ItemType.Medkit},                                                                                    //19
-            new List<ItemType>{ItemType.GrenadeHE},                                                                                 //20
-            new List<ItemType>{ItemType.Painkillers},                                                                               //21
-            new List<ItemType>{},                                                                                                   //22
-            new List<ItemType>{ItemType.Medkit},                                                                                    //23
-            new List<ItemType>{},                                                                                                   //24
-            new List<ItemType>{ItemType.GrenadeFlash }
-        };
-
-        public List<List<ItemType>> StandardKillstreakTable { get; set; } = new List<List<ItemType>>
-        {
-            new List<ItemType>{                         ItemType.Painkillers},                                                                              //1
-            new List<ItemType>{                         ItemType.SCP330},                                                                                   //2
-            new List<ItemType>{                         ItemType.Medkit},                                                                                   //3
-            new List<ItemType>{                         ItemType.SCP330},                                                                                   //4
-            new List<ItemType>{ItemType.GrenadeFlash,   ItemType.Adrenaline},                                                                               //5
-            new List<ItemType>{                         ItemType.SCP330},                                                                                   //6
-            new List<ItemType>{                         ItemType.Medkit},                                                                                   //7
-            new List<ItemType>{                         ItemType.Adrenaline},                                                                               //8
-            new List<ItemType>{ItemType.GrenadeHE,      ItemType.Painkillers},                                                                              //9
-            new List<ItemType>{                         ItemType.SCP330,         ItemType.SCP330},                                                          //10
-            new List<ItemType>{                         ItemType.Adrenaline},                                                                               //11
-            new List<ItemType>{                         ItemType.SCP330,         ItemType.SCP330},                                                          //12
-            new List<ItemType>{ItemType.SCP1853,        ItemType.Painkillers},                                                                              //13
-            new List<ItemType>{                         ItemType.Adrenaline},                                                                               //14
-            new List<ItemType>{                         ItemType.SCP500},                                                                                   //15
-            new List<ItemType>{                         ItemType.SCP330,         ItemType.SCP330},                                                          //16
-            new List<ItemType>{ItemType.SCP207,         ItemType.Painkillers,    ItemType.Adrenaline},                                                      //17
-            new List<ItemType>{                         ItemType.SCP330,         ItemType.SCP330},                                                          //18
-            new List<ItemType>{                         ItemType.SCP500},                                                                                   //19
-            new List<ItemType>{                         ItemType.SCP330,         ItemType.SCP330,       ItemType.SCP330,        ItemType.Adrenaline},       //20
-            new List<ItemType>{ItemType.SCP018,         ItemType.Painkillers},                                                                              //21
-            new List<ItemType>{                         ItemType.SCP330,         ItemType.SCP330,       ItemType.SCP330},                                   //22
-            new List<ItemType>{                         ItemType.SCP500,         ItemType.Adrenaline},                                                      //23
-            new List<ItemType>{                         ItemType.SCP330,         ItemType.SCP330,       ItemType.SCP330},                                   //24
-            new List<ItemType>{ItemType.SCP268,         ItemType.Painkillers }                                                                              //25
-        };
-
-        public List<List<ItemType>> ExpertKillstreakTable { get; set; } = new List<List<ItemType>>
-        {
-            new List<ItemType>{                                                         ItemType.Painkillers},                                              //1    
-            new List<ItemType>{},                                                                                                                           //2    
-            new List<ItemType>{                                                         ItemType.Painkillers},                                              //3    
-            new List<ItemType>{},                                                                                                                           //4    
-            new List<ItemType>{ItemType.SCP207,                                         ItemType.SCP330},                                                   //5
-            new List<ItemType>{                                                         ItemType.Adrenaline},                                               //6    
-            new List<ItemType>{                                                         ItemType.SCP330},                                                   //7    
-            new List<ItemType>{                         ItemType.Jailbird,              ItemType.Painkillers},                                              //8    
-            new List<ItemType>{                                                         ItemType.SCP330},                                                   //9    
-            new List<ItemType>{ItemType.SCP244a,                                        ItemType.Adrenaline},                                               //10    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.SCP330,        ItemType.SCP330},   //11   
-            new List<ItemType>{                         ItemType.GunCom45,              ItemType.Painkillers,   ItemType.Adrenaline},                       //12    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.SCP330,        ItemType.SCP330},   //13    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.Adrenaline},                       //14    
-            new List<ItemType>{ItemType.SCP268,                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //15    
-            new List<ItemType>{                         ItemType.ParticleDisruptor,     ItemType.Painkillers,   ItemType.Adrenaline},                       //16    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //17    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.Adrenaline},                       //18    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //19     
-            new List<ItemType>{ItemType.SCP018,         ItemType.Jailbird,              ItemType.Painkillers,   ItemType.Adrenaline},                       //20
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //21    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.Adrenaline},                       //22    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //23    
-            new List<ItemType>{                         ItemType.ParticleDisruptor,     ItemType.SCP500,        ItemType.Adrenaline},                       //24    
-            new List<ItemType>{ItemType.ArmorHeavy,                                     ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330 }   //25    
-        };
-
-        public List<List<ItemType>> RageKillstreakTable { get; set; } = new List<List<ItemType>>
-        {
-            new List<ItemType>{                                                         ItemType.Painkillers},                                              //1    
-            new List<ItemType>{},                                                                                                                           //2    
-            new List<ItemType>{                                                         ItemType.Painkillers},                                              //3    
-            new List<ItemType>{},                                                                                                                           //4    
-            new List<ItemType>{                                                         ItemType.Adrenaline},                                               //5
-            new List<ItemType>{},                                                                                                                           //6    
-            new List<ItemType>{                                                         ItemType.Painkillers},                                              //7    
-            new List<ItemType>{                         ItemType.Jailbird},                                                                                 //8    
-            new List<ItemType>{                                                         ItemType.Painkillers},                                              //9    
-            new List<ItemType>{ItemType.SCP244a,                                        ItemType.Adrenaline},                                               //10    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.SCP330},                           //11   
-            new List<ItemType>{                         ItemType.GunCom45,              ItemType.Painkillers,   ItemType.Adrenaline},                       //12    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.SCP330},                           //13    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.Adrenaline},                       //14    
-            new List<ItemType>{ItemType.SCP268,                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //15    
-            new List<ItemType>{                         ItemType.ParticleDisruptor,     ItemType.Painkillers,   ItemType.Adrenaline},                       //16    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //17    
-            new List<ItemType>{                                                         ItemType.Painkillers,   ItemType.Adrenaline},                       //18    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //19     
-            new List<ItemType>{ItemType.SCP018,         ItemType.Jailbird,              ItemType.Painkillers,   ItemType.Adrenaline},                       //20
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //21    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.Adrenaline},                       //22    
-            new List<ItemType>{                                                         ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330},   //23    
-            new List<ItemType>{                         ItemType.ParticleDisruptor,     ItemType.SCP500,        ItemType.Adrenaline},                       //24    
-            new List<ItemType>{ItemType.SCP244b,                                        ItemType.SCP500,        ItemType.SCP330,        ItemType.SCP330 }   //25    
-        };
-
-        public List<List<ItemType>> RageKillstreakLoadout { get; set; } = new List<List<ItemType>>
-        {
-            new List<ItemType>{                         ItemType.GunCOM15},                                                                                 //0
-            new List<ItemType>{                         ItemType.GunCOM15},                                                                                 //1
-            new List<ItemType>{                         ItemType.GunCOM15},                                                                                 //2
-            new List<ItemType>{                         ItemType.GunCOM18},                                                                                 //3
-            new List<ItemType>{                         ItemType.GunCOM18},                                                                                 //4
-            new List<ItemType>{ItemType.ArmorLight,     ItemType.GunCOM18},                                                                                 //5
-            new List<ItemType>{ItemType.ArmorLight,     ItemType.GunRevolver},                                                                              //6
-            new List<ItemType>{ItemType.ArmorLight,     ItemType.GunRevolver},                                                                              //7
-            new List<ItemType>{ItemType.ArmorLight,     ItemType.GunRevolver},                                                                              //8
-            new List<ItemType>{ItemType.ArmorLight,     ItemType.GunFSP9},                                                                                  //9
-            new List<ItemType>{ItemType.ArmorCombat,    ItemType.GunFSP9},                                                                                  //10
-            new List<ItemType>{ItemType.ArmorCombat,    ItemType.GunFSP9},                                                                                  //11
-            new List<ItemType>{ItemType.ArmorCombat,    ItemType.GunCrossvec},                                                                              //12
-            new List<ItemType>{ItemType.ArmorCombat,    ItemType.GunCrossvec},                                                                              //13
-            new List<ItemType>{ItemType.ArmorCombat,    ItemType.GunCrossvec},                                                                              //14
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunE11SR},                                                                                 //15
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunE11SR},                                                                                 //16
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunE11SR},                                                                                 //17
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunAK},                                                                                    //18
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunAK},                                                                                    //19
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunAK},                                                                                    //20
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunShotgun},                                                                               //21
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunShotgun},                                                                               //22
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunShotgun},                                                                               //23
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunLogicer,        ItemType.GunShotgun},                                                   //24
-            new List<ItemType>{ItemType.ArmorHeavy,     ItemType.GunLogicer,        ItemType.GunShotgun }                                                   //25
-        };
-
-        public List<List<Effect>> RageKillstreakStatusEffects { get; set; } = new List<List<Effect>>
-        {
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("Disabled", 1),          new Effect("Bleeding", 1)},                                                             //0
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("Disabled", 1),          new Effect("Bleeding", 1)},                                                             //1
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("Disabled", 1),          new Effect("Bleeding", 1)},                                                             //2
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("Disabled", 1)},                                                                                                 //3
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("Disabled", 1)},                                                                                                 //4
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("Disabled", 1),          new Effect("Scp1853", 1)},                                                              //5
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("Scp1853", 1)},                                                                                                  //6
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("MovementBoost", 4),     new Effect("Scp1853", 1)},                                                              //7
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("Exhausted", 1),         new Effect("MovementBoost", 8),     new Effect("Scp1853", 1),                           new Effect("BodyshotReduction", 1)},//8
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("MovementBoost", 12),     new Effect("Scp1853", 1),           new Effect("BodyshotReduction", 1)},                                                    //9
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("MovementBoost", 16),    new Effect("Scp1853", 2),           new Effect("BodyshotReduction", 1)},                                                    //10
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("Burned", 1),            new Effect("MovementBoost", 20),    new Effect("Scp1853", 2),           new Effect("BodyshotReduction", 1)},                                                    //11
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("MovementBoost", 24),    new Effect("Scp1853", 2),           new Effect("BodyshotReduction", 2)},                                                                                        //12
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("MovementBoost", 28),    new Effect("Scp1853", 2),           new Effect("BodyshotReduction", 2)},                                                                                        //13
-            new List<Effect>{new Effect("Hemorrhage", 1),       new Effect("MovementBoost", 32),    new Effect("Scp1853", 2),           new Effect("BodyshotReduction", 2)},                                                                                        //14
-            new List<Effect>{new Effect("MovementBoost", 36),   new Effect("Scp1853", 3),           new Effect("BodyshotReduction", 2), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 1.0f)))) },                                            //15
-            new List<Effect>{new Effect("MovementBoost", 40),   new Effect("Scp1853", 3),           new Effect("BodyshotReduction", 3), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 2.0f)))) },                                            //16
-            new List<Effect>{new Effect("MovementBoost", 44),   new Effect("Scp1853", 3),           new Effect("BodyshotReduction", 3), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 3.0f)))) },                                            //17
-            new List<Effect>{new Effect("MovementBoost", 48),   new Effect("Scp1853", 3),           new Effect("BodyshotReduction", 3), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 4.0f)))) },                                            //18
-            new List<Effect>{new Effect("MovementBoost", 52),   new Effect("Scp1853", 3),           new Effect("BodyshotReduction", 3), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 5.0f)))) },                                            //19
-            new List<Effect>{new Effect("MovementBoost", 56),   new Effect("Scp1853", 4),           new Effect("BodyshotReduction", 4), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 6.0f)))) },                                            //20
-            new List<Effect>{new Effect("MovementBoost", 60),   new Effect("Scp1853", 4),           new Effect("BodyshotReduction", 4), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 7.0f)))) },                                            //21
-            new List<Effect>{new Effect("MovementBoost", 64),   new Effect("Scp1853", 4),           new Effect("BodyshotReduction", 4), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 8.0f)))) },                                            //22
-            new List<Effect>{new Effect("MovementBoost", 68),   new Effect("Scp1853", 4),           new Effect("BodyshotReduction", 4), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 9.0f)))) },                                            //23
-            new List<Effect>{new Effect("MovementBoost", 72),   new Effect("Scp1853", 4),           new Effect("BodyshotReduction", 4), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 10.0f)))) },                                           //24
-            new List<Effect>{new Effect("MovementBoost", 76),   new Effect("Scp1853", 255),         new Effect("BodyshotReduction", 4), new Effect("DamageReduction", (byte)(200.0f * (1.0f - math.pow(0.9f, 11.0f)))) }                                            //25
         };
     }
 
@@ -623,24 +469,10 @@ namespace TheRiptide
 
         public KillstreakConfig config;
 
-        public enum KillstreakMode { Easy, Standard, Expert, Rage }
         public class Killstreak
         {
-            public KillstreakMode mode = KillstreakMode.Standard;
+            public string name = "";
             public int count = 0;
-        }
-
-        struct EffectCompare : IEqualityComparer<Effect>
-        {
-            public bool Equals(Effect x, Effect y)
-            {
-                return x.name == y.name;
-            }
-
-            public int GetHashCode(Effect obj)
-            {
-                return obj.name.GetHashCode();
-            }
         }
 
         public static Dictionary<int, Killstreak> player_killstreak = new Dictionary<int, Killstreak>();
@@ -653,13 +485,15 @@ namespace TheRiptide
         public void Init(KillstreakConfig config)
         {
             this.config = config;
+            if (!config.KillstreakTables.ContainsKey(config.DefaultKillstreak))
+                throw new System.Exception("Killstreak Config Error: KillstreakTables must contain the DefaultKillstreak");
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
         void OnPlayerJoined(Player player)
         {
             if (!player_killstreak.ContainsKey(player.PlayerId))
-                player_killstreak.Add(player.PlayerId, new Killstreak());
+                player_killstreak.Add(player.PlayerId, new Killstreak { name = config.DefaultKillstreak });
         }
 
         [PluginEvent(ServerEventType.PlayerLeft)]
@@ -673,91 +507,74 @@ namespace TheRiptide
         }
 
         [PluginEvent(ServerEventType.PlayerDeath)]
-        void OnPlayerDeath(Player target, Player killer, DamageHandlerBase damage)
+        void OnPlayerDeath(Player victim, Player killer, DamageHandlerBase damage)
         {
             if (killer != null && player_killstreak.ContainsKey(killer.PlayerId))
             {
                 Killstreak killstreak = player_killstreak[killer.PlayerId];
-                if (killstreak.mode == KillstreakMode.Rage)
-                {
-                    List<ItemType> previous_loadout = config.RageKillstreakLoadout[math.min(config.RageKillstreakLoadout.Count, killstreak.count)];
-                    List<ItemType> new_loadout = config.RageKillstreakLoadout[math.min(config.RageKillstreakLoadout.Count, killstreak.count + 1)];
-                    IEnumerable<ItemType> remove_items = previous_loadout.Except(new_loadout);
-                    IEnumerable<ItemType> add_items = new_loadout.Except(previous_loadout);
-
-                    foreach (ItemType item in remove_items)
-                    {
-                        IEnumerable<ItemBase> matches = killer.Items.Where((i) => i.ItemTypeId == item);
-                        killer.RemoveItem(new Item(matches.First()));
-                    }
-                    foreach (ItemType item in add_items)
-                    {
-                        if (IsGun(item))
-                        {
-                            if (killer.IsInventoryFull)
-                                if (!RemoveItem(killer, ItemType.Painkillers))
-                                    if (!RemoveItem(killer, ItemType.Medkit))
-                                        if (!RemoveItem(killer, ItemType.Adrenaline))
-                                            if (!RemoveItem(killer, ItemType.SCP500))
-                                                if (!RemoveItem(killer, ItemType.SCP244a))
-                                                    if (!RemoveItem(killer, ItemType.SCP244b))
-                                                        if (!RemoveItem(killer, ItemType.SCP018))
-                                                            RemoveItem(killer, ItemType.GunShotgun);
-                            AddFirearm(killer, item, true);
-                        }
-                        else
-                            killer.AddItem(item);
-                    }
-
-                    List<Effect> previous_effects = config.RageKillstreakStatusEffects[math.min(config.RageKillstreakStatusEffects.Count, killstreak.count)];
-                    List<Effect> new_effects = config.RageKillstreakStatusEffects[math.min(config.RageKillstreakStatusEffects.Count, killstreak.count + 1)];
-                    IEnumerable<Effect> remove_effects = previous_effects.Except(new_effects, new EffectCompare());
-                    IEnumerable<Effect> add_effects = new_effects.Except(previous_effects);
-
-                    foreach (Effect effect in remove_effects)
-                    {
-                        killer.EffectsManager.ChangeState(effect.name, 0);
-                    }
-
-                    foreach (Effect effect in add_effects)
-                    {
-                        killer.EffectsManager.ChangeState(effect.name, effect.intensity);
-                    }
-                }
-
-                List<ItemType> reward_items = new List<ItemType>();
-                switch (killstreak.mode)
-                {
-                    case KillstreakMode.Easy:
-                        reward_items = config.EasyKillstreakTable[killstreak.count % config.EasyKillstreakTable.Count];
-                        break;
-                    case KillstreakMode.Standard:
-                        reward_items = config.StandardKillstreakTable[killstreak.count % config.StandardKillstreakTable.Count];
-                        break;
-                    case KillstreakMode.Expert:
-                        reward_items = config.ExpertKillstreakTable[killstreak.count % config.ExpertKillstreakTable.Count];
-                        break;
-                    case KillstreakMode.Rage:
-                        reward_items = config.RageKillstreakTable[killstreak.count % config.RageKillstreakTable.Count];
-                        break;
-                    default:
-                        reward_items = config.StandardKillstreakTable[killstreak.count % config.StandardKillstreakTable.Count];
-                        break;
-                }
-
-                AddItems(killer, reward_items);
                 killstreak.count++;
+                KillstreakRewardTable table = config.KillstreakTables[killstreak.name];
+
+                if (!table.ItemTable.IsEmpty())
+                {
+                    int item_index = CalculateIndex(killstreak.count, table.ItemTable.Last().Key, table.ItemOverflowAction);
+                    if (table.ItemTable.ContainsKey(item_index))
+                        foreach (ItemReward reward in table.ItemTable[item_index])
+                            GrantItemReward(killer, reward);
+                }
+
+                if(!table.AmmoTable.IsEmpty())
+                {
+                    int ammo_index = CalculateIndex(killstreak.count, table.AmmoTable.Last().Key, table.AmmoOverflowAction);
+                    if(table.AmmoTable.ContainsKey(ammo_index))
+                    {
+                        Firearm firearm = killer.CurrentItem as Firearm;
+                        if (firearm != null && damage is FirearmDamageHandler fdh && firearm.ItemTypeId == fdh.WeaponType && !(firearm is ParticleDisruptor))
+                            foreach (AmmoReward reward in table.AmmoTable[ammo_index])
+                                GrantAmmoReward(killer, firearm, reward);
+                    }
+                }
+
+                if(!table.PlayerTable.IsEmpty())
+                {
+                    int player_index = CalculateIndex(killstreak.count, table.PlayerTable.Last().Key, table.PlayerOverflowAction);
+                    if(table.PlayerTable.ContainsKey(player_index))
+                        foreach (PlayerReward reward in table.PlayerTable[player_index])
+                            GrantPlayerReward(killer, reward);
+                }
+
+                if (!table.EffectTable.IsEmpty())
+                {
+                    int effect_index = CalculateIndex(killstreak.count, table.EffectTable.Last().Key, table.EffectOverflowAction);
+                    if (table.EffectTable.ContainsKey(effect_index))
+                        foreach (EffectReward reward in table.EffectTable[effect_index])
+                            GrantEffectReward(killer, reward);
+                }
+
+                string killstreak_name = "<color=" + table.ColorHex + ">" + killstreak.name + "</color>";
                 if (killstreak.count % 5 == 0)
-                    BroadcastOverride.BroadcastLine(1, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreak.Replace("{name}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()));
+                    BroadcastOverride.BroadcastLine(1, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreak.Replace("{killstreak}", killstreak_name).Replace("{name}", killer.Nickname).Replace("{count}", killstreak.count.ToString()));
                 else
-                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, translation.PrivateKillstreak.Replace("{streak}", killstreak.count.ToString()));
+                    BroadcastOverride.BroadcastLine(killer, 2, 3, BroadcastPriority.Low, translation.PrivateKillstreak.Replace("{count}", killstreak.count.ToString()));
             }
-            if (player_killstreak.ContainsKey(target.PlayerId))
+            if (player_killstreak.ContainsKey(victim.PlayerId))
             {
-                Killstreak killstreak = player_killstreak[target.PlayerId];
-                if (killstreak.count >= 5)
-                    BroadcastOverride.BroadcastLine(2, killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{killer}", killer.Nickname).Replace("{streak}", killstreak.count.ToString()).Replace("{victim}",target.Nickname));
-                killstreak.count = 0;
+                Killstreak victim_killstreak = player_killstreak[victim.PlayerId];
+                string victim_killstreak_name = "<color=" + config.KillstreakTables[victim_killstreak.name].ColorHex + ">" + victim_killstreak.name + "</color>";
+
+                if (victim_killstreak.count >= 5)
+                {
+                    string killer_killstreak_name = "";
+                    if (killer == null)
+                        killer_killstreak_name = victim_killstreak_name;
+                    else
+                    {
+                        Killstreak killer_killstreak = player_killstreak[killer.PlayerId];
+                        killer_killstreak_name = "<color=" + config.KillstreakTables[killer_killstreak.name].ColorHex + ">" + killer_killstreak.name + "</color>";
+                    }
+                    BroadcastOverride.BroadcastLine(2, victim_killstreak.count, BroadcastPriority.Medium, translation.GlobalKillstreakEnded.Replace("{victim_killstreak}", victim_killstreak_name).Replace("{killer_killstreak}", killer_killstreak_name).Replace("{killer}", killer.Nickname).Replace("{count}", victim_killstreak.count.ToString()).Replace("{victim}", victim.Nickname));
+                }
+                victim_killstreak.count = 0;
             }
         }
 
@@ -766,47 +583,39 @@ namespace TheRiptide
             return player_killstreak[player.PlayerId];
         }
 
-        public static string KillstreakColorCode(Player player)
+        public string KillstreakColorCode(Player player)
         {
-            switch (player_killstreak[player.PlayerId].mode)
-            {
-                case KillstreakMode.Easy:
-                    return "<color=#5900ff>";
-                case KillstreakMode.Standard:
-                    return "<color=#43BFF0>";
-                case KillstreakMode.Expert:
-                    return "<color=#36a832>";
-                case KillstreakMode.Rage:
-                    return "<color=#FF0000>";
-            }
-            return "<color=#43BFF0>";
+            Killstreak killstreak = player_killstreak[player.PlayerId];
+            return config.KillstreakTables[killstreak.name].ColorHex;
         }
 
-        public static bool IsGunGame(Player player)
+        public bool IsLoadoutLocked(Player player)
         {
-            return player_killstreak[player.PlayerId].mode == KillstreakMode.Rage;
+            Killstreak killstreak = player_killstreak[player.PlayerId];
+            return config.KillstreakTables[killstreak.name].LoadoutLock;
         }
 
         public void AddKillstreakStartItems(Player player)
         {
             Killstreak killstreak = player_killstreak[player.PlayerId];
+            KillstreakRewardTable table = config.KillstreakTables[killstreak.name];
 
-            if (killstreak.mode != KillstreakMode.Rage)
+            if (!table.ItemTable.IsEmpty())
             {
-                if (killstreak.mode == KillstreakMode.Easy)
-                    AddItems(player, new List<ItemType>() { ItemType.Painkillers, ItemType.Medkit, ItemType.Medkit, ItemType.Medkit });
-                else if (killstreak.mode == KillstreakMode.Standard)
-                    AddItems(player, new List<ItemType>() { ItemType.Painkillers });
+                int item_index = CalculateIndex(killstreak.count, table.ItemTable.Last().Key, table.ItemOverflowAction);
+                if (table.ItemTable.ContainsKey(item_index))
+                    foreach (ItemReward reward in table.ItemTable[item_index])
+                        GrantItemReward(player, reward);
             }
-            else
+
+            if (!table.AmmoTable.IsEmpty())
             {
-                foreach (ItemType item in config.RageKillstreakLoadout[0])
-                {
-                    if (IsGun(item))
-                        AddFirearm(player, item, true);
-                    else
-                        player.AddItem(item);
-                }
+                int ammo_index = CalculateIndex(killstreak.count, table.AmmoTable.Last().Key, table.AmmoOverflowAction);
+                if (table.AmmoTable.ContainsKey(ammo_index))
+                    foreach (ItemBase item in player.ReferenceHub.inventory.UserInventory.Items.Values)
+                        if (item is Firearm firearm && !(firearm is ParticleDisruptor))
+                            foreach (AmmoReward reward in table.AmmoTable[ammo_index])
+                                GrantAmmoReward(player, firearm, reward);
             }
         }
 
@@ -814,13 +623,232 @@ namespace TheRiptide
         {
             Killstreak killstreak = player_killstreak[player.PlayerId];
             player.EffectsManager.DisableAllEffects();
+            KillstreakRewardTable table = config.KillstreakTables[killstreak.name];
 
-            if (killstreak.mode == KillstreakMode.Rage)
+            if (!table.PlayerTable.IsEmpty())
             {
-                foreach (Effect effect in config.RageKillstreakStatusEffects[0])
+                int player_index = CalculateIndex(killstreak.count, table.PlayerTable.Last().Key, table.PlayerOverflowAction);
+                if (table.PlayerTable.ContainsKey(player_index))
+                    foreach (PlayerReward reward in table.PlayerTable[player_index])
+                        GrantPlayerReward(player, reward);
+            }
+
+            if (!table.EffectTable.IsEmpty())
+            {
+                int effect_index = CalculateIndex(killstreak.count, table.EffectTable.Last().Key, table.EffectOverflowAction);
+                if (table.EffectTable.ContainsKey(effect_index))
+                    foreach (EffectReward reward in table.EffectTable[effect_index])
+                        GrantEffectReward(player, reward);
+            }
+        }
+
+        public ItemType ArmorType(Player player)
+        {
+            Killstreak killstreak = player_killstreak[player.PlayerId];
+            KillstreakRewardTable table = config.KillstreakTables[killstreak.name];
+            if(table.ItemTable.ContainsKey(0))
+            {
+                if (table.ItemTable[0].Any(x => x.Item == ItemType.ArmorLight))
+                    return ItemType.ArmorLight;
+                else if (table.ItemTable[0].Any(x => x.Item == ItemType.ArmorCombat))
+                    return ItemType.ArmorCombat;
+                else if (table.ItemTable[0].Any(x => x.Item == ItemType.ArmorHeavy))
+                    return ItemType.ArmorHeavy;
+            }
+            return ItemType.None;
+        }
+
+        private void GrantPlayerReward(Player player, PlayerReward reward)
+        {
+            switch (reward.Action)
+            {
+                case PlayerAction.Add:
+                    switch (reward.Stat)
+                    {
+                        case PlayerStat.HP:
+                            player.Health = UnityEngine.Mathf.Clamp(player.Health + reward.Value, 0.0f, player.MaxHealth);
+                            break;
+                        case PlayerStat.AHP:
+                            AhpStat ahp = null;
+                            if (player.ReferenceHub.playerStats.TryGetModule(out ahp))
+                                ahp.ServerAddProcess(reward.Value, AhpStat.DefaultMax, AhpStat.DefaultDecay, AhpStat.DefaultEfficacy, reward.Sustain, reward.Persistent);
+                            break;
+                        case PlayerStat.Stamina:
+                            StaminaStat s = null;
+                            if (player.ReferenceHub.playerStats.TryGetModule(out s))
+                                s.ModifyAmount(UnityEngine.Mathf.Clamp(s.CurValue + reward.Value, s.MinValue, s.MaxValue));
+                            break;
+                    }
+                    break;
+                case PlayerAction.Remove:
+                    switch (reward.Stat)
+                    {
+                        case PlayerStat.HP:
+                            player.Health = UnityEngine.Mathf.Clamp(player.Health - reward.Value, 0.0f, player.MaxHealth);
+                            break;
+                        case PlayerStat.AHP:
+                            AhpStat ahp = null;
+                            if (player.ReferenceHub.playerStats.TryGetModule(out ahp))
+                            {
+                                float remaining = reward.Value;
+                                while (!ahp._activeProcesses.IsEmpty())
+                                {
+                                    AhpStat.AhpProcess process = ahp._activeProcesses.Last();
+                                    process.CurrentAmount -= remaining;
+                                    if (process.CurrentAmount <= 0)
+                                    {
+                                        remaining = -process.CurrentAmount;
+                                        ahp.ServerKillProcess(process.KillCode);
+                                    }
+                                    else
+                                    {
+                                        //ahp.ServerUpdateProcesses();
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        case PlayerStat.Stamina:
+                            StaminaStat s = null;
+                            if (player.ReferenceHub.playerStats.TryGetModule(out s))
+                                s.ModifyAmount(UnityEngine.Mathf.Clamp(s.CurValue - reward.Value, s.MinValue, s.MaxValue));
+                            break;
+                    }
+                    break;
+                case PlayerAction.Set:
+                    switch (reward.Stat)
+                    {
+                        case PlayerStat.HP:
+                            player.Health = UnityEngine.Mathf.Clamp(reward.Value, 0.0f, player.MaxHealth);
+                            break;
+                        case PlayerStat.AHP:
+                            AhpStat ahp = null;
+                            if (player.ReferenceHub.playerStats.TryGetModule(out ahp))
+                            {
+                                while (!ahp._activeProcesses.IsEmpty())
+                                    ahp.ServerKillProcess(ahp._activeProcesses.Last().KillCode);
+                                ahp.ServerAddProcess(reward.Value, AhpStat.DefaultMax, AhpStat.DefaultDecay, AhpStat.DefaultEfficacy, reward.Sustain, reward.Persistent);
+                                //ahp.ServerUpdateProcesses();
+                            }
+                            break;
+                        case PlayerStat.Stamina:
+                            StaminaStat s = null;
+                            if (player.ReferenceHub.playerStats.TryGetModule(out s))
+                                s.ModifyAmount(UnityEngine.Mathf.Clamp(reward.Value, s.MinValue, s.MaxValue));
+                            break;
+                    }
+                    break;
+            }
+        }
+
+        private void GrantAmmoReward(Player player, Firearm firearm, AmmoReward reward)
+        {
+            switch (reward.Action)
+            {
+                case AmmoAction.Add:
+                    if (reward.Stat == AmmoStat.Inventory)
+                        GrantAmmo(player, firearm.AmmoType, reward.Proportion);
+                    else if (reward.Stat == AmmoStat.Gun)
+                        GrantWeaponAmmo(firearm, reward.Proportion);
+                    break;
+                case AmmoAction.Remove:
+                    if (reward.Stat == AmmoStat.Inventory)
+                        GrantAmmo(player, firearm.AmmoType, -reward.Proportion);
+                    else if (reward.Stat == AmmoStat.Gun)
+                        GrantWeaponAmmo(firearm, -reward.Proportion);
+                    break;
+                case AmmoAction.Set:
+                    if (reward.Stat == AmmoStat.Inventory)
+                        player.SetAmmo(firearm.AmmoType, (ushort)UnityEngine.Mathf.Clamp(player.GetAmmoLimit(firearm.AmmoType) * reward.Proportion, 0.0f, player.GetAmmoLimit(firearm.AmmoType)));
+                    else if (reward.Stat == AmmoStat.Gun)
+                        firearm.Status = new FirearmStatus((byte)UnityEngine.Mathf.Clamp(firearm.AmmoManagerModule.MaxAmmo * reward.Proportion, 0.0f, firearm.AmmoManagerModule.MaxAmmo), firearm.Status.Flags, firearm.Status.Attachments);
+                    break;
+            }
+        }
+
+        private void GrantEffectReward(Player player, EffectReward reward)
+        {
+            player.EffectsManager.ChangeState(reward.Effect, reward.Intensity, reward.Duration);
+        }
+
+        private void GrantItemReward(Player player, ItemReward reward)
+        {
+            switch (reward.Action)
+            {
+                case InventoryAction.Add:
+                    GrantItem(player, reward.Item);
+                    break;
+                case InventoryAction.Remove:
+                    RemoveItem(player, reward.Item);
+                    break;
+            }
+        }
+
+        private int CalculateIndex(int index, int max, OverflowAction action)
+        {
+            if (index > max)
+            {
+                switch (action)
                 {
-                    player.EffectsManager.ChangeState(effect.name, effect.intensity);
+                    case OverflowAction.End: index = -1; break;
+                    case OverflowAction.Rollover: index = ((index - 1) % max) + 1; break;
+                    case OverflowAction.Clamp: index = max; break;
                 }
+            }
+            return index;
+        }
+
+        private void GrantItem(Player player, ItemType item)
+        {
+            if (IsGun(item))
+            {
+                if (player.IsInventoryFull)
+                    if (!RemoveItem(player, ItemType.Painkillers))
+                        if (!RemoveItem(player, ItemType.Medkit))
+                            if (!RemoveItem(player, ItemType.Adrenaline))
+                                if (!RemoveItem(player, ItemType.SCP500))
+                                    if (!RemoveItem(player, ItemType.SCP244a))
+                                        if (!RemoveItem(player, ItemType.SCP244b))
+                                            if (!RemoveItem(player, ItemType.SCP018))
+                                                return;
+                GrantAmmo(player, item, 1.0f);
+                GrantFirearm(player, item);
+            }
+            else
+            {
+                player.AddItem(item);
+            }
+        }
+
+        private void GrantWeaponAmmo(Firearm firearm, float proportion)
+        {
+            byte ammo = (byte)UnityEngine.Mathf.Clamp(firearm.Status.Ammo + (firearm.AmmoManagerModule.MaxAmmo * proportion), 0.0f, firearm.AmmoManagerModule.MaxAmmo * proportion);
+            firearm.Status = new FirearmStatus(ammo, firearm.Status.Flags, firearm.Status.Attachments);
+        }
+
+        private void GrantAmmo(Player player, ItemType firearm_type, float proportion)
+        {
+            ItemType ammo_type = GunAmmoType(firearm_type);
+            if (ammo_type != ItemType.None)
+                player.SetAmmo(ammo_type, (ushort)UnityEngine.Mathf.Clamp(player.GetAmmo(ammo_type) + (player.GetAmmoLimit(ammo_type) * proportion), 0.0f, player.GetAmmoLimit(ammo_type)));
+        }
+
+        private void GrantFirearm(Player player, ItemType type)
+        {
+            Firearm firearm = player.AddItem(type) as Firearm;
+            uint code = firearm.Status.Attachments;
+            if (firearm is ParticleDisruptor)
+            {
+                firearm.Status = new FirearmStatus(5, firearm.Status.Flags, code);
+            }
+            else
+            {
+                if (AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub].ContainsKey(type))
+                    code = AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub][type];
+                ushort ammo_reserve = player.GetAmmo(firearm.AmmoType);
+                byte ammo_loaded = (byte)UnityEngine.Mathf.Min(ammo_reserve, firearm.AmmoManagerModule.MaxAmmo);
+                player.SetAmmo(firearm.AmmoType, (ushort)(ammo_reserve - ammo_loaded));
+                firearm.Status = new FirearmStatus(ammo_loaded, FirearmStatusFlags.MagazineInserted, code);
             }
         }
     }

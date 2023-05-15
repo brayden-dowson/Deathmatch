@@ -91,7 +91,7 @@ namespace TheRiptide
 
                 if(killer != null && player_stats.ContainsKey(killer.PlayerId))
                 {
-                    string hint = translation.DeathMsgKiller.Replace("{killer}", "<b>" + Killstreaks.KillstreakColorCode(killer) + killer.Nickname + "</color></b>").Replace("{health}", killer.Health.ToString("0"));
+                    string hint = translation.DeathMsgKiller.Replace("{killer}", "<b><color=" + Killstreaks.Singleton.KillstreakColorCode(killer) + ">"+ killer.Nickname + "</color></b>").Replace("{health}", killer.Health.ToString("0"));
                     //if (killer.ArtificialHealth != 0)
                     //    hint += " <color=008f1c>AH: " + killer.ArtificialHealth + "</color>";
 

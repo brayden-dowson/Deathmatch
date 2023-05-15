@@ -31,9 +31,9 @@ namespace TheRiptide
         public string SelfKill { get; set; } = "<b><color=#eb0d47>{victim}</color></b> humiliated  themselves";
 
         [Description("killstreak")]
-        public string GlobalKillstreak { get; set; } = "<b><color=#43BFF0>{killer}</color></b> is on a <b><color=#FF0000>{streak}</color></b> kill streak";
-        public string PrivateKillstreak { get; set; } = "Kill streak <b><color=#FF0000>{streak}</color></b>";
-        public string GlobalKillstreakEnded { get; set; } = "<b><color=#43BFF0>{killer}</color></b> ended <b><color=#43BFF0>{victim}'s </color></b>" + "<b><color=#FF0000>{streak}</color></b> kill streak";
+        public string GlobalKillstreak { get; set; } = "<b>{killstreak}<color=#43BFF0>{killer}</color></b> is on a <b><color=#FF0000>{count}</color></b> kill streak";
+        public string PrivateKillstreak { get; set; } = "Kill streak <b><color=#FF0000>{count}</color></b>";
+        public string GlobalKillstreakEnded { get; set; } = "<b>{killer_killstreak}<color=#43BFF0>{killer}</color></b> ended <b>{victim_killstreak}<color=#43BFF0>{victim}'s </color></b>" + "<b><color=#FF0000>{count}</color></b> kill streak";
 
         [Description("loadout")]
         public string CustomisationHint { get; set; } = "<b>CHECK INVENTORY! <color=#FF0000>Right Click O5 to select gun</color></b>";
@@ -84,10 +84,10 @@ namespace TheRiptide
 
         [Description("killstreak reward system menu")]
         public string KillstreakRewardMenu { get; set; } = "<b><color=#43BFF0>[KILLSTREAK REWARD SYSTEM]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
-        public string Easy { get; set; } = "<color=#eb0d47>[HEAVY ARMOR]</color> = <b><color=#5900ff>Easy</color>: low risk low reward, good loadout but bad killstreak rewards</b>";
-        public string Standard { get; set; } = "<color=#eb0d47>[COMBAT ARMOR]</color> = <b><color=#43BFF0>Standard</color>: medium risk medium reward, ok loadout and ok killsteak rewards</b>";
-        public string Expert { get; set; } = "<color=#eb0d47>[LIGHT ARMOR]</color> = <b><color=#36a832>Expert</color>: high risk high reward, bad loadout but good killstreak rewards </b>";
-        public string Rage { get; set; } = "<color=#eb0d47>[COM 45]</color> = <b><color=#FF0000>RAGE</color> - [DATA EXPUNGED]</b>";
+        //public string Easy { get; set; } = "<color=#eb0d47>[HEAVY ARMOR]</color> = <b><color=#5900ff>Easy</color>: low risk low reward, good loadout but bad killstreak rewards</b>";
+        //public string Standard { get; set; } = "<color=#eb0d47>[COMBAT ARMOR]</color> = <b><color=#43BFF0>Standard</color>: medium risk medium reward, ok loadout and ok killsteak rewards</b>";
+        //public string Expert { get; set; } = "<color=#eb0d47>[LIGHT ARMOR]</color> = <b><color=#36a832>Expert</color>: high risk high reward, bad loadout but good killstreak rewards </b>";
+        //public string Rage { get; set; } = "<color=#eb0d47>[COM 45]</color> = <b><color=#FF0000>RAGE</color> - [DATA EXPUNGED]</b>";
         public string KillstreakSelected { get; set; } = "{killstreak} selected as your killstreak reward system";
         public string CurrentKillstreakSelected { get; set; } = "Current killstreak reward system selected: {killstreak}</color>";
 
