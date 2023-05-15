@@ -222,6 +222,7 @@ namespace TheRiptide
                             loadout.rage_mode_enabled = config.rage_enabled;
                             spawn.role = config.role;
                             killstreak.name = config.killstreak_mode;
+                            Killstreaks.Singleton.KillstreakLoaded(player);
                         });
                     }
                 }

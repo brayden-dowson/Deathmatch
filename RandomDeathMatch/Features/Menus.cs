@@ -261,7 +261,7 @@ namespace TheRiptide
 
             foreach(var kvp in Killstreaks.Singleton.config.KillstreakTables)
             {
-                if (kvp.Key != "Rage")
+                if (kvp.Key != "RAGE")
                 {
                     killstreak_items.Add(new MenuItem(kvp.Value.MenuItem, kvp.Value.MenuDescription, (player) =>
                     {
@@ -275,16 +275,16 @@ namespace TheRiptide
             }
 
             List<MenuItem> killstreak_items_secret = killstreak_items.ToList();
-            if(Killstreaks.Singleton.config.KillstreakTables.ContainsKey("Rage"))
+            if(Killstreaks.Singleton.config.KillstreakTables.ContainsKey("RAGE"))
             {
-                KillstreakRewardTable table = Killstreaks.Singleton.config.KillstreakTables["Rage"];
+                KillstreakRewardTable table = Killstreaks.Singleton.config.KillstreakTables["RAGE"];
                 killstreak_items_secret.Add(
                 new MenuItem(table.MenuItem, table.MenuDescription, (player) =>
                 {
-                    Killstreaks.GetKillstreak(player).name = "Rage";
+                    Killstreaks.GetKillstreak(player).name = "RAGE";
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
                     MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
-                    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.KillstreakSelected.Replace("{killstreak}", "<color=" + table.ColorHex + ">Rage</color>"));
+                    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.KillstreakSelected.Replace("{killstreak}", "<color=" + table.ColorHex + ">RAGE</color>"));
                     return false;
                 }));
             }
