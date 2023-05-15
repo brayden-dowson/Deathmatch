@@ -133,9 +133,12 @@ namespace TheRiptide
         {
             if(player != null)
             {
-                Database.Life life = player_life[player.PlayerId];
-                if (life != null)
-                    life.shots++;
+                if (player_life.ContainsKey(player.PlayerId))
+                {
+                    Database.Life life = player_life[player.PlayerId];
+                    if (life != null)
+                        life.shots++;
+                }
             }
         }
 

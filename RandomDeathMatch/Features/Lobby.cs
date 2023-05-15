@@ -26,6 +26,7 @@ namespace TheRiptide
         [Description("max players should be less than SpawnDimX x SpawnDimY")]
         public int SpawnDimX { get; set; } = 8;
         public int SpawnDimY { get; set; } = 8;
+        public float SpawnProtection { get; set; } = 3.0f;
     }
 
     class Lobby
@@ -214,7 +215,6 @@ namespace TheRiptide
                             BroadcastOverride.ClearLines(BroadcastPriority.Low);
                             BroadcastOverride.UpdateAllDirty();
                         }
-                        player.EffectsManager.ChangeState<CustomPlayerEffects.SpawnProtected>(1, 1);
                         TeleportRandom(player);
                     });
                 }
@@ -460,6 +460,7 @@ namespace TheRiptide
                             ApplyGameNotStartedEffects(player);
                         spawn.in_spawn = false;
                         Tracking.Singleton.PlayerSpawn(player);
+                        player.EffectsManager.ChangeState<CustomPlayerEffects.SpawnProtected>(1, config.SpawnProtection);
                     }
                     else
                     {
