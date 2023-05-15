@@ -9,11 +9,6 @@ using static TheRiptide.Translation;
 
 namespace TheRiptide
 {
-    public class MenuConfig
-    {
-        public bool RageEnabled { get; set; } = true;
-    }
-
     public class DeathmatchMenu
     {
         private static DeathmatchMenu instance = null;
@@ -27,16 +22,9 @@ namespace TheRiptide
             }
         }
 
-        public MenuConfig config;
-
         public enum MenuPage { None, Main, GunSlot1, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, DeleteData, Debug };
 
         private DeathmatchMenu() { }
-
-        public void Init(MenuConfig config)
-        {
-            this.config = config;
-        }
 
         public void SetupMenus()
         {
@@ -90,7 +78,7 @@ namespace TheRiptide
                     Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
                     Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
                     MenuInfo info;
-                    if (loadout.rage_mode_enabled && Singleton.config.RageEnabled)
+                    if (loadout.rage_mode_enabled && Killstreaks.Singleton.config.RageEnabled)
                     {
                         InventoryMenu.ShowMenu(player, (int)MenuPage.KillstreakModeSecret);
                         info = InventoryMenu.GetInfo((int)MenuPage.KillstreakModeSecret);

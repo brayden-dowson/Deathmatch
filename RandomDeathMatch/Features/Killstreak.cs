@@ -81,8 +81,12 @@ namespace TheRiptide
 
     public class KillstreakConfig
     {
+        [Description("if disabled the player cannot select RAGE killstreak even if they have found it")]
+        public bool RageEnabled { get; set; } = true;
+        [Description("default killstreak must be included in the killstreak table otherwise the plugin will not load")]
         public string DefaultKillstreak { get; set; } = "Novice";
 
+        [Description("you can define up to 7 killstreaks\n# the RAGE killstreak in an easter egg that can only appear when found correctly\n# Items rewards - Action [Add, Remove], Item [see global reference config for types]\n# Effect rewards - Effect [see global reference config for types], Intensity [0-255], Duration[0=infinite, 1-255 seconds]\n# Ammo rewards - Action [Add, Remove, Set], Stat [Inventory, Gun], Proportion [0.0-1.0]\n# Player rewards - Action [Add, Remove, Set], Stat [HP, AHP, Stamina], Value [float], Sustain [float for AHP], Persistent [bool for AHP]\n# Overflow action [End, Rollover, Clamp] Rollover will rollover to 1 not 0\n# anything with a 0 killstreak items/ammo/effects/players stats are granted when the player spawns")]
         public Dictionary<string, KillstreakRewardTable> KillstreakTables { get; set; } = new Dictionary<string, KillstreakRewardTable>
         {
             {
@@ -601,6 +605,9 @@ namespace TheRiptide
             Killstreak killstreak = player_killstreak[player.PlayerId];
             if (!config.KillstreakTables.ContainsKey(killstreak.name))
                 killstreak.name = config.DefaultKillstreak;
+
+            if (killstreak.name == "RAGE" && !config.RageEnabled)
+                killstreak.name = config.DefaultKillstreak;
         }
 
         public bool IsLoadoutLocked(Player player)
@@ -609,51 +616,53 @@ namespace TheRiptide
             return config.KillstreakTables[killstreak.name].LoadoutLock;
         }
 
+        public void AddKillstreakStartAmmo(Player player)
+        {
+            Killstreak killstreak = player_killstreak[player.PlayerId];
+            KillstreakRewardTable table = config.KillstreakTables[killstreak.name];
+            ItemType armor = ArmorType(player);
+            Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
+            if (!table.LoadoutLock && table.AmmoTable.ContainsKey(0))
+            {
+                foreach(var inventory_ammo in table.AmmoTable[0].Where((r) => r.Stat == AmmoStat.Inventory))
+                {
+                    GrantAmmo(player, GunAmmoType(loadout.primary), inventory_ammo.Proportion);
+                    if (armor != ItemType.None)
+                    {
+                        if (GunAmmoType(loadout.primary) != GunAmmoType(loadout.secondary))
+                            GrantAmmo(player, GunAmmoType(loadout.secondary), inventory_ammo.Proportion);
+                        if (armor == ItemType.ArmorHeavy && GunAmmoType(loadout.primary) != GunAmmoType(loadout.tertiary) && GunAmmoType(loadout.secondary) != GunAmmoType(loadout.tertiary))
+                            GrantAmmo(player, GunAmmoType(loadout.tertiary), inventory_ammo.Proportion);
+                    }
+                }
+            }
+        }
+
         public void AddKillstreakStartItems(Player player)
         {
             Killstreak killstreak = player_killstreak[player.PlayerId];
             KillstreakRewardTable table = config.KillstreakTables[killstreak.name];
 
-            if (!table.ItemTable.IsEmpty())
-            {
-                int item_index = CalculateIndex(killstreak.count, table.ItemTable.Last().Key, table.ItemOverflowAction);
-                if (table.ItemTable.ContainsKey(item_index))
-                    foreach (ItemReward reward in table.ItemTable[item_index])
+            if (!table.ItemTable.IsEmpty() && table.ItemTable.ContainsKey(0))
+                foreach (ItemReward reward in table.ItemTable[0])
+                    if (!(reward.Action == InventoryAction.Add && IsArmor(reward.Item)))
                         GrantItemReward(player, reward);
-            }
-
-            if (!table.AmmoTable.IsEmpty())
-            {
-                int ammo_index = CalculateIndex(killstreak.count, table.AmmoTable.Last().Key, table.AmmoOverflowAction);
-                if (table.AmmoTable.ContainsKey(ammo_index))
-                    foreach (ItemBase item in player.ReferenceHub.inventory.UserInventory.Items.Values)
-                        if (item is Firearm firearm && !(firearm is ParticleDisruptor))
-                            foreach (AmmoReward reward in table.AmmoTable[ammo_index])
-                                GrantAmmoReward(player, firearm, reward);
-            }
         }
 
-        public void AddKillstreakEffects(Player player)
+        public void AddKillstreakStartEffects(Player player)
         {
             Killstreak killstreak = player_killstreak[player.PlayerId];
             player.EffectsManager.DisableAllEffects();
             KillstreakRewardTable table = config.KillstreakTables[killstreak.name];
 
-            if (!table.PlayerTable.IsEmpty())
-            {
-                int player_index = CalculateIndex(killstreak.count, table.PlayerTable.Last().Key, table.PlayerOverflowAction);
-                if (table.PlayerTable.ContainsKey(player_index))
-                    foreach (PlayerReward reward in table.PlayerTable[player_index])
-                        GrantPlayerReward(player, reward);
-            }
+            if (!table.PlayerTable.IsEmpty() && table.PlayerTable.ContainsKey(0))
+                foreach (PlayerReward reward in table.PlayerTable[0])
+                    GrantPlayerReward(player, reward);
 
-            if (!table.EffectTable.IsEmpty())
-            {
-                int effect_index = CalculateIndex(killstreak.count, table.EffectTable.Last().Key, table.EffectOverflowAction);
-                if (table.EffectTable.ContainsKey(effect_index))
-                    foreach (EffectReward reward in table.EffectTable[effect_index])
-                        GrantEffectReward(player, reward);
-            }
+            if (!table.EffectTable.IsEmpty() && table.EffectTable.ContainsKey(0))
+                foreach (EffectReward reward in table.EffectTable[0])
+                    GrantEffectReward(player, reward);
+
         }
 
         public ItemType ArmorType(Player player)
@@ -825,7 +834,7 @@ namespace TheRiptide
                                         if (!RemoveItem(player, ItemType.SCP244b))
                                             if (!RemoveItem(player, ItemType.SCP018))
                                                 return;
-                GrantAmmo(player, item, 1.0f);
+                GrantAmmo(player, GunAmmoType(item), 1.0f);
                 GrantFirearm(player, item);
             }
             else
@@ -840,9 +849,8 @@ namespace TheRiptide
             firearm.Status = new FirearmStatus(ammo, firearm.Status.Flags, firearm.Status.Attachments);
         }
 
-        private void GrantAmmo(Player player, ItemType firearm_type, float proportion)
+        private void GrantAmmo(Player player, ItemType ammo_type, float proportion)
         {
-            ItemType ammo_type = GunAmmoType(firearm_type);
             if (ammo_type != ItemType.None)
                 player.SetAmmo(ammo_type, (ushort)UnityEngine.Mathf.Clamp(player.GetAmmo(ammo_type) + (player.GetAmmoLimit(ammo_type) * proportion), 0.0f, player.GetAmmoLimit(ammo_type)));
         }
@@ -859,6 +867,7 @@ namespace TheRiptide
             {
                 if (AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub].ContainsKey(type))
                     code = AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub][type];
+                AttachmentsUtils.ApplyAttachmentsCode(firearm, code, true);
                 ushort ammo_reserve = player.GetAmmo(firearm.AmmoType);
                 byte ammo_loaded = (byte)UnityEngine.Mathf.Min(ammo_reserve, firearm.AmmoManagerModule.MaxAmmo);
                 player.SetAmmo(firearm.AmmoType, (ushort)(ammo_reserve - ammo_loaded));

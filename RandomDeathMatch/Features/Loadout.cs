@@ -301,31 +301,19 @@ namespace TheRiptide
 
             if (!IsLoadoutEmpty(player))
             {
-                Killstreaks.Singleton.AddKillstreakStartItems(player);
                 ItemType armor = Killstreaks.Singleton.ArmorType(player);
+                if (armor != ItemType.None)
+                    player.AddItem(armor);
+                Killstreaks.Singleton.AddKillstreakStartAmmo(player);
                 if (!Killstreaks.Singleton.IsLoadoutLocked(player))
                 {
-                    AddFirearm(player, loadout.primary, true);
-                    if (armor == ItemType.ArmorLight || armor == ItemType.ArmorCombat || armor == ItemType.ArmorHeavy)
-                        AddFirearm(player, loadout.secondary, GunAmmoType(loadout.primary) != GunAmmoType(loadout.secondary));
+                    AddFirearm(player, loadout.primary, false);
+                    if (armor != ItemType.None)
+                        AddFirearm(player, loadout.secondary, false);
                     if(armor == ItemType.ArmorHeavy)
-                        AddFirearm(player, loadout.tertiary, GunAmmoType(loadout.primary) != GunAmmoType(loadout.tertiary) && GunAmmoType(loadout.secondary) != GunAmmoType(loadout.tertiary));
+                        AddFirearm(player, loadout.tertiary, false);
                 }
-
-                //if (killstreak.mode == Killstreaks.KillstreakMode.Easy)
-                //    player.AddItem(ItemType.ArmorHeavy);
-                //else if (killstreak.mode == Killstreaks.KillstreakMode.Standard)
-                //    player.AddItem(ItemType.ArmorCombat);
-                //else if (killstreak.mode == Killstreaks.KillstreakMode.Expert)
-                //    player.AddItem(ItemType.ArmorLight);
-
-                //if (killstreak.mode != Killstreaks.KillstreakMode.Rage)
-                //{
-                //    AddFirearm(player, loadout.primary, true);
-                //    AddFirearm(player, loadout.secondary, GunAmmoType(loadout.primary) != GunAmmoType(loadout.secondary));
-                //    if (killstreak.mode == Killstreaks.KillstreakMode.Easy)
-                //        AddFirearm(player, loadout.tertiary, GunAmmoType(loadout.primary) != GunAmmoType(loadout.tertiary) && GunAmmoType(loadout.secondary) != GunAmmoType(loadout.tertiary));
-                //}
+                Killstreaks.Singleton.AddKillstreakStartItems(player);
             }
         }
 

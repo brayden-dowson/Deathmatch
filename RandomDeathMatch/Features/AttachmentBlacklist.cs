@@ -18,11 +18,8 @@ namespace TheRiptide
     {
         public bool IsEnabled { get; set; } = true;
 
-        [Description("put black listed attachments here, see below for all attachments")]
+        [Description("put black listed attachments here, see global reference config for attachment types")]
         public List<AttachmentName> BlackList { get; set; } = new List<AttachmentName>();
-
-        [Description("list of all the different attachments (changing this does nothing)")]
-        public List<AttachmentName> AllAttachments { get; set; } = new List<AttachmentName>();
     }
 
     class AttachmentBlacklist
@@ -37,14 +34,9 @@ namespace TheRiptide
             Singleton = this;
         }
 
-        public void Init(AttachmentBlacklistConfig config, Deathmatch plugin)
+        public void Init(AttachmentBlacklistConfig config)
         {
             this.config = config;
-            config.AllAttachments.Clear();
-            foreach (AttachmentName name in Enum.GetValues(typeof(AttachmentName)))
-                config.AllAttachments.Add(name);
-            PluginHandler handler = PluginHandler.Get(plugin);
-            handler.SaveConfig(plugin, "attachment_blacklist_config");
         }
 
         [PluginEvent(ServerEventType.RoundStart)]

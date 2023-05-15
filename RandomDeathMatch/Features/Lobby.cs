@@ -461,7 +461,7 @@ namespace TheRiptide
                         if (Deathmatch.GameStarted)
                         {
                             Statistics.SetPlayerStartTime(player, Time.time);
-                            Killstreaks.Singleton.AddKillstreakEffects(player);
+                            Killstreaks.Singleton.AddKillstreakStartEffects(player);
                         }
                         else
                             ApplyGameNotStartedEffects(player);

@@ -127,6 +127,7 @@ namespace TheRiptide
 
         [Description("stats")]
         public string DeathMsgKiller { get; set; } = "\n\n\n{killer} <color=#43BFF0>HP: {health}</color>";
+        public string DeathMsgAhp { get; set; } = " <color=#008f1c>AH: {ahp}</color>";
         public string DeathMsgDamageReduction { get; set; } = " <color=#5900ff> DR: {reduction}%</color>";
         public string DeathMsgBodyshotReduction { get; set; } = " <color=#e7d77b> BSR: {reduction}%</color>";
         public string DeathMsgDamageDelt { get; set; } = "\n<color=#43BFF0> DMG: {damage}</color> <color=#FF0000>HS: {head_shots}</color> <color=#36a832>BS: {body_shots}</color> <color=#43BFF0>LS: {limb_shots}</color>";
@@ -167,29 +168,29 @@ namespace TheRiptide
     }
 
 
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class H : ICommand
-    {
-        public string Command { get; } = "h";
+    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
+    //public class H : ICommand
+    //{
+    //    public string Command { get; } = "h";
 
-        public string[] Aliases { get; } = new string[] { };
+    //    public string[] Aliases { get; } = new string[] { };
 
-        public string Description { get; } = "send hint";
+    //    public string Description { get; } = "send hint";
 
-        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-        {
-            Player player;
-            if (Player.TryGet(sender, out player))
-            {
-                string h = "";
-                foreach (var a in arguments)
-                    h += a;
-                player.ReceiveHint(h, 300);
-                response = "success";
-                return true;
-            }
-            response = "failed";
-            return false;
-        }
-    }
+    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+    //    {
+    //        Player player;
+    //        if (Player.TryGet(sender, out player))
+    //        {
+    //            string h = "";
+    //            foreach (var a in arguments)
+    //                h += a;
+    //            player.ReceiveHint(h, 300);
+    //            response = "success";
+    //            return true;
+    //        }
+    //        response = "failed";
+    //        return false;
+    //    }
+    //}
 }

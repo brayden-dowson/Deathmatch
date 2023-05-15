@@ -92,8 +92,16 @@ namespace TheRiptide
                 if(killer != null && player_stats.ContainsKey(killer.PlayerId))
                 {
                     string hint = translation.DeathMsgKiller.Replace("{killer}", "<b><color=" + Killstreaks.Singleton.KillstreakColorCode(killer) + ">"+ killer.Nickname + "</color></b>").Replace("{health}", killer.Health.ToString("0"));
-                    //if (killer.ArtificialHealth != 0)
-                    //    hint += " <color=008f1c>AH: " + killer.ArtificialHealth + "</color>";
+                    try
+                    {
+                        AhpStat ahp = null;
+                        if (killer.ReferenceHub.playerStats.TryGetModule(out ahp))
+                            hint += translation.DeathMsgAhp.Replace("{ahp}", ahp.CurValue.ToString());
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.Error("Error could not get Ahp of player: " + ex.ToString());
+                    }
 
                     DamageReduction damage_reduction = null;
                     if (killer.EffectsManager.TryGetEffect(out damage_reduction))

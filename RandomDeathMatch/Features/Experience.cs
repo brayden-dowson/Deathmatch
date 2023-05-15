@@ -37,6 +37,7 @@ namespace TheRiptide
         [Description("xp granted 30 seconds into the round to reward players that stay an entire round")]
         public int XpOnRoundStart { get; set; } = 1200;
 
+        [Description("see the global reference config for all item types")]
         public Dictionary<ItemType, int> XpOnItemUse { get; set; } = new Dictionary<ItemType, int>
         {
             {ItemType.Painkillers,5 },
@@ -55,6 +56,7 @@ namespace TheRiptide
 
         };
 
+        [Description("see the global reference config for all item types")]
         public Dictionary<ItemType, int> XpOnItemThrown { get; set; } = new Dictionary<ItemType, int>
         {
             {ItemType.SCP244a, 50 },

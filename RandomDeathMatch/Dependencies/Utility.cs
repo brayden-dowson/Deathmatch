@@ -13,6 +13,11 @@ namespace TheRiptide
 {
     public static class Utility
     {
+        public static bool IsArmor(ItemType item)
+        {
+            return item == ItemType.ArmorLight || item == ItemType.ArmorCombat || item == ItemType.ArmorHeavy;
+        }
+
         public static ItemType GetItemFromDamageHandler(DamageHandlerBase damage)
         {
             if (damage is FirearmDamageHandler firearm)
