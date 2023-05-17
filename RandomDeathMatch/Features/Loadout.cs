@@ -187,19 +187,6 @@ namespace TheRiptide
             target.ClearInventory();
         }
 
-        [PluginEvent(ServerEventType.PlayerDeath)]
-        void OnPlayerDeath(Player target, Player killer, DamageHandlerBase damage)
-        {
-            if (killer != null && killer.IsAlive)
-            {
-                if (killer.CurrentItem.Category == ItemCategory.Firearm)
-                {
-                    ItemType ammo = (killer.CurrentItem as Firearm).AmmoType;
-                    killer.SetAmmo(ammo, (ushort)math.min(killer.GetAmmo(ammo) + (ushort)(killer.GetAmmoLimit(ammo) / 5), killer.GetAmmoLimit(ammo)));
-                }
-            }
-        }
-
         [PluginEvent(ServerEventType.PlayerSpawn)]
         void OnPlayerSpawn(Player player, RoleTypeId role)
         {
