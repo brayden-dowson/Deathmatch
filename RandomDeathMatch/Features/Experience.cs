@@ -296,6 +296,7 @@ namespace TheRiptide
                     RewardXp(p, config.XpPerMinute * minutes, translation.RewardXpMinute.Replace("{time}", minutes.ToString()));
 
                     XP xp = player_xp[p.PlayerId];
+                    int gained = xp.value - previous_xp[p.PlayerId].value;
                     bool maxed_tier = xp.tier >= config.TierTags.Count - 1;
                     bool maxed_stage = xp.stage >= config.StageTags.Count - 1;
                     bool maxed_level = xp.level >= config.LevelTags.Count - 1;
@@ -334,7 +335,7 @@ namespace TheRiptide
                         next = XpToNextLevel(xp);
                     }
                     Database.Singleton.SaveExperience(p);
-                    ShowXpHint(p, xp, 30.0f);
+                    HintOverride.Add(p, 1, translation.XpGainedMsg.Replace("{xp}", gained.ToString()), 30.0f);
                     BadgeOverride.Singleton.SetBadge(p, 1, XpString(xp));
                 }
             }

@@ -20,6 +20,7 @@ using System.ComponentModel;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
 using static TheRiptide.Translation;
+using Interactables.Interobjects.DoorUtils;
 
 namespace TheRiptide
 {
@@ -65,7 +66,6 @@ namespace TheRiptide
             public bool locked = false;
             public bool customising = false;
             public bool rage_mode_enabled = false;
-            public bool radio = true;
         }
 
         public static Dictionary<int, Loadout> player_loadouts = new Dictionary<int, Loadout>();
@@ -142,22 +142,25 @@ namespace TheRiptide
                             }
                         }
                     }
-                    else
+                    else if (!Killstreaks.Singleton.IsLoadoutLocked(player))
                     {
                         BroadcastOverride.ClearLines(player, BroadcastPriority.High);
                         BroadcastOverride.BroadcastLines(player, 1, 3, BroadcastPriority.High, translation.CustomisationDenied);
                     }
-                }
-                else if (item.Category != ItemCategory.Armor)
-                {
-                    if (item.ItemTypeId == ItemType.Radio)
+                    else
                     {
-                        RemoveItem(player, ItemType.Radio);
-                        BroadcastOverride.BroadcastLine(player, 1, 5, BroadcastPriority.High, translation.RadioDisableHint);
+                        int gun_count = 0;
+                        foreach (var i in player.ReferenceHub.inventory.UserInventory.Items.Values)
+                            if (IsGun(i.ItemTypeId))
+                                gun_count++;
+                        if (gun_count >= 2)
+                            RemoveItem(player, item.ItemTypeId);
+                        else
+                            BroadcastOverride.BroadcastLine(player, 1, 3, BroadcastPriority.High, translation.LastWeapon);
                     }
-                    else if (loadout.locked)
-                        drop_allowed = true;
                 }
+                else if (item.Category != ItemCategory.Armor && loadout.locked)
+                    drop_allowed = true;
             }
             BroadcastOverride.UpdateIfDirty(player);
             return drop_allowed;
@@ -173,12 +176,34 @@ namespace TheRiptide
         void OnPlayerShotWeapon(Player player, Firearm firearm)
         {
             player_loadouts[player.PlayerId].locked = true;
+            RemoveItem(player, ItemType.KeycardO5);
         }
 
         [PluginEvent(ServerEventType.PlayerUsedItem)]
         void OnPlayerUsedItem(Player player, ItemBase item)
         {
             player_loadouts[player.PlayerId].locked = true;
+            RemoveItem(player, ItemType.KeycardO5);
+        }
+
+        [PluginEvent(ServerEventType.PlayerInteractDoor)]
+        bool OnPlayerInteractDoor(Player player, DoorVariant door, bool can_open)
+        {
+            if (door.ActiveLocks > 0 && !player.IsBypassEnabled)
+                return true;
+
+            door.NetworkTargetState = !door.TargetState;
+            door._triggerPlayer = player.ReferenceHub;
+            switch (door.NetworkTargetState)
+            {
+                case false:
+                    DoorEvents.TriggerAction(door, DoorAction.Closed, player.ReferenceHub);
+                    break;
+                case true:
+                    DoorEvents.TriggerAction(door, DoorAction.Opened, player.ReferenceHub);
+                    break;
+            }
+            return false;
         }
 
         [PluginEvent(ServerEventType.PlayerDying)]
@@ -216,15 +241,6 @@ namespace TheRiptide
                     AddLoadoutStartItems(player);
                 });
             }
-        }
-
-        [PluginEvent(ServerEventType.PlayerUsingRadio)]
-        void OnPlayerUsingRadio(Player player, RadioItem radio, float drain)
-        {
-            //if(player != null && radio != null)
-            //{
-            //    radio.BatteryPercent = 100;
-            //}
         }
 
         public static bool ValidateLoadout(Player player)
@@ -279,18 +295,12 @@ namespace TheRiptide
             Loadout loadout = player_loadouts[player.PlayerId];
             Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
 
-            player.AddItem(ItemType.KeycardO5);
-            if (loadout.radio)
-            {
-                RadioItem radio = player.AddItem(ItemType.Radio) as RadioItem;
-                radio._rangeId = (byte)(radio.Ranges.Length - 1);
-            }
-
             if (!IsLoadoutEmpty(player))
             {
                 ItemType armor = Killstreaks.Singleton.ArmorType(player);
                 if (armor != ItemType.None)
-                    player.AddItem(armor);
+                    AddArmor(player, armor, true);
+
                 Killstreaks.Singleton.AddKillstreakStartAmmo(player);
                 if (!Killstreaks.Singleton.IsLoadoutLocked(player))
                 {
@@ -302,6 +312,7 @@ namespace TheRiptide
                 }
                 Killstreaks.Singleton.AddKillstreakStartItems(player);
             }
+            player.AddItem(ItemType.KeycardO5);
         }
 
         public bool SetGun(Player player, ItemType gun)

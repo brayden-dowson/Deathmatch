@@ -40,7 +40,7 @@ namespace TheRiptide
         public List<string> CustomisationDenied { get; set; } = new List<string>() {
             "<color=#f8d107>Loadout can not be customised after shooting gun/using item</color>",
             "<color=#43BFF0>Wait until next respawn</color>" };
-        public string RadioDisableHint { get; set; } = "<color=#FF0000>Radio can be disabled in</color> <b><color=#43BFF0>[MAIN MENU]</color> -> <color=#43BFF0>[PREFERENCES]</color> -> <color=#eb0d47>[GUARD]</color></b>";
+        public string LastWeapon { get; set; } = "<color=#f8d107>last gun can not be deleted!</color>";
         public string WeaponBanned { get; set; } = "<color=#FF0000>{weapon} is currently banned</color>";
 
         [Description("lobby")]
@@ -53,7 +53,7 @@ namespace TheRiptide
         public string Teleporting { get; set; } = "<color=#43BFF0>Teleporting in 7 seconds</color>";
         public string TeleportCancel { get; set; } = "<color=#43BFF0>Open [MAIN MENU] to cancel</color> - <color=#FF0000>Right Click O5</color>";
         public string FastTeleport { get; set; } = "<color=#43BFF0>loadout set, teleporting in 3 seconds</color>";
-        public string SpectatorMode { get; set; } = "spectator mode is currently bugged, you may need to leave and rejoin to respawn";
+        public string SpectatorMode { get; set; } = "spectate 939 to respawn, if bugged you may need to leave and rejoin to respawn";
 
         [Description("main menu")]
         public string MainMenu { get; set; } = "<b><color=#43BFF0>[MAIN MENU]</color></b> <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
@@ -100,12 +100,10 @@ namespace TheRiptide
 
         [Description("preferences menu")]
         public string PreferencesMenu { get; set; } = "<b><color=#43BFF0>[PREFERENCES]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
-        public string ToggleRadio { get; set; } = "<color=#eb0d47>[GUARD]</color> = <b>Toggle Loadout Radio</b>";
         public string Stats { get; set; } = "<color=#eb0d47>[SCIENTIST]</color> = <b><color=#43BFF0>[STATS]</color></b>";
         public string Spectator { get; set; } = "<color=#eb0d47>[FLASH LIGHT]</color> = <b>Enable spectator mode</b>";
         public string EnableRage { get; set; } = "<color=#eb0d47>[COIN]</color> = <b>Enable [DATA EXPUNGED]</b>";
         public string DeleteData { get; set; } = "<color=#eb0d47>[JANITOR]</color> = <b>Delete Data stats/configs/ranks/xp/preferences (can not be undone)</b>";
-        public string RadioToggled { get; set; } = "<b><color=#43BFF0>Loadout Radio: </color></b> {state}";
 
         [Description("stats menu")]
         public string StatsMenu { get; set; } = "<b><color=#43BFF0>[STATS]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
@@ -154,12 +152,18 @@ namespace TheRiptide
         public string RewardXpItemUsed { get; set; } = "gained {xp} Xp for using {item}";
         public string RewardXpItemThrown { get; set; } = "gained {xp} Xp for throwing {item}";
         public string XpMsg { get; set; } = "<align=center><voffset=2em><b><size=48>{xp}</size></b>\n";
+        public string XpGainedMsg { get; set; } = "<align=center><voffset=2em><b><size=48>you gained {xp}Xp this round!</size></b>\n";
 
         [Description("rank")]
         public string RankMsg { get; set; } = "<align=center><voffset=1.5em><b><size=72><color={color}>{rank}</color></size></b>\n";
 
         [Description("attachment blacklist")]
         public string AttachmentBanned { get; set; } = "<color=#FF0000>attachment {attachment} banned</color>";
+
+        [Description("voice chat")]
+        public string GlobalTalkGlobalReceive { get; set; } = "<color=#43BFF0>Voice Chat: Global Talk Global Receive</color>";
+        public string ProximityTalkGlobalReceive { get; set; } = "<color=#43BFF0>Voice Chat:</color> <color=#FF0000>Proximity Talk</color> <color=#43BFF0>Global Receive</color>";
+        public string ProximityTalkProximityReceive { get; set; } = "<color=#43BFF0>Voice Chat:</color> <color=#FF0000>Proximity Talk Proximity Receive</color>";
     }
 
     public static class Translation

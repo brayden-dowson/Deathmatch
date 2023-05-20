@@ -107,7 +107,6 @@ namespace TheRiptide
                 //    InventoryMenu.ShowMenu(player, (int)MenuPage.Debug);
                 //    return false;
                 //}),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.GunSlot1, translation.GunSlotMenu, new List<MenuItem>
@@ -123,7 +122,6 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.GunClass);
                     return false;
                 }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.GunSlot2, translation.GunSlotMenu, new List<MenuItem>
@@ -145,7 +143,6 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.GunClass);
                     return false;
                 }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.GunSlot3, translation.GunSlotMenu, new List<MenuItem>
@@ -173,7 +170,6 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.GunClass);
                     return false;
                 }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.GunClass, translation.GunClassMenu, new List<MenuItem>
@@ -193,7 +189,6 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.ChaosGun);
                     return false;
                 }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
             });
 
             Func<Player, ItemType, bool> GunSelected = (player, gun) =>
@@ -220,8 +215,7 @@ namespace TheRiptide
                 new MenuItem(ItemType.GunCOM18, "", (player)=> { return GunSelected(player, ItemType.GunCOM18);  }),
                 new MenuItem(ItemType.GunFSP9, "", (player)=> { return GunSelected(player, ItemType.GunFSP9);  }),
                 new MenuItem(ItemType.GunCrossvec, "", (player)=> { return GunSelected(player, ItemType.GunCrossvec); }),
-                new MenuItem(ItemType.GunE11SR, "", (player)=> { return GunSelected(player, ItemType.GunE11SR);  }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
+                new MenuItem(ItemType.GunE11SR, "", (player)=> { return GunSelected(player, ItemType.GunE11SR);  })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.ChaosGun, translation.ChaosGunMenu, new List<MenuItem>
@@ -234,8 +228,7 @@ namespace TheRiptide
                 new MenuItem(ItemType.GunAK, "", (player)=> { GunSelected(player, ItemType.GunAK); return false; }),
                 new MenuItem(ItemType.GunLogicer, "", (player)=> { GunSelected(player, ItemType.GunLogicer); return false; }),
                 new MenuItem(ItemType.GunShotgun, "", (player)=> { GunSelected(player, ItemType.GunShotgun); return false; }),
-                new MenuItem(ItemType.GunRevolver, "", (player)=> { GunSelected(player, ItemType.GunRevolver); return false; }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
+                new MenuItem(ItemType.GunRevolver, "", (player)=> { GunSelected(player, ItemType.GunRevolver); return false; })
             });
 
             List<MenuItem> killstreak_items = new List<MenuItem>()
@@ -276,47 +269,6 @@ namespace TheRiptide
                     return false;
                 }));
             }
-
-            //Func<Player, Killstreaks.KillstreakMode, bool> KillstreakModeSelected = (player, mode) =>
-            //{
-            //    Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
-            //    killstreak.mode = mode;
-            //    InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
-            //    MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Main);
-            //    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.KillstreakSelected.Replace("{killstreak}", Killstreaks.KillstreakColorCode(player) + Enum.GetName(typeof(Killstreaks.KillstreakMode), killstreak.mode)));
-            //    return false;
-            //};
-
-            //List<MenuItem> killstreak_items = new List<MenuItem>()
-            //{ 
-            //    new MenuItem(ItemType.KeycardO5, translation.BackToMainMenu, (player)=>
-            //    {
-            //        InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
-            //        return false;
-            //    }),
-            //    new MenuItem(ItemType.ArmorHeavy, translation.Easy, (player)=>
-            //    {
-            //        return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Easy);
-            //    }),
-            //    new MenuItem(ItemType.ArmorCombat, translation.Standard, (player)=>
-            //    {
-            //        return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Standard);
-            //    }),
-            //    new MenuItem(ItemType.ArmorLight, translation.Expert, (player)=>
-            //    {
-            //        return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Expert);
-            //    })
-            //};
-
-            //List<MenuItem> killstreak_items_secret = killstreak_items.ToList();
-            //killstreak_items_secret.Add(
-            //new MenuItem(ItemType.GunCom45, translation.Rage, (player) =>
-            //{
-            //    return KillstreakModeSelected(player, Killstreaks.KillstreakMode.Rage);
-            //}));
-
-            killstreak_items.Add(new MenuItem(ItemType.Radio, "", (p) => { return false; }));
-            killstreak_items_secret.Add(new MenuItem(ItemType.Radio, "", (p) => { return false; }));
 
             InventoryMenu.CreateMenu((int)MenuPage.KillstreakMode, translation.KillstreakRewardMenu, killstreak_items);
             InventoryMenu.CreateMenu((int)MenuPage.KillstreakModeSecret, translation.KillstreakRewardMenu, killstreak_items_secret);
@@ -374,14 +326,6 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardGuard, translation.ToggleRadio, (player)=>
-                {
-                    Loadouts.Loadout loadout = Loadouts.GetLoadout(player);
-                    loadout.radio = !loadout.radio;
-                    MenuInfo info = InventoryMenu.GetInfo((int)MenuPage.Preference);
-                    BroadcastOverride.BroadcastLine(player, info.broadcast_lines + 1, 1500.0f, BroadcastPriority.High, translation.RadioToggled.Replace("{state}", (loadout.radio ? "Enabled" : "Disabled")));
-                    return false;
-                }),
                 new MenuItem(ItemType.KeycardScientist, translation.Stats, (player)=>
                 {
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Stats);
@@ -403,8 +347,7 @@ namespace TheRiptide
                 {
                     InventoryMenu.ShowMenu(player, (int)MenuPage.DeleteData);
                     return false;
-                }),
-                new MenuItem(ItemType.Radio, "", (p) => { return false; })
+                })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.Stats, translation.StatsMenu, new List<MenuItem>
@@ -414,8 +357,7 @@ namespace TheRiptide
                     BroadcastOverride.ClearLines(player, BroadcastPriority.Highest);
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Preference);
                     return false;
-                }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
+                })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.DeleteData, translation.DeleteDataMenu, new List<MenuItem>
@@ -438,8 +380,7 @@ namespace TheRiptide
                     else
                         BroadcastOverride.BroadcastLine(player, 3, 1500, BroadcastPriority.High, translation.FailedToDeleteData);
                     return false;
-                }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
+                })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.Debug, "<b><color=#43BFF0>[DEBUG]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>", new List<MenuItem>
@@ -474,8 +415,7 @@ namespace TheRiptide
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "end");
                     //Rooms.ShrinkFacility(1);
                     return false;
-                }),
-                new MenuItem(ItemType.Radio,"",(p)=>{ return false; })
+                })
             });
         }
 

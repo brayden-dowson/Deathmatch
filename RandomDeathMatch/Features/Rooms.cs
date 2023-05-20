@@ -85,7 +85,7 @@ namespace TheRiptide
                             BroadcastOverride.UpdateIfDirty(p);
                             Timing.CallDelayed(10.0f, () =>
                             {
-                                if (ValidPlayerInRoom(p) && Loadouts.GetLoadout(p).radio && Deathmatch.IsPlayerValid(player) && !Deathmatch.GameStarted)
+                                if (ValidPlayerInRoom(p) && Deathmatch.IsPlayerValid(player) && !Deathmatch.GameStarted)
                                     BroadcastOverride.BroadcastLine(p, 2, 290.0f, BroadcastPriority.Low, translation.SecondPlayerHelp.Replace("{name}", player.Nickname));
                                 BroadcastOverride.UpdateIfDirty(p);
                             });

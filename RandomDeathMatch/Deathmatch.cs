@@ -20,7 +20,7 @@ namespace TheRiptide
         public bool IsEnabled { get; set; } = true;
 
         [Description("round time in minutes")]
-        public float RoundTime { get; set; } = 30.0f;
+        public float RoundTime { get; set; } = 20.0f;
 
         public string DummyPlayerName { get; set; } = "[THE RIPTIDE]";
     }
@@ -70,8 +70,8 @@ namespace TheRiptide
         [PluginConfig("attachment_blacklist_config.yml")]
         public AttachmentBlacklistConfig attachment_blacklist_config;
 
-        //[PluginConfig("voice_chat_config.yml")]
-        //public VoiceChatConfig voice_chat_config;
+        [PluginConfig("voice_chat_config.yml")]
+        public VoiceChatConfig voice_chat_config;
 
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
@@ -133,10 +133,10 @@ namespace TheRiptide
                 EventManager.RegisterEvents<Tracking>(this);
             if (attachment_blacklist_config.IsEnabled)
                 EventManager.RegisterEvents<AttachmentBlacklist>(this);
-            //if (voice_chat_config.IsEnabled)
-            //    EventManager.RegisterEvents<VoiceChat>(this);
+            if (voice_chat_config.IsEnabled)
+                EventManager.RegisterEvents<VoiceChat>(this);
 
-
+            Statistics.Init();
             Rooms.Singleton.Init(rooms_config);
             Killstreaks.Singleton.Init(killstreak_config);
             Loadouts.Singleton.Init(loadout_config);
@@ -149,8 +149,8 @@ namespace TheRiptide
                 Tracking.Singleton.Init(tracking_config);
             if (attachment_blacklist_config.IsEnabled)
                 AttachmentBlacklist.Singleton.Init(attachment_blacklist_config);
-            //if (voice_chat_config.IsEnabled)
-            //    VoiceChat.Singleton.Init(voice_chat_config);
+            if (voice_chat_config.IsEnabled)
+                VoiceChat.Singleton.Init(voice_chat_config);
 
             Translation.translation = translation_config;
             DeathmatchMenu.Singleton.SetupMenus();
@@ -161,7 +161,7 @@ namespace TheRiptide
             Database.Singleton.UnLoad();
 
             //features
-            //EventManager.UnregisterEvents<VoiceChat>(this);
+            EventManager.UnregisterEvents<VoiceChat>(this);
             EventManager.UnregisterEvents<AttachmentBlacklist>(this);
             EventManager.UnregisterEvents<Tracking>(this);
             EventManager.UnregisterEvents<Experiences>(this);
@@ -215,6 +215,7 @@ namespace TheRiptide
             FriendlyFireConfig.PauseDetector = true;
             Server.IsHeavilyModded = true;
             Round.IsLocked = true;
+            Warhead.IsLocked = true;
 
             Timing.CallDelayed(1.0f, () =>
             {

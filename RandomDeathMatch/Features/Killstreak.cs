@@ -1,6 +1,7 @@
 ﻿using InventorySystem.Items;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
+using InventorySystem.Items.Armor;
 using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
@@ -363,6 +364,7 @@ namespace TheRiptide
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
                     {
                         { 0, new List<ItemReward>{ new ItemReward { Item = ItemType.ArmorLight },                                       new ItemReward {Item = ItemType.GunCOM15 } } },
+                        { 1, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 } } },
                         { 2, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers } } },
                         { 3, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunCOM15 },        new ItemReward { Item = ItemType.GunCOM18 } } },
                         { 4, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 } } },
@@ -836,6 +838,10 @@ namespace TheRiptide
                                                 return;
                 GrantAmmo(player, GunAmmoType(item), 1.0f);
                 GrantFirearm(player, item);
+            }
+            else if(IsArmor(item))
+            {
+                AddArmor(player, item, true);
             }
             else
             {

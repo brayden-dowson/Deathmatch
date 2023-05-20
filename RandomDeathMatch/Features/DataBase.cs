@@ -21,7 +21,6 @@ namespace TheRiptide
             public ItemType primary { get; set; } = ItemType.None;
             public ItemType secondary { get; set; } = ItemType.None;
             public ItemType tertiary { get; set; } = ItemType.None;
-            public bool radio { get; set; } = true;
             public bool rage_enabled { get; set; } = false;
 
             //spawn
@@ -219,7 +218,6 @@ namespace TheRiptide
                             loadout.primary = config.primary;
                             loadout.secondary = config.secondary;
                             loadout.tertiary = config.tertiary;
-                            loadout.radio = config.radio;
                             loadout.rage_mode_enabled = config.rage_enabled;
                             spawn.role = config.role;
                             killstreak.name = config.killstreak_mode;
@@ -296,7 +294,6 @@ namespace TheRiptide
                     config.primary = loadout.primary;
                     config.secondary = loadout.secondary;
                     config.tertiary = loadout.tertiary;
-                    config.radio = loadout.radio;
                     config.rage_enabled = loadout.rage_mode_enabled;
                     config.role = spawn.role;
                     config.killstreak_mode = killstreak.name;

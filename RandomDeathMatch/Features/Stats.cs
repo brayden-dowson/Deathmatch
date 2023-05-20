@@ -10,6 +10,7 @@ using UnityEngine;
 using CustomPlayerEffects;
 using PlayerRoles;
 using static TheRiptide.Translation;
+using static TheRiptide.EventSubscriber;
 
 namespace TheRiptide
 {
@@ -44,6 +45,39 @@ namespace TheRiptide
         public static Dictionary<int, Dictionary<int, LifeStats>> attacker_stats = new Dictionary<int, Dictionary<int, LifeStats>>();
 
         public static Dictionary<int, Stats> player_stats = new Dictionary<int, Stats>();
+        private static Action<ReferenceHub, DamageHandlerBase> OnPlayerDamaged;
+
+        public static void Init()
+        {
+            OnPlayerDamaged = new Action<ReferenceHub, DamageHandlerBase>((hub, damage) =>
+            {
+                try
+                {
+                    if (hub != null)
+                    {
+                        if (damage is AttackerDamageHandler attacker)
+                        {
+                            if (attacker_stats.ContainsKey(attacker.Attacker.PlayerId))
+                            {
+                                var attacks = attacker_stats[attacker.Attacker.PlayerId];
+                                if (attacks.ContainsKey(hub.PlayerId))
+                                    attacks[hub.PlayerId].damage += attacker.DealtHealthDamage;
+                            }
+                            if (player_stats.ContainsKey(attacker.Attacker.PlayerId))
+                                player_stats[hub.PlayerId].damage_delt += Mathf.RoundToInt(attacker.DealtHealthDamage);
+                        }
+
+                        if (damage is StandardDamageHandler standard && player_stats.ContainsKey(hub.PlayerId))
+                            player_stats[hub.PlayerId].damage_recieved += Mathf.RoundToInt(standard.DealtHealthDamage);
+                    }
+                }
+                catch(Exception ex)
+                {
+                    Log.Error("on damage error: " + ex.ToString());
+                }
+            });
+            SubscribeOnDamaged(OnPlayerDamaged);
+        }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
         void OnPlayerJoined(Player player)
@@ -96,7 +130,7 @@ namespace TheRiptide
                     {
                         AhpStat ahp = null;
                         if (killer.ReferenceHub.playerStats.TryGetModule(out ahp))
-                            hint += translation.DeathMsgAhp.Replace("{ahp}", ahp.CurValue.ToString());
+                            hint += translation.DeathMsgAhp.Replace("{ahp}", ahp.CurValue.ToString("0"));
                     }
                     catch(Exception ex)
                     {
@@ -163,7 +197,7 @@ namespace TheRiptide
                 {
                     if (standard.Hitbox == HitboxType.Headshot)
                         stats.headshots++;
-                    stats.damage_delt += (int)math.round(standard.Damage);
+                    //stats.damage_delt += (int)math.round(standard.Damage);
                 }
             }
 
@@ -173,7 +207,7 @@ namespace TheRiptide
                 Stats stats = player_stats[victim.PlayerId];
                 if (damage is StandardDamageHandler standard)
                 {
-                    stats.damage_recieved += (int)math.round(standard.Damage);
+                    //stats.damage_recieved += (int)math.round(standard.Damage);
                 }
             }
 
@@ -190,7 +224,7 @@ namespace TheRiptide
 
                 if (damage is FirearmDamageHandler firearm)
                 {
-                    life_stats.damage += firearm.Damage;
+                    //life_stats.damage += firearm.Damage;
                     if (firearm.Hitbox == HitboxType.Headshot)
                         life_stats.head_shots++;
                     else if (firearm.Hitbox == HitboxType.Body)
@@ -202,7 +236,7 @@ namespace TheRiptide
                 }
                 else if(damage is StandardDamageHandler standard)
                 {
-                    life_stats.damage += standard.Damage;
+                    //life_stats.damage += standard.Damage;
                     life_stats.other_hits++;
                 }
             }
