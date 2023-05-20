@@ -12,7 +12,7 @@
 - Weapon and Attachment blacklists
 - Translation config
 - First player gets to choose starting area in facility
-- Infinite life radio granted (players can opt out in the preferences menu)
+- Global voice chat toggleable with the Alt key
 - Loadouts, Roles and preferences are saved when player leaves
 - Round stats displayed at end of round
 - Base game features overriden for minimal setup
