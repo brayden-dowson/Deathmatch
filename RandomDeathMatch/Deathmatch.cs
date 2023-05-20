@@ -20,7 +20,7 @@ namespace TheRiptide
         public bool IsEnabled { get; set; } = true;
 
         [Description("round time in minutes")]
-        public float RoundTime { get; set; } = 30.0f;
+        public float RoundTime { get; set; } = 20.0f;
 
         public string DummyPlayerName { get; set; } = "[THE RIPTIDE]";
     }
@@ -116,7 +116,6 @@ namespace TheRiptide
             EventManager.RegisterEvents<FacilityManager>(this);
             EventManager.RegisterEvents<BadgeOverride>(this);
             EventManager.RegisterEvents<HintOverride>(this);
-            //EventManager.RegisterEvents<VoiceChatOverride>(this);
             BadgeOverride.Singleton.Init(2);
 
             //features
@@ -137,7 +136,7 @@ namespace TheRiptide
             if (voice_chat_config.IsEnabled)
                 EventManager.RegisterEvents<VoiceChat>(this);
 
-
+            Statistics.Init();
             Rooms.Singleton.Init(rooms_config);
             Killstreaks.Singleton.Init(killstreak_config);
             Loadouts.Singleton.Init(loadout_config);
@@ -175,7 +174,6 @@ namespace TheRiptide
             EventManager.UnregisterEvents<Statistics>(this);
 
             //dependencies
-            //EventManager.UnregisterEvents<VoiceChatOverride>(this);
             EventManager.UnregisterEvents<HintOverride>(this);
             EventManager.UnregisterEvents<BadgeOverride>(this);
             EventManager.UnregisterEvents<FacilityManager>(this);
@@ -217,6 +215,7 @@ namespace TheRiptide
             FriendlyFireConfig.PauseDetector = true;
             Server.IsHeavilyModded = true;
             Round.IsLocked = true;
+            Warhead.IsLocked = true;
 
             Timing.CallDelayed(1.0f, () =>
             {

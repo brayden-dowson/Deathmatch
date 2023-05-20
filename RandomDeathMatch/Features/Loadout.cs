@@ -20,6 +20,7 @@ using System.ComponentModel;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
 using static TheRiptide.Translation;
+using Interactables.Interobjects.DoorUtils;
 
 namespace TheRiptide
 {
@@ -148,7 +149,14 @@ namespace TheRiptide
                     }
                     else
                     {
-                        RemoveItem(player, item.ItemTypeId);
+                        int gun_count = 0;
+                        foreach (var i in player.ReferenceHub.inventory.UserInventory.Items.Values)
+                            if (IsGun(i.ItemTypeId))
+                                gun_count++;
+                        if (gun_count >= 2)
+                            RemoveItem(player, item.ItemTypeId);
+                        else
+                            BroadcastOverride.BroadcastLine(player, 1, 3, BroadcastPriority.High, translation.LastWeapon);
                     }
                 }
                 else if (item.Category != ItemCategory.Armor && loadout.locked)
@@ -168,12 +176,34 @@ namespace TheRiptide
         void OnPlayerShotWeapon(Player player, Firearm firearm)
         {
             player_loadouts[player.PlayerId].locked = true;
+            RemoveItem(player, ItemType.KeycardO5);
         }
 
         [PluginEvent(ServerEventType.PlayerUsedItem)]
         void OnPlayerUsedItem(Player player, ItemBase item)
         {
             player_loadouts[player.PlayerId].locked = true;
+            RemoveItem(player, ItemType.KeycardO5);
+        }
+
+        [PluginEvent(ServerEventType.PlayerInteractDoor)]
+        bool OnPlayerInteractDoor(Player player, DoorVariant door, bool can_open)
+        {
+            if (door.ActiveLocks > 0 && !player.IsBypassEnabled)
+                return true;
+
+            door.NetworkTargetState = !door.TargetState;
+            door._triggerPlayer = player.ReferenceHub;
+            switch (door.NetworkTargetState)
+            {
+                case false:
+                    DoorEvents.TriggerAction(door, DoorAction.Closed, player.ReferenceHub);
+                    break;
+                case true:
+                    DoorEvents.TriggerAction(door, DoorAction.Opened, player.ReferenceHub);
+                    break;
+            }
+            return false;
         }
 
         [PluginEvent(ServerEventType.PlayerDying)]
@@ -265,7 +295,6 @@ namespace TheRiptide
             Loadout loadout = player_loadouts[player.PlayerId];
             Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
 
-            player.AddItem(ItemType.KeycardO5);
             if (!IsLoadoutEmpty(player))
             {
                 ItemType armor = Killstreaks.Singleton.ArmorType(player);
@@ -283,6 +312,7 @@ namespace TheRiptide
                 }
                 Killstreaks.Singleton.AddKillstreakStartItems(player);
             }
+            player.AddItem(ItemType.KeycardO5);
         }
 
         public bool SetGun(Player player, ItemType gun)

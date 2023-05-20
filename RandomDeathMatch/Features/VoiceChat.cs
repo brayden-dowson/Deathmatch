@@ -19,7 +19,6 @@ namespace TheRiptide
     public class VoiceChatConfig
     {
         public bool IsEnabled { get; set; } = true;
-        public bool IsSpectatorChatGlobal { get; set; } = false;
     }
 
     public class VoiceChat
