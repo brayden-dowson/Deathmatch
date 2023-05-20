@@ -270,7 +270,8 @@ namespace TheRiptide
             {
                 ItemType armor = Killstreaks.Singleton.ArmorType(player);
                 if (armor != ItemType.None)
-                    player.AddItem(armor);
+                    AddArmor(player, armor, true);
+
                 Killstreaks.Singleton.AddKillstreakStartAmmo(player);
                 if (!Killstreaks.Singleton.IsLoadoutLocked(player))
                 {

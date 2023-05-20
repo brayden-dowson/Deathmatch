@@ -1,4 +1,5 @@
 ﻿using InventorySystem.Items;
+using InventorySystem.Items.Armor;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
 using PlayerRoles;
@@ -13,6 +14,12 @@ namespace TheRiptide
 {
     public static class Utility
     {
+        public static void AddArmor(Player player, ItemType armor_type, bool dont_remove_excess_on_drop)
+        {
+            BodyArmor armor = player.AddItem(armor_type) as BodyArmor;
+            armor.DontRemoveExcessOnDrop = dont_remove_excess_on_drop;
+        }
+
         public static bool IsArmor(ItemType item)
         {
             return item == ItemType.ArmorLight || item == ItemType.ArmorCombat || item == ItemType.ArmorHeavy;

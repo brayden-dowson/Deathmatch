@@ -1,6 +1,7 @@
 ﻿using InventorySystem.Items;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
+using InventorySystem.Items.Armor;
 using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
@@ -837,6 +838,10 @@ namespace TheRiptide
                                                 return;
                 GrantAmmo(player, GunAmmoType(item), 1.0f);
                 GrantFirearm(player, item);
+            }
+            else if(IsArmor(item))
+            {
+                AddArmor(player, item, true);
             }
             else
             {
