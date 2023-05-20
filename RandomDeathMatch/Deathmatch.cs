@@ -116,7 +116,7 @@ namespace TheRiptide
             EventManager.RegisterEvents<FacilityManager>(this);
             EventManager.RegisterEvents<BadgeOverride>(this);
             EventManager.RegisterEvents<HintOverride>(this);
-            EventManager.RegisterEvents<VoiceChatOverride>(this);
+            //EventManager.RegisterEvents<VoiceChatOverride>(this);
             BadgeOverride.Singleton.Init(2);
 
             //features
@@ -175,7 +175,7 @@ namespace TheRiptide
             EventManager.UnregisterEvents<Statistics>(this);
 
             //dependencies
-            EventManager.UnregisterEvents<VoiceChatOverride>(this);
+            //EventManager.UnregisterEvents<VoiceChatOverride>(this);
             EventManager.UnregisterEvents<HintOverride>(this);
             EventManager.UnregisterEvents<BadgeOverride>(this);
             EventManager.UnregisterEvents<FacilityManager>(this);

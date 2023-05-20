@@ -59,6 +59,10 @@
     <Reference Include="Mirror_publicized">
       <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\publicized_assemblies\Mirror_publicized.dll</HintPath>
     </Reference>
+    <Reference Include="NorthwoodLib, Version=1.2.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\Program Files (x86)\Steam\steamapps\common\SCP Secret Laboratory Dedicated Server\SCPSL_Data\Managed\NorthwoodLib.dll</HintPath>
+    </Reference>
     <Reference Include="PluginAPI, Version=12.0.0.0, Culture=neutral, processorArchitecture=AMD64">
       <HintPath>..\packages\Northwood.PluginAPI.12.0.0\lib\net48\PluginAPI.dll</HintPath>
     </Reference>

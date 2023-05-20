@@ -168,7 +168,7 @@ namespace TheRiptide
                 return true;
 
             Spawn spawn = player_spawns[player.PlayerId];
-            if(new_role != spawn.role && new_role != RoleTypeId.Spectator)
+            if(new_role != spawn.role && new_role != RoleTypeId.Spectator && new_role != RoleTypeId.Overwatch)
             {
                 Timing.CallDelayed(0.0f, () => { player.SetRole(spawn.role, RoleChangeReason.RemoteAdmin); });
                 return false;

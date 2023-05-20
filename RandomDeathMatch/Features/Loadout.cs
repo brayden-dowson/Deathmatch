@@ -141,10 +141,14 @@ namespace TheRiptide
                             }
                         }
                     }
-                    else
+                    else if (!Killstreaks.Singleton.IsLoadoutLocked(player))
                     {
                         BroadcastOverride.ClearLines(player, BroadcastPriority.High);
                         BroadcastOverride.BroadcastLines(player, 1, 3, BroadcastPriority.High, translation.CustomisationDenied);
+                    }
+                    else
+                    {
+                        RemoveItem(player, item.ItemTypeId);
                     }
                 }
                 else if (item.Category != ItemCategory.Armor && loadout.locked)

@@ -363,6 +363,7 @@ namespace TheRiptide
                     ItemTable = new SortedDictionary<int, List<ItemReward>>
                     {
                         { 0, new List<ItemReward>{ new ItemReward { Item = ItemType.ArmorLight },                                       new ItemReward {Item = ItemType.GunCOM15 } } },
+                        { 1, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 } } },
                         { 2, new List<ItemReward>{ new ItemReward { Item = ItemType.Painkillers } } },
                         { 3, new List<ItemReward>{ new ItemReward { Action = InventoryAction.Remove, Item = ItemType.GunCOM15 },        new ItemReward { Item = ItemType.GunCOM18 } } },
                         { 4, new List<ItemReward>{ new ItemReward { Item = ItemType.SCP330 } } },

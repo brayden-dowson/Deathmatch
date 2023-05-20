@@ -157,6 +157,11 @@ namespace TheRiptide
 
         [Description("attachment blacklist")]
         public string AttachmentBanned { get; set; } = "<color=#FF0000>attachment {attachment} banned</color>";
+
+        [Description("voice chat")]
+        public string GlobalTalkGlobalReceive { get; set; } = "<color=#FF0000>Voice Chat: Global Talk Global Receive</color>";
+        public string ProximityTalkGlobalReceive { get; set; } = "<color=#FF0000>Voice Chat: Proximity Talk Global Receive</color>";
+        public string ProximityTalkProximityReceive { get; set; } = "<color=#FF0000>Voice Chat: Proximity Talk Proximity Receive</color>";
     }
 
     public static class Translation
