@@ -70,8 +70,8 @@ namespace TheRiptide
         [PluginConfig("attachment_blacklist_config.yml")]
         public AttachmentBlacklistConfig attachment_blacklist_config;
 
-        //[PluginConfig("voice_chat_config.yml")]
-        //public VoiceChatConfig voice_chat_config;
+        [PluginConfig("voice_chat_config.yml")]
+        public VoiceChatConfig voice_chat_config;
 
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
@@ -116,6 +116,7 @@ namespace TheRiptide
             EventManager.RegisterEvents<FacilityManager>(this);
             EventManager.RegisterEvents<BadgeOverride>(this);
             EventManager.RegisterEvents<HintOverride>(this);
+            EventManager.RegisterEvents<VoiceChatOverride>(this);
             BadgeOverride.Singleton.Init(2);
 
             //features
@@ -133,8 +134,8 @@ namespace TheRiptide
                 EventManager.RegisterEvents<Tracking>(this);
             if (attachment_blacklist_config.IsEnabled)
                 EventManager.RegisterEvents<AttachmentBlacklist>(this);
-            //if (voice_chat_config.IsEnabled)
-            //    EventManager.RegisterEvents<VoiceChat>(this);
+            if (voice_chat_config.IsEnabled)
+                EventManager.RegisterEvents<VoiceChat>(this);
 
 
             Rooms.Singleton.Init(rooms_config);
@@ -149,8 +150,8 @@ namespace TheRiptide
                 Tracking.Singleton.Init(tracking_config);
             if (attachment_blacklist_config.IsEnabled)
                 AttachmentBlacklist.Singleton.Init(attachment_blacklist_config);
-            //if (voice_chat_config.IsEnabled)
-            //    VoiceChat.Singleton.Init(voice_chat_config);
+            if (voice_chat_config.IsEnabled)
+                VoiceChat.Singleton.Init(voice_chat_config);
 
             Translation.translation = translation_config;
             DeathmatchMenu.Singleton.SetupMenus();
@@ -161,7 +162,7 @@ namespace TheRiptide
             Database.Singleton.UnLoad();
 
             //features
-            //EventManager.UnregisterEvents<VoiceChat>(this);
+            EventManager.UnregisterEvents<VoiceChat>(this);
             EventManager.UnregisterEvents<AttachmentBlacklist>(this);
             EventManager.UnregisterEvents<Tracking>(this);
             EventManager.UnregisterEvents<Experiences>(this);
@@ -174,6 +175,7 @@ namespace TheRiptide
             EventManager.UnregisterEvents<Statistics>(this);
 
             //dependencies
+            EventManager.UnregisterEvents<VoiceChatOverride>(this);
             EventManager.UnregisterEvents<HintOverride>(this);
             EventManager.UnregisterEvents<BadgeOverride>(this);
             EventManager.UnregisterEvents<FacilityManager>(this);

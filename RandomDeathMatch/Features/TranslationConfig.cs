@@ -40,7 +40,6 @@ namespace TheRiptide
         public List<string> CustomisationDenied { get; set; } = new List<string>() {
             "<color=#f8d107>Loadout can not be customised after shooting gun/using item</color>",
             "<color=#43BFF0>Wait until next respawn</color>" };
-        public string RadioDisableHint { get; set; } = "<color=#FF0000>Radio can be disabled in</color> <b><color=#43BFF0>[MAIN MENU]</color> -> <color=#43BFF0>[PREFERENCES]</color> -> <color=#eb0d47>[GUARD]</color></b>";
         public string WeaponBanned { get; set; } = "<color=#FF0000>{weapon} is currently banned</color>";
 
         [Description("lobby")]
@@ -100,12 +99,10 @@ namespace TheRiptide
 
         [Description("preferences menu")]
         public string PreferencesMenu { get; set; } = "<b><color=#43BFF0>[PREFERENCES]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
-        public string ToggleRadio { get; set; } = "<color=#eb0d47>[GUARD]</color> = <b>Toggle Loadout Radio</b>";
         public string Stats { get; set; } = "<color=#eb0d47>[SCIENTIST]</color> = <b><color=#43BFF0>[STATS]</color></b>";
         public string Spectator { get; set; } = "<color=#eb0d47>[FLASH LIGHT]</color> = <b>Enable spectator mode</b>";
         public string EnableRage { get; set; } = "<color=#eb0d47>[COIN]</color> = <b>Enable [DATA EXPUNGED]</b>";
         public string DeleteData { get; set; } = "<color=#eb0d47>[JANITOR]</color> = <b>Delete Data stats/configs/ranks/xp/preferences (can not be undone)</b>";
-        public string RadioToggled { get; set; } = "<b><color=#43BFF0>Loadout Radio: </color></b> {state}";
 
         [Description("stats menu")]
         public string StatsMenu { get; set; } = "<b><color=#43BFF0>[STATS]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";

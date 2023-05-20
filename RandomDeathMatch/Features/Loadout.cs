@@ -65,7 +65,6 @@ namespace TheRiptide
             public bool locked = false;
             public bool customising = false;
             public bool rage_mode_enabled = false;
-            public bool radio = true;
         }
 
         public static Dictionary<int, Loadout> player_loadouts = new Dictionary<int, Loadout>();
@@ -148,16 +147,8 @@ namespace TheRiptide
                         BroadcastOverride.BroadcastLines(player, 1, 3, BroadcastPriority.High, translation.CustomisationDenied);
                     }
                 }
-                else if (item.Category != ItemCategory.Armor)
-                {
-                    if (item.ItemTypeId == ItemType.Radio)
-                    {
-                        RemoveItem(player, ItemType.Radio);
-                        BroadcastOverride.BroadcastLine(player, 1, 5, BroadcastPriority.High, translation.RadioDisableHint);
-                    }
-                    else if (loadout.locked)
-                        drop_allowed = true;
-                }
+                else if (item.Category != ItemCategory.Armor && loadout.locked)
+                    drop_allowed = true;
             }
             BroadcastOverride.UpdateIfDirty(player);
             return drop_allowed;
@@ -218,15 +209,6 @@ namespace TheRiptide
             }
         }
 
-        [PluginEvent(ServerEventType.PlayerUsingRadio)]
-        void OnPlayerUsingRadio(Player player, RadioItem radio, float drain)
-        {
-            //if(player != null && radio != null)
-            //{
-            //    radio.BatteryPercent = 100;
-            //}
-        }
-
         public static bool ValidateLoadout(Player player)
         {
             if (IsLoadoutEmpty(player))
@@ -280,12 +262,6 @@ namespace TheRiptide
             Killstreaks.Killstreak killstreak = Killstreaks.GetKillstreak(player);
 
             player.AddItem(ItemType.KeycardO5);
-            if (loadout.radio)
-            {
-                RadioItem radio = player.AddItem(ItemType.Radio) as RadioItem;
-                radio._rangeId = (byte)(radio.Ranges.Length - 1);
-            }
-
             if (!IsLoadoutEmpty(player))
             {
                 ItemType armor = Killstreaks.Singleton.ArmorType(player);

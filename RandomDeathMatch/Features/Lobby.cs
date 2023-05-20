@@ -380,13 +380,13 @@ namespace TheRiptide
             {
                 if (player == null)
                 {
-                    ServerConsole.AddLog("could not teleport player because player was null");
+                    Log.Error("could not teleport player because player was null");
                     return;
                 }
 
                 if (!player_spawns.ContainsKey(player.PlayerId))
                 {
-                    ServerConsole.AddLog("could not teleport player: " + player.Nickname + " because they where never added to players");
+                    Log.Error("could not teleport player: " + player.Nickname + " because they where never added to players");
                     return;
                 }
 
@@ -471,17 +471,17 @@ namespace TheRiptide
                     }
                     else
                     {
-                        ServerConsole.AddLog("could not teleport player: " + player.Nickname + " because there was no opened rooms");
+                        Log.Error("could not teleport player: " + player.Nickname + " because there was no opened rooms");
                     }
                 }
                 else
                 {
-                    ServerConsole.AddLog("could not teleport player: " + player.Nickname + " because they are not in spawn");
+                    Log.Error("could not teleport player: " + player.Nickname + " because they are not in spawn");
                 }
             }
             catch (Exception ex)
             {
-                ServerConsole.AddLog("teleport error: " + ex.ToString());
+                Log.Error("teleport error: " + ex.ToString());
             }
         }
 
