@@ -336,7 +336,6 @@ namespace TheRiptide
                     }
                     Database.Singleton.SaveExperience(p);
                     HintOverride.Add(p, 1, translation.XpGainedMsg.Replace("{xp}", gained.ToString()), 30.0f);
-                    //ShowXpHint(p, xp, 30.0f);
                     BadgeOverride.Singleton.SetBadge(p, 1, XpString(xp));
                 }
             }
