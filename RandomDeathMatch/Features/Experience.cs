@@ -305,7 +305,11 @@ namespace TheRiptide
                     RewardXp(p, config.XpPerMinute * minutes, translation.RewardXpMinute.Replace("{time}", minutes.ToString()));
 
                     XP xp = player_xp[p.PlayerId];
-                    int gained = xp.value - previous_xp[p.PlayerId].value;
+                    int gained = 0;
+                    if (previous_xp.ContainsKey(p.PlayerId))
+                        gained = xp.value - previous_xp[p.PlayerId].value;
+                    else
+                        gained = xp.value;
                     bool maxed_tier = xp.tier >= config.TierTags.Count - 1;
                     bool maxed_stage = xp.stage >= config.StageTags.Count - 1;
                     bool maxed_level = xp.level >= config.LevelTags.Count - 1;

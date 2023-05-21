@@ -12,7 +12,7 @@ namespace TheRiptide
     public class TranslationConfig
     {
         [Description("Main")]
-        public string DntMsg { get; set; } = "<size=128><b><color=#FF0000>Warning! You have DNT enabled so any Experience and Rank you gain will be lost at the end of the round! Your Config, Preferences, Killstreak, Statistics, Role and Loadout cant be saved because you have DNT enabled in you game settings. To remain fair your kills/deaths towards ranked players will be ignored.</color></b></size>";
+        public string DntMsg { get; set; } = "<size=64><b><color=#FF0000>Warning! You have DNT enabled so any Experience and Rank you gain will be lost at the end of the round! Your Config, Preferences, Killstreak, Statistics, Role and Loadout cant be saved because you have DNT enabled in you game settings. To remain fair your kills/deaths towards ranked players will be ignored.</color></b></size>";
 
         [Description("Hitbox")]
         public string Body { get; set; } = "Body";
