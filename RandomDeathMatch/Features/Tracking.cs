@@ -10,6 +10,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static TheRiptide.Utility;
+using static TheRiptide.EventSubscriber;
+using UnityEngine;
 
 namespace TheRiptide
 {
@@ -29,6 +31,7 @@ namespace TheRiptide
         private Database.Round current_round = new Database.Round();
         private Dictionary<int, Database.Session> player_sessions = new Dictionary<int, Database.Session>();
         private Dictionary<int, Database.Life> player_life = new Dictionary<int, Database.Life>();
+        private Action<ReferenceHub, DamageHandlerBase> OnPlayerDamaged;
 
         public Tracking()
         {
@@ -38,6 +41,25 @@ namespace TheRiptide
         public void Init(TrackingConfig config)
         {
             this.config = config;
+            if (config.TrackHits)
+            {
+                OnPlayerDamaged = new Action<ReferenceHub, DamageHandlerBase>((hub, damage) =>
+                {
+                    try
+                    {
+                        if (hub != null)
+                        {
+                            if (damage is AttackerDamageHandler attacker && player_life.ContainsKey(hub.PlayerId) && player_life.ContainsKey(attacker.Attacker.PlayerId))
+                                player_life[hub.PlayerId].received.Last().damage = (byte)Mathf.Clamp(Mathf.RoundToInt(attacker.DealtHealthDamage), 0, 255);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        Log.Error("on damage error: " + ex.ToString());
+                    }
+                });
+                SubscribeOnDamaged(OnPlayerDamaged);
+            }
         }
 
         [PluginEvent(ServerEventType.WaitingForPlayers)]
@@ -121,7 +143,6 @@ namespace TheRiptide
                     victim_life.received.Add(hit);
                     attacker_life.delt.Add(hit);
                     hit.health = (byte)victim.Health;
-                    hit.damage = (byte)standard.Damage;
                     hit.hitbox = (byte)standard.Hitbox;
                     hit.weapon = (byte)GetItemFromDamageHandler(damage);
                 }
