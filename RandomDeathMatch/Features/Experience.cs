@@ -374,7 +374,7 @@ namespace TheRiptide
 
             public string[] Aliases { get; } = new string[] { "dmxp" };
 
-            public string Description { get; } = "set players xp. usage: dmsetxp [player_id] [value] [level] [stage] [tier]', -1 = palceholder, -1 id = self";
+            public string Description { get; } = "set players xp. usage: dmsetxp [player_id] [value] [level] [stage] [tier], -1 = placeholder, -1 id = self";
 
             public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
             {
@@ -383,7 +383,7 @@ namespace TheRiptide
 
                 if (arguments.Count == 0)
                 {
-                    response = "usage: dmsetxp [player_id] [value] [level] [stage] [tier]', -1 = palceholder, -1 id = self";
+                    response = "usage: dmsetxp [player_id] [value] [level] [stage] [tier], -1 = placeholder, -1 id = self";
                     return false;
                 }
 

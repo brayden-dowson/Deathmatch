@@ -355,7 +355,7 @@ namespace TheRiptide
 
             public string[] Aliases { get; } = new string[] { "dmrs" };
 
-            public string Description { get; } = "set players rank state. usage: dmsetrankstate [player_id] [state]";
+            public string Description { get; } = "set players rank state. usage: dmsetrankstate [player_id] [state], states: 0 = Unranked 1 = Placement 2 = Ranked";
 
             public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
             {
@@ -364,7 +364,7 @@ namespace TheRiptide
 
                 if(arguments.Count != 2)
                 {
-                    response = "usage: dmsetrankstate [playerid] [state]. states: 0 = Unranked 1 = Placement 2 = Ranked";
+                    response = "usage: dmsetrankstate [playerid] [state], states: 0 = Unranked 1 = Placement 2 = Ranked";
                     return false;
                 }
 
