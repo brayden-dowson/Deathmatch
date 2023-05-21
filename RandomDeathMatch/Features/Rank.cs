@@ -202,10 +202,14 @@ namespace TheRiptide
             }
         }
 
-        public void SetRank(Player player, float rating)
+        public bool SetRank(Player player, float rating)
         {
             if (player_glikco.ContainsKey(player.UserId))
+            {
                 player_glikco[player.UserId].Rating = rating;
+                return true;
+            }
+            return false;
         }
 
         public Database.Rank GetRank(Player player)
@@ -289,19 +293,21 @@ namespace TheRiptide
                 Player target = null;
                 if (!int.TryParse(arguments.ElementAt(0), out id) || !Player.TryGet(id, out target))
                 {
-                    response = "failed invalid id: " + arguments.ElementAt(0);
+                    response = "failed - invalid id: " + arguments.ElementAt(0);
                     return false;
                 }
 
                 int rating;
                 if (!int.TryParse(arguments.ElementAt(1), out rating))
                 {
-                    response = "failed invalid rating: " + arguments.ElementAt(1);
+                    response = "failed - invalid rating: " + arguments.ElementAt(1);
                     return false;
                 }
 
-                Singleton.SetRank(target, rating);
-                response = "success";
+                if (Singleton.SetRank(target, rating))
+                    response = "success";
+                else
+                    response = "failed - player does not have a rank yet";
                 return true;
             }
         }
@@ -330,11 +336,14 @@ namespace TheRiptide
                 Player target = null;
                 if (!int.TryParse(arguments.ElementAt(0), out id) || !Player.TryGet(id, out target))
                 {
-                    response = "failed invalid id: " + arguments.ElementAt(0);
+                    response = "failed - invalid id: " + arguments.ElementAt(0);
                     return false;
                 }
 
-                response = target.Nickname + " rating is " + Singleton.GetRank(target).rating.ToString("0");
+                if (Singleton.player_glikco.ContainsKey(target.UserId))
+                    response = target.Nickname + " rating is " + Singleton.player_glikco[target.UserId].Rating.ToString("0");
+                else
+                    response = "failed - player does not have a rank yet";
                 return true;
             }
         }

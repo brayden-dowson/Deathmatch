@@ -397,14 +397,14 @@ namespace TheRiptide
                     int tier = -1;
                     if (!int.TryParse(arguments.ElementAt(0), out id))
                     {
-                        response = "failed to parse id: " + arguments.ElementAt(0);
+                        response = "failed - invalid id: " + arguments.ElementAt(0);
                         return false;
                     }
                     if (arguments.Count >= 2)
                     {
                         if (!int.TryParse(arguments.ElementAt(1), out value))
                         {
-                            response = "failed to parse value: " + arguments.ElementAt(1);
+                            response = "failed - invalid value: " + arguments.ElementAt(1);
                             return false;
                         }
                     }
@@ -412,7 +412,7 @@ namespace TheRiptide
                     {
                         if (!int.TryParse(arguments.ElementAt(2), out level))
                         {
-                            response = "failed to parse level: " + arguments.ElementAt(2);
+                            response = "failed - invalid level: " + arguments.ElementAt(2);
                             return false;
                         }
                     }
@@ -420,7 +420,7 @@ namespace TheRiptide
                     {
                         if (!int.TryParse(arguments.ElementAt(3), out stage))
                         {
-                            response = "failed to parse stage: " + arguments.ElementAt(3);
+                            response = "failed - invalid stage: " + arguments.ElementAt(3);
                             return false;
                         }
                     }
@@ -428,7 +428,7 @@ namespace TheRiptide
                     {
                         if (!int.TryParse(arguments.ElementAt(4), out tier))
                         {
-                            response = "failed to parse tier: " + arguments.ElementAt(4);
+                            response = "failed - invalid tier: " + arguments.ElementAt(4);
                             return false;
                         }
                     }
@@ -438,7 +438,7 @@ namespace TheRiptide
                         Player target = null;
                         if (!Player.TryGet(id, out target))
                         {
-                            response = "failed to get player with id: " + id;
+                            response = "failed - no player with id: " + id;
                             return false;
                         }
                         xp = Singleton.GetXP(target);
@@ -454,7 +454,7 @@ namespace TheRiptide
                     response = "successfully set xp: " + xp.value + " level: " + xp.level + " stage: " + xp.stage + " tier: " + xp.tier;
                     return true;
                 }
-                response = "failed";
+                response = "failed - only players may execute this command";
                 return false;
             }
         }
