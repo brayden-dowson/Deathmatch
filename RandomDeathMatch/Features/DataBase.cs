@@ -184,7 +184,6 @@ namespace TheRiptide
 
         public void Load(string config_path)
         {
-
             db = new LiteDatabase(config_path.Replace("config.yml", "") + "Deathmatch.db");
         }
 

@@ -214,7 +214,6 @@ namespace TheRiptide
 
         public static void BroadcastLine(int line, float duration, BroadcastPriority priority, string msg)
         {
-
             foreach (Player player in Player.GetPlayers())
                 BroadcastLine(player, line, duration, priority, msg);
         }

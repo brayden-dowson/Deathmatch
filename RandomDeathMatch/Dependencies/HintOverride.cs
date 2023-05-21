@@ -127,22 +127,26 @@ namespace TheRiptide
 
         public static void Add(Player player, int id, string msg, float duration)
         {
-            hint_info[player.PlayerId].Add(id, msg, duration);
+            if (hint_info.ContainsKey(player.PlayerId))
+                hint_info[player.PlayerId].Add(id, msg, duration);
         }
 
         public static void Remove(Player player, int id)
         {
-            hint_info[player.PlayerId].Remove(id);
+            if (hint_info.ContainsKey(player.PlayerId))
+                hint_info[player.PlayerId].Remove(id);
         }
 
         public static void Clear(Player player)
         {
-            hint_info[player.PlayerId].Clear();
+            if (hint_info.ContainsKey(player.PlayerId))
+                hint_info[player.PlayerId].Clear();
         }
 
         public static void Refresh(Player player)
         {
-            hint_info[player.PlayerId].Refresh(player);
+            if (hint_info.ContainsKey(player.PlayerId))
+                hint_info[player.PlayerId].Refresh(player);
         }
 
         public static void Refresh()
