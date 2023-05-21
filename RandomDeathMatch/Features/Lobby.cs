@@ -110,9 +110,11 @@ namespace TheRiptide
             if (player_spawns.ContainsKey(player.PlayerId))
             {
                 avaliable_spawn_rooms.Add(player_spawns[player.PlayerId].spawn_room);
-                Database.Singleton.SaveConfigSpawn(player);
+                if (!player.DoNotTrack)
+                    Database.Singleton.SaveConfigSpawn(player);
                 player_spawns.Remove(player.PlayerId);
             }
+
             if(Player.Count == 2)
             {
                 Deathmatch.GameStarted = false;

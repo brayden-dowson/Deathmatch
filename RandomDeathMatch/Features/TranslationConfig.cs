@@ -11,6 +11,9 @@ namespace TheRiptide
 {
     public class TranslationConfig
     {
+        [Description("Main")]
+        public string DntMsg { get; set; } = "<size=128><b><color=#FF0000>Warning! You have DNT enabled so any Experience and Rank you gain will be lost at the end of the round! Your Config, Preferences, Killstreak, Statistics, Role and Loadout cant be saved because you have DNT enabled in you game settings. To remain fair your kills/deaths towards ranked players will be ignored.</color></b></size>";
+
         [Description("Hitbox")]
         public string Body { get; set; } = "Body";
         public string Limb { get; set; } = "Limb";
@@ -134,7 +137,7 @@ namespace TheRiptide
         public string PlayerStatsLine2 { get; set; } = "<color=#76b8b5>Hs Kills:</color> <color=#FF0000>{hsk}%</color>    <color=#76b8b5>Hs:</color> <color=#FF0000>{hs}%</color>    <color=#76b8b5>Accuracy:</color> <color=#FF0000>{accuracy}%</color>    <color=#76b8b5>Dmg Delt:</color> <color=#FF0000>{dmg_delt}</color>    <color=#76b8b5>Dmg Taken:</color> <color=#FF0000>{dmg_taken}</color>";
         public string HighestKillstreak { get; set; } = "<b><color=#43BFF0>{name}</color></b> <color=#d4af37>had the highest killstreak of</color> <b><color=#FF0000>{streak}</color></b>";
         public string HighestKills { get; set; } = "<b><color=#43BFF0>{name}</color></b> <color=#c0c0c0>had the most kills</color> <b><color=#FF0000>{kills}</color></b>";
-        public string HighestScore { get; set; } = "<b><color=#43BFF0>{name}</color></b> <color=#a97142> was the best player with a score of </color> <b><color=#FF0000>{score}</color></b>";
+        public string HighestScore { get; set; } = "<b><color=#43BFF0>{name}</color></b> <color=#a97142>was the best player with a score of </color> <b><color=#FF0000>{score}</color></b>";
 
         [Description("experience")]
         public string RewardXpKill { get; set; } = "gained {xp} Xp for killing player";

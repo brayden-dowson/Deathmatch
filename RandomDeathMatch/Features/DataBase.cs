@@ -207,26 +207,19 @@ namespace TheRiptide
 
                 var configs = db.GetCollection<Config>("configs");
                 configs.EnsureIndex(x => x.UserId);
-                if (!player.DoNotTrack)
+                Config config = configs.FindById(player.UserId);
+                if (config != null)
                 {
-                    Config config = configs.FindById(player.UserId);
-                    if (config != null)
+                    Timing.CallDelayed(0.0f, () =>
                     {
-                        Timing.CallDelayed(0.0f, () =>
-                        {
-                            loadout.primary = config.primary;
-                            loadout.secondary = config.secondary;
-                            loadout.tertiary = config.tertiary;
-                            loadout.rage_mode_enabled = config.rage_enabled;
-                            spawn.role = config.role;
-                            killstreak.name = config.killstreak_mode;
-                            Killstreaks.Singleton.KillstreakLoaded(player);
-                        });
-                    }
-                }
-                else
-                {
-                    configs.Delete(player.UserId);
+                        loadout.primary = config.primary;
+                        loadout.secondary = config.secondary;
+                        loadout.tertiary = config.tertiary;
+                        loadout.rage_mode_enabled = config.rage_enabled;
+                        spawn.role = config.role;
+                        killstreak.name = config.killstreak_mode;
+                        Killstreaks.Singleton.KillstreakLoaded(player);
+                    });
                 }
             });
         }
@@ -287,21 +280,14 @@ namespace TheRiptide
             {
                 var configs = db.GetCollection<Config>("configs");
                 configs.EnsureIndex(x => x.UserId);
-                if (!player.DoNotTrack)
-                {
-                    Config config = new Config { UserId = player.UserId };
-                    config.primary = loadout.primary;
-                    config.secondary = loadout.secondary;
-                    config.tertiary = loadout.tertiary;
-                    config.rage_enabled = loadout.rage_mode_enabled;
-                    config.role = spawn.role;
-                    config.killstreak_mode = killstreak.name;
-                    configs.Upsert(config);
-                }
-                else
-                {
-                    configs.Delete(player.UserId);
-                }
+                Config config = new Config { UserId = player.UserId };
+                config.primary = loadout.primary;
+                config.secondary = loadout.secondary;
+                config.tertiary = loadout.tertiary;
+                config.rage_enabled = loadout.rage_mode_enabled;
+                config.role = spawn.role;
+                config.killstreak_mode = killstreak.name;
+                configs.Upsert(config);
             });
         }
 
@@ -309,33 +295,30 @@ namespace TheRiptide
         {
             DbDelayedAsync(() =>
             {
-                if (!player.DoNotTrack)
+                Rank player_rank = Ranks.Singleton.GetRank(player);
+                var ranks = db.GetCollection<Rank>("ranks");
+                ranks.EnsureIndex(x => x.UserId);
+                Rank rank = ranks.FindById(player.UserId);
+                Timing.CallDelayed(0.0f, () =>
                 {
-                    Rank player_rank = Ranks.Singleton.GetRank(player);
-                    var ranks = db.GetCollection<Rank>("ranks");
-                    ranks.EnsureIndex(x => x.UserId);
-                    Rank rank = ranks.FindById(player.UserId);
-                    Timing.CallDelayed(0.0f, () =>
+                    try
                     {
-                        try
+                        if (rank != null)
                         {
-                            if (rank != null)
-                            {
-                                player_rank.UserId = rank.UserId;
-                                player_rank.state = rank.state;
-                                player_rank.placement_matches = rank.placement_matches;
-                                player_rank.rating = rank.rating;
-                                player_rank.rd = rank.rd;
-                                player_rank.rv = rank.rv;
-                            }
-                            Ranks.Singleton.RankLoaded(player);
+                            player_rank.UserId = rank.UserId;
+                            player_rank.state = rank.state;
+                            player_rank.placement_matches = rank.placement_matches;
+                            player_rank.rating = rank.rating;
+                            player_rank.rd = rank.rd;
+                            player_rank.rv = rank.rv;
                         }
-                        catch (System.Exception ex)
-                        {
-                            Log.Error("database rank error: " + ex.ToString());
-                        }
-                    });
-                }
+                        Ranks.Singleton.RankLoaded(player);
+                    }
+                    catch (System.Exception ex)
+                    {
+                        Log.Error("database rank error: " + ex.ToString());
+                    }
+                });
             });
         }
 
@@ -353,31 +336,28 @@ namespace TheRiptide
         {
             DbDelayedAsync(() =>
             {
-                if (!player.DoNotTrack)
+                Experiences.XP player_xp = Experiences.Singleton.GetXP(player);
+                var experiences = db.GetCollection<Experience>("experiences");
+                experiences.EnsureIndex(x => x.UserId);
+                Experience xp = experiences.FindById(player.UserId);
+                Timing.CallDelayed(0.0f, () =>
                 {
-                    Experiences.XP player_xp = Experiences.Singleton.GetXP(player);
-                    var experiences = db.GetCollection<Experience>("experiences");
-                    experiences.EnsureIndex(x => x.UserId);
-                    Experience xp = experiences.FindById(player.UserId);
-                    Timing.CallDelayed(0.0f, () =>
+                    try
                     {
-                        try
+                        if (xp != null)
                         {
-                            if (xp != null)
-                            {
-                                player_xp.value = xp.value;
-                                player_xp.level = xp.level;
-                                player_xp.stage = xp.stage;
-                                player_xp.tier = xp.tier;
-                            }
-                            Experiences.Singleton.XpLoaded(player);
+                            player_xp.value = xp.value;
+                            player_xp.level = xp.level;
+                            player_xp.stage = xp.stage;
+                            player_xp.tier = xp.tier;
                         }
-                        catch(System.Exception ex)
-                        {
-                            Log.Error("database experience error: " + ex.ToString());
-                        }
-                    });
-                }
+                        Experiences.Singleton.XpLoaded(player);
+                    }
+                    catch(System.Exception ex)
+                    {
+                        Log.Error("database experience error: " + ex.ToString());
+                    }
+                });
             });
         }
 
@@ -386,17 +366,14 @@ namespace TheRiptide
             Experiences.XP player_xp = Experiences.Singleton.GetXP(player);
             DbAsync(() =>
             {
-                if (!player.DoNotTrack)
-                {
-                    var experiences = db.GetCollection<Experience>("experiences");
-                    experiences.EnsureIndex(x => x.UserId);
-                    Experience xp = new Experience { UserId = player.UserId };
-                    xp.value = player_xp.value;
-                    xp.level = player_xp.level;
-                    xp.stage = player_xp.stage;
-                    xp.tier = player_xp.tier;
-                    experiences.Upsert(xp);
-                }
+                var experiences = db.GetCollection<Experience>("experiences");
+                experiences.EnsureIndex(x => x.UserId);
+                Experience xp = new Experience { UserId = player.UserId };
+                xp.value = player_xp.value;
+                xp.level = player_xp.level;
+                xp.stage = player_xp.stage;
+                xp.tier = player_xp.tier;
+                experiences.Upsert(xp);
             });
         }
 

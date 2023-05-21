@@ -99,7 +99,8 @@ namespace TheRiptide
         {
             if (player_loadouts.ContainsKey(player.PlayerId))
             {
-                Database.Singleton.SaveConfigLoadout(player);
+                if (!player.DoNotTrack)
+                    Database.Singleton.SaveConfigLoadout(player);
                 player_loadouts.Remove(player.PlayerId);
             }
         }

@@ -509,7 +509,8 @@ namespace TheRiptide
         {
             if (player_killstreak.ContainsKey(player.PlayerId))
             {
-                Database.Singleton.SaveConfigKillstreak(player);
+                if (!player.DoNotTrack)
+                    Database.Singleton.SaveConfigKillstreak(player);
                 player_killstreak.Remove(player.PlayerId);
             }
         }

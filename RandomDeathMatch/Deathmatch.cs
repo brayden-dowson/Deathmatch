@@ -11,6 +11,7 @@ using UnityEngine;
 using System.ComponentModel;
 using CustomPlayerEffects;
 using InventorySystem.Items.Firearms.Attachments;
+using static TheRiptide.Translation;
 
 //todo voice and spectate cmd
 namespace TheRiptide
@@ -270,7 +271,10 @@ namespace TheRiptide
         void OnPlayerJoined(Player player)
         {
             players.Add(player.PlayerId);
-            Database.Singleton.LoadConfig(player);
+            if (!player.DoNotTrack)
+                Database.Singleton.LoadConfig(player);
+            else
+                Timing.CallDelayed(1.0f, () => { HintOverride.Add(player, 0, translation.DntMsg, 30.0f); HintOverride.Refresh(player); });
         }
 
         [PluginEvent(ServerEventType.PlayerLeft)]

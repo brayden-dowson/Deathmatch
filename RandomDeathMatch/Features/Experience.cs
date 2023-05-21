@@ -141,7 +141,7 @@ namespace TheRiptide
         {
             public float damage = 0.0f;
             public int killstreak = 0;
-            public float connect_time = UnityEngine.Time.time;
+            public float connect_time = Time.time;
         }
 
         public class XP
@@ -184,7 +184,10 @@ namespace TheRiptide
             if (!player_xp.ContainsKey(id))
             {
                 player_xp.Add(id, new XP());
-                Database.Singleton.LoadExperience(player);
+                if (!player.DoNotTrack)
+                    Database.Singleton.LoadExperience(player);
+                else
+                    BadgeOverride.Singleton.SetBadge(player, 1, XpString(player_xp[id]));
             }
 
             if (!player_tracking.ContainsKey(id))
@@ -340,7 +343,8 @@ namespace TheRiptide
                         maxed_level = xp.level >= config.LevelTags.Count - 1;
                         next = XpToNextLevel(xp);
                     }
-                    Database.Singleton.SaveExperience(p);
+                    if (!p.DoNotTrack)
+                        Database.Singleton.SaveExperience(p);
                     HintOverride.Add(p, 1, translation.XpGainedMsg.Replace("{xp}", gained.ToString()), 30.0f);
                     BadgeOverride.Singleton.SetBadge(p, 1, XpString(xp));
                 }

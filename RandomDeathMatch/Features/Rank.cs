@@ -21,6 +21,9 @@ namespace TheRiptide
 
         public string BadgeFormat { get; set; } = "Rank: {0}\n";
 
+        public string DntTag { get; set; } = "Rank: DNT\n";
+        public string DntColor { get; set; } = "nickel";
+
         [Description("players start unranked. unranked players cannot influence placement/ranked players. once the MinXpForPlacement is achieved they will progress to placement")]
         public string UnrankedTag { get; set; } = "Rank: --/--/--\n";
         public string UnrankedColor { get; set; } = "nickel";
@@ -31,6 +34,7 @@ namespace TheRiptide
         public string PlacementColor { get; set; } = "magenta";
         [Description("matches referes to kill/deaths against placement and ranked players. this is how many until you become ranked")]
         public int PlacementMatches { get; set; } = 300;
+
         [Description("glicko-2 params set when a player start placement")]
         public float Rating { get; set; } = 1500;
         public float RatingDeviation { get; set; } = 350;
@@ -116,6 +120,11 @@ namespace TheRiptide
                     player_ranks.Add(id, new Database.Rank { UserId = player.UserId });
                     Database.Singleton.LoadRank(player);
                 }
+            }
+            else
+            {
+                BadgeOverride.Singleton.SetBadge(player, 0, config.DntTag);
+                BadgeOverride.Singleton.SetBadgeColor(player, config.DntColor);
             }
         }
 
