@@ -253,6 +253,7 @@ namespace TheRiptide
                     Experiences.Singleton.SaveExperiences();
                     Ranks.Singleton.CalculateAndSaveRanks();
                     HintOverride.Refresh();
+                    VoiceChat.Singleton.ForceGlobalTalkGlobalReceive();
                     Server.Instance.SetRole(RoleTypeId.Spectator);
                 }
                 catch(Exception ex)

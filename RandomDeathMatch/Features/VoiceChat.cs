@@ -13,6 +13,7 @@ using Mirror;
 using VoiceChat;
 using PlayerRoles.Voice;
 using static TheRiptide.Translation;
+using System.Linq;
 
 namespace TheRiptide
 {
@@ -28,6 +29,7 @@ namespace TheRiptide
 
         public enum TalkMode { GlobalTalkGlobalReceive, ProximityTalkGlobalReceive, ProximityTalkProximityReceive };
         private Dictionary<int, TalkMode> player_mode = new Dictionary<int, TalkMode>();
+        private bool force_mode = false;
         private Harmony harmony;
 
         public VoiceChat()
@@ -40,6 +42,12 @@ namespace TheRiptide
         public void Init(VoiceChatConfig config)
         {
             this.config = config;
+        }
+
+        [PluginEvent(ServerEventType.WaitingForPlayers)]
+        void OnWaitingForPlayers()
+        {
+            force_mode = false;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
@@ -56,6 +64,13 @@ namespace TheRiptide
         {
             if (player_mode.ContainsKey(player.PlayerId))
                 player_mode.Remove(player.PlayerId);
+        }
+
+        public void ForceGlobalTalkGlobalReceive()
+        {
+            force_mode = true;
+            foreach (var id in player_mode.Keys.ToList())
+                player_mode[id] = TalkMode.GlobalTalkGlobalReceive;
         }
 
         private bool IsGlobalTalk(int id)
@@ -111,25 +126,28 @@ namespace TheRiptide
                 if (FpcNoclip.IsPermitted(player))
                     return true;
 
-                int id = player.PlayerId;
-                if (Singleton.player_mode.ContainsKey(id))
+                if (!Singleton.force_mode)
                 {
-                    switch (Singleton.player_mode[id])
+                    int id = player.PlayerId;
+                    if (Singleton.player_mode.ContainsKey(id))
                     {
-                        case TalkMode.GlobalTalkGlobalReceive:
-                            Singleton.player_mode[id] = TalkMode.ProximityTalkGlobalReceive;
-                            BroadcastOverride.BroadcastLine(Player.Get(player), 1, 5, BroadcastPriority.Low, translation.ProximityTalkGlobalReceive);
-                            break;
-                        case TalkMode.ProximityTalkGlobalReceive:
-                            Singleton.player_mode[id] = TalkMode.ProximityTalkProximityReceive;
-                            BroadcastOverride.BroadcastLine(Player.Get(player), 1, 5, BroadcastPriority.Low, translation.ProximityTalkProximityReceive);
-                            break;
-                        case TalkMode.ProximityTalkProximityReceive:
-                            Singleton.player_mode[id] = TalkMode.GlobalTalkGlobalReceive;
-                            BroadcastOverride.BroadcastLine(Player.Get(player), 1, 5, BroadcastPriority.Low, translation.GlobalTalkGlobalReceive);
-                            break;
+                        switch (Singleton.player_mode[id])
+                        {
+                            case TalkMode.GlobalTalkGlobalReceive:
+                                Singleton.player_mode[id] = TalkMode.ProximityTalkGlobalReceive;
+                                BroadcastOverride.BroadcastLine(Player.Get(player), 1, 5, BroadcastPriority.Low, translation.ProximityTalkGlobalReceive);
+                                break;
+                            case TalkMode.ProximityTalkGlobalReceive:
+                                Singleton.player_mode[id] = TalkMode.ProximityTalkProximityReceive;
+                                BroadcastOverride.BroadcastLine(Player.Get(player), 1, 5, BroadcastPriority.Low, translation.ProximityTalkProximityReceive);
+                                break;
+                            case TalkMode.ProximityTalkProximityReceive:
+                                Singleton.player_mode[id] = TalkMode.GlobalTalkGlobalReceive;
+                                BroadcastOverride.BroadcastLine(Player.Get(player), 1, 5, BroadcastPriority.Low, translation.GlobalTalkGlobalReceive);
+                                break;
+                        }
+                        BroadcastOverride.UpdateIfDirty(Player.Get(player));
                     }
-                    BroadcastOverride.UpdateIfDirty(Player.Get(player));
                 }
             }
             catch(System.Exception ex)
