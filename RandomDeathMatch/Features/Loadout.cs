@@ -192,16 +192,19 @@ namespace TheRiptide
             if (door.ActiveLocks > 0 && !player.IsBypassEnabled)
                 return true;
 
-            door.NetworkTargetState = !door.TargetState;
-            door._triggerPlayer = player.ReferenceHub;
-            switch (door.NetworkTargetState)
+            if (door.AllowInteracting(player.ReferenceHub, 0))
             {
-                case false:
-                    DoorEvents.TriggerAction(door, DoorAction.Closed, player.ReferenceHub);
-                    break;
-                case true:
-                    DoorEvents.TriggerAction(door, DoorAction.Opened, player.ReferenceHub);
-                    break;
+                door.NetworkTargetState = !door.TargetState;
+                door._triggerPlayer = player.ReferenceHub;
+                switch (door.NetworkTargetState)
+                {
+                    case false:
+                        DoorEvents.TriggerAction(door, DoorAction.Closed, player.ReferenceHub);
+                        break;
+                    case true:
+                        DoorEvents.TriggerAction(door, DoorAction.Opened, player.ReferenceHub);
+                        break;
+                }
             }
             return false;
         }
