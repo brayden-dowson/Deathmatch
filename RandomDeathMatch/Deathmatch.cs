@@ -21,6 +21,8 @@ namespace TheRiptide
 
         [Description("round time in minutes")]
         public float RoundTime { get; set; } = 20.0f;
+        [Description("round end in seconds")]
+        public float RoundEndTime { get; set; } = 30.0f;
 
         public string DummyPlayerName { get; set; } = "[THE RIPTIDE]";
     }
@@ -241,8 +243,8 @@ namespace TheRiptide
             {
                 try
                 {
-                    restart_handle = Timing.CallDelayed(20.0f, () => Round.Restart(false));
-                    Timing.CallPeriodically(20.0f, 0.2f, () =>
+                    restart_handle = Timing.CallDelayed(config.RoundEndTime, () => Round.Restart(false));
+                    Timing.CallPeriodically(config.RoundEndTime, 0.2f, () =>
                     {
                         foreach (var p in Player.GetPlayers())
                             p.IsGodModeEnabled = true;

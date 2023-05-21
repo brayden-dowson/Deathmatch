@@ -11,6 +11,7 @@ using Glicko2;
 using CommandSystem;
 using System.ComponentModel;
 using static TheRiptide.Translation;
+using RemoteAdmin;
 
 namespace TheRiptide
 {
@@ -21,12 +22,12 @@ namespace TheRiptide
         public string BadgeFormat { get; set; } = "Rank: {0}\n";
 
         [Description("players start unranked. unranked players cannot influence placement/ranked players. once the MinXpForPlacement is achieved they will progress to placement")]
-        public string UnrankedTag { get; set; } = "Rank : --/--/--\n";
+        public string UnrankedTag { get; set; } = "Rank: --/--/--\n";
         public string UnrankedColor { get; set; } = "nickel";
         public Experiences.XP MinXpForPlacement { get; set; } = new Experiences.XP { value = 0, level = 0, stage = 2, tier = 0 };
 
         [Description("placement players rank is influenced by other placement players and ranked players but ranked players are not influenced by placement players")]
-        public string PlacementTag { get; set; } = "Rank : ?\n";
+        public string PlacementTag { get; set; } = "Rank: ?\n";
         public string PlacementColor { get; set; } = "magenta";
         [Description("matches referes to kill/deaths against placement and ranked players. this is how many until you become ranked")]
         public int PlacementMatches { get; set; } = 300;
@@ -56,6 +57,11 @@ namespace TheRiptide
             new RankInfo{ Tag = "Legendary Eagle Master",           Rating = 3250,     Color = "yellow" },
             new RankInfo{ Tag = "Supreme Master First Class",       Rating = 3500,     Color = "orange" },
             new RankInfo{ Tag = "Global Elite",                     Rating = 3750,     Color = "crimson" },
+        };
+
+        public List<PlayerPermissions> RankCmdPermissions = new List<PlayerPermissions>()
+        {
+            PlayerPermissions.ServerConsoleCommands
         };
     }
 
@@ -258,68 +264,126 @@ namespace TheRiptide
             string rank_hint = translation.RankMsg.Replace("{color}", BadgeOverride.ColorNameToHex[color]).Replace("{rank}", tag);
             HintOverride.Add(player, 0, rank_hint, duration);
         }
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmSetRank : ICommand
+        {
+            public string Command { get; } = "dmsetrank";
+
+            public string[] Aliases { get; } = new string[] { "dmr"};
+
+            public string Description { get; } = "set players rating. usage: dmsetrank [playerid] [rating]";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.RankCmdPermissions.ToArray(), out response))
+                    return false;
+
+                if (arguments.Count != 2)
+                {
+                    response = "usage: dmsetrank [playerid] [rating]";
+                    return false;
+                }
+
+                int id;
+                Player target = null;
+                if (!int.TryParse(arguments.ElementAt(0), out id) || !Player.TryGet(id, out target))
+                {
+                    response = "failed invalid id: " + arguments.ElementAt(0);
+                    return false;
+                }
+
+                int rating;
+                if (!int.TryParse(arguments.ElementAt(1), out rating))
+                {
+                    response = "failed invalid rating: " + arguments.ElementAt(1);
+                    return false;
+                }
+
+                Singleton.SetRank(target, rating);
+                response = "success";
+                return true;
+            }
+        }
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmGetRank : ICommand
+        {
+            public string Command { get; } = "dmgetrank";
+
+            public string[] Aliases { get; } = new string[] { "dmgr" };
+
+            public string Description { get; } = "set players rating. usage: dmsetrank [player_id] [rating]";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.RankCmdPermissions.ToArray(), out response))
+                    return false;
+
+                if (arguments.Count != 1)
+                {
+                    response = "usage: dmgetrank [playerid]";
+                    return false;
+                }
+
+                int id;
+                Player target = null;
+                if (!int.TryParse(arguments.ElementAt(0), out id) || !Player.TryGet(id, out target))
+                {
+                    response = "failed invalid id: " + arguments.ElementAt(0);
+                    return false;
+                }
+
+                response = target.Nickname + " rating is " + Singleton.GetRank(target).rating.ToString("0");
+                return true;
+            }
+        }
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmSetRankState : ICommand
+        {
+            public string Command { get; } = "dmsetrankstate";
+
+            public string[] Aliases { get; } = new string[] { "dmrs" };
+
+            public string Description { get; } = "set players rank state. usage: dmsetrankstate [player_id] [state]";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.RankCmdPermissions.ToArray(), out response))
+                    return false;
+
+                if(arguments.Count != 2)
+                {
+                    response = "usage: dmsetrankstate [playerid] [state]. states: 0 = Unranked 1 = Placement 2 = Ranked";
+                    return false;
+                }
+
+                int id;
+                Player target = null;
+                if (!int.TryParse(arguments.ElementAt(0), out id) || !Player.TryGet(id, out target))
+                {
+                    response = "failed - invalid id: " + arguments.ElementAt(0);
+                    return false;
+                }
+
+                int state;
+                if (!int.TryParse(arguments.ElementAt(1), out state))
+                {
+                    response = "failed - invalid state: " + arguments.ElementAt(1);
+                    return false;
+                }
+
+                if (!Enum.IsDefined(typeof(Database.RankState), state))
+                {
+                    response = "failed - invalid state: valid states are 0 = Unranked 1 = Placement 2 = Ranked";
+                    return false;
+                }
+
+                Singleton.GetRank(target).state = (Database.RankState)state;
+                response = "success";
+                return true;
+            }
+        }
     }
-
-    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
-    //public class SetRank : ICommand
-    //{
-    //    public string Command { get; } = "dmsetrank";
-
-    //    public string[] Aliases { get; } = new string[] { };
-
-    //    public string Description { get; } = "set rank on self";
-
-    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-    //    {
-    //        Player player;
-    //        if (Player.TryGet(sender, out player))
-    //        {
-    //            int rating;
-    //            if (!int.TryParse(arguments.ElementAt(0), out rating))
-    //            {
-    //                response = "failed";
-    //                return false;
-    //            }
-    //            Ranks.Singleton.SetRank(player, rating);
-    //            response = "success";
-    //            return true;
-    //        }
-    //        response = "failed";
-    //        return false;
-    //    }
-    //}
-
-    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
-    //public class SetRankState : ICommand
-    //{
-    //    public string Command { get; } = "dmsetrankstate";
-
-    //    public string[] Aliases { get; } = new string[] { };
-
-    //    public string Description { get; } = "set rank state on self";
-
-    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-    //    {
-    //        Player player;
-    //        if (Player.TryGet(sender, out player))
-    //        {
-    //            int state;
-    //            if (!int.TryParse(arguments.ElementAt(0), out state))
-    //            {
-    //                response = "failed";
-    //                return false;
-    //            }
-    //            if (!Enum.IsDefined(typeof(Database.RankState), state))
-    //            {
-    //                response = "valid states are 0 = Unranked 1 = Placement 2 = Ranked";
-    //                return false;
-    //            }
-    //            Ranks.Singleton.GetRank(player).state = (Database.RankState)state;
-    //            response = "success";
-    //            return true;
-    //        }
-    //        response = "failed";
-    //        return false;
-    //    }
-    //}
 }

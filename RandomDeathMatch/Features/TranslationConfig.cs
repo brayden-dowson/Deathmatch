@@ -152,7 +152,7 @@ namespace TheRiptide
         public string RewardXpItemUsed { get; set; } = "gained {xp} Xp for using {item}";
         public string RewardXpItemThrown { get; set; } = "gained {xp} Xp for throwing {item}";
         public string XpMsg { get; set; } = "<align=center><voffset=2em><b><size=48>{xp}</size></b>\n";
-        public string XpGainedMsg { get; set; } = "<align=center><voffset=2em><b><size=48>you gained {xp}Xp this round!</size></b>\n";
+        public string XpGainedMsg { get; set; } = "<align=center><voffset=2em><b><size=48>YOU GAINED {xp} XP THIS ROUND!</size></b>\n";
 
         [Description("rank")]
         public string RankMsg { get; set; } = "<align=center><voffset=1.5em><b><size=72><color={color}>{rank}</color></size></b>\n";
