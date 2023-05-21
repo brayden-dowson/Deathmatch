@@ -131,7 +131,8 @@ namespace TheRiptide
         public string DeathMsgAhp { get; set; } = " <color=#008f1c>AH: {ahp}</color>";
         public string DeathMsgDamageReduction { get; set; } = " <color=#5900ff> DR: {reduction}%</color>";
         public string DeathMsgBodyshotReduction { get; set; } = " <color=#e7d77b> BSR: {reduction}%</color>";
-        public string DeathMsgDamageDelt { get; set; } = "\n<color=#43BFF0> DMG: {damage}</color> <color=#FF0000>HS: {head_shots}</color> <color=#36a832>BS: {body_shots}</color> <color=#43BFF0>LS: {limb_shots}</color>";
+        public string DeathMsgDamageDelt { get; set; } = "\n<color=#43BFF0>Delt - DMG: {damage}</color> <color=#FF0000>HS: {head_shots}</color> <color=#36a832>BS: {body_shots}</color> <color=#43BFF0>LS: {limb_shots}</color>";
+        public string DeathMsgDamageTaken { get; set; } = "\n<color=#43BFF0>Taken - DMG: {damage}</color> <color=#FF0000>HS: {head_shots}</color> <color=#36a832>BS: {body_shots}</color> <color=#43BFF0>LS: {limb_shots}</color>";
         public string DeathMsgDamageOther { get; set; } = " Other: {other_hits}";
         public string PlayerStatsLine1 { get; set; } = "<color=#76b8b5>Kills:</color> <color=#FF0000>{kills}</color>    <color=#76b8b5>Deaths:</color> <color=#FF0000>{deaths}</color>    <color=#76b8b5>K/D:</color> <color=#FF0000>{kd}</color>    <color=#76b8b5>Highest Killstreak:</color> <color=#FF0000>{top_ks}</color>" + "</color>    <color=#76b8b5>Score:</color> <color=#FF0000>{score}</color>";
         public string PlayerStatsLine2 { get; set; } = "<color=#76b8b5>Hs Kills:</color> <color=#FF0000>{hsk}%</color>    <color=#76b8b5>Hs:</color> <color=#FF0000>{hs}%</color>    <color=#76b8b5>Accuracy:</color> <color=#FF0000>{accuracy}%</color>    <color=#76b8b5>Dmg Delt:</color> <color=#FF0000>{dmg_delt}</color>    <color=#76b8b5>Dmg Taken:</color> <color=#FF0000>{dmg_taken}</color>";

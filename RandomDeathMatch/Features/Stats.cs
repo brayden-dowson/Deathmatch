@@ -164,15 +164,28 @@ namespace TheRiptide
 
                     if (attacker_stats[victim.PlayerId].ContainsKey(killer.PlayerId))
                     {
-                        LifeStats life_stats = attacker_stats[victim.PlayerId][killer.PlayerId];
+                        LifeStats victim_life_stats = attacker_stats[victim.PlayerId][killer.PlayerId];
                         hint += translation.DeathMsgDamageDelt.
-                            Replace("{damage}", life_stats.damage.ToString("0")).
-                            Replace("{head_shots}", life_stats.head_shots.ToString()).
-                            Replace("{body_shots}", life_stats.body_shots.ToString()).
-                            Replace("{limb_shots}", life_stats.limb_shots.ToString());
-                        if (life_stats.other_hits != 0)
+                            Replace("{damage}", victim_life_stats.damage.ToString("0")).
+                            Replace("{head_shots}", victim_life_stats.head_shots.ToString()).
+                            Replace("{body_shots}", victim_life_stats.body_shots.ToString()).
+                            Replace("{limb_shots}", victim_life_stats.limb_shots.ToString());
+                        if (victim_life_stats.other_hits != 0)
                             hint += translation.DeathMsgDamageOther.
-                                Replace("{other_hits}", life_stats.other_hits.ToString());
+                                Replace("{other_hits}", victim_life_stats.other_hits.ToString());
+                    }
+
+                    if(attacker_stats[killer.PlayerId].ContainsKey(victim.PlayerId))
+                    {
+                        LifeStats attacker_life_stats = attacker_stats[killer.PlayerId][victim.PlayerId];
+                        hint += translation.DeathMsgDamageTaken.
+                            Replace("{damage}", attacker_life_stats.damage.ToString("0")).
+                            Replace("{head_shots}", attacker_life_stats.head_shots.ToString()).
+                            Replace("{body_shots}", attacker_life_stats.body_shots.ToString()).
+                            Replace("{limb_shots}", attacker_life_stats.limb_shots.ToString());
+                        if (attacker_life_stats.other_hits != 0)
+                            hint += translation.DeathMsgDamageOther.
+                                Replace("{other_hits}", attacker_life_stats.other_hits.ToString());
                     }
 
                     victim.ReceiveHint(hint, 7.0f);
