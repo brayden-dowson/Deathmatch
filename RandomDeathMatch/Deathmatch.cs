@@ -249,9 +249,12 @@ namespace TheRiptide
                         foreach (var p in Player.GetPlayers())
                             p.IsGodModeEnabled = true;
                     });
-                    Statistics.DisplayRoundStats();
-                    Experiences.Singleton.SaveExperiences();
-                    Ranks.Singleton.CalculateAndSaveRanks();
+                    try { Statistics.DisplayRoundStats(); }
+                    catch(Exception ex) { Log.Error(ex.ToString()); }
+                    try { Experiences.Singleton.SaveExperiences(); }
+                    catch (Exception ex) { Log.Error(ex.ToString()); }
+                    try { Ranks.Singleton.CalculateAndSaveRanks(); }
+                    catch (Exception ex) { Log.Error(ex.ToString()); }
                     HintOverride.Refresh();
                     VoiceChat.Singleton.ForceGlobalTalkGlobalReceive();
                     Server.Instance.SetRole(RoleTypeId.Spectator);

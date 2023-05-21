@@ -204,9 +204,9 @@ namespace TheRiptide
 
         public bool SetRank(Player player, float rating)
         {
-            if (player_glikco.ContainsKey(player.UserId))
+            if (player_ranks.ContainsKey(player.PlayerId))
             {
-                player_glikco[player.UserId].Rating = rating;
+                player_ranks[player.PlayerId].rating = rating;
                 return true;
             }
             return false;
@@ -340,8 +340,8 @@ namespace TheRiptide
                     return false;
                 }
 
-                if (Singleton.player_glikco.ContainsKey(target.UserId))
-                    response = target.Nickname + " rating is " + Singleton.player_glikco[target.UserId].Rating.ToString("0");
+                if (Singleton.player_ranks.ContainsKey(target.PlayerId))
+                    response = target.Nickname + " rating is " + Singleton.GetRank(target).rating.ToString("0");
                 else
                     response = "failed - player does not have a rank yet";
                 return true;
