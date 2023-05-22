@@ -11,7 +11,10 @@ using UnityEngine;
 using System.ComponentModel;
 using CustomPlayerEffects;
 using InventorySystem.Items.Firearms.Attachments;
+using LightContainmentZoneDecontamination;
+using PlayerStatsSystem;
 using static TheRiptide.Translation;
+using static TheRiptide.EventSubscriber;
 
 //todo voice and spectate cmd
 namespace TheRiptide
@@ -78,8 +81,10 @@ namespace TheRiptide
 
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
+        private Action OnConfigReloaded;
         private CoroutineHandle restart_handle;
         private CoroutineHandle round_timer_handle;
+
 
         public static bool GameStarted
         {
@@ -106,6 +111,18 @@ namespace TheRiptide
         {
             Singleton = this;
             Killfeeds.Init(2, 5, 20);
+
+            OnConfigReloaded = new Action(() =>
+            {
+                Server.FriendlyFire = true;
+                FriendlyFireConfig.PauseDetector = true;
+                Server.IsHeavilyModded = true;
+                ServerConsole.CustomGamemodeServerConfig = true;
+                Round.IsLocked = true;
+                Warhead.IsLocked = true;
+                DecontaminationController.Singleton.DecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
+                AttackerDamageHandler._ffMultiplier = 1.0f;
+            });
         }
 
         public void Start()
@@ -155,8 +172,10 @@ namespace TheRiptide
             if (voice_chat_config.IsEnabled)
                 VoiceChat.Singleton.Init(voice_chat_config);
 
-            Translation.translation = translation_config;
+            translation = translation_config;
             DeathmatchMenu.Singleton.SetupMenus();
+
+            SubscribeOnConfigReloaded(OnConfigReloaded);
         }
 
         public void Stop()
@@ -186,6 +205,8 @@ namespace TheRiptide
             EventManager.UnregisterEvents(this);
 
             DeathmatchMenu.Singleton.ClearMenus();
+
+            UnsubscribeOnConfigReloaded(OnConfigReloaded);
         }
 
         [PluginEntryPoint("Deathmatch", "1.0", "needs no explanation", "The Riptide")]
@@ -211,31 +232,6 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.RoundStart)]
         void OnRoundStart()
         {
-            Server.Instance.SetRole(RoleTypeId.Scp939);
-            Server.Instance.ReferenceHub.nicknameSync.SetNick(config.DummyPlayerName);
-            Server.Instance.Position = new Vector3(128.8f, 994.0f, 18.0f);
-            Server.FriendlyFire = true;
-            FriendlyFireConfig.PauseDetector = true;
-            Server.IsHeavilyModded = true;
-            Round.IsLocked = true;
-            Warhead.IsLocked = true;
-
-            Timing.CallDelayed(1.0f, () =>
-            {
-                try
-                {
-                    Server.Instance.ReferenceHub.serverRoles.Permissions = (ulong)PlayerPermissions.FacilityManagement;
-                    CommandSystem.Commands.RemoteAdmin.Cleanup.ItemsCommand cmd = new CommandSystem.Commands.RemoteAdmin.Cleanup.ItemsCommand();
-                    string response = "";
-                    string[] empty = { "" };
-                    cmd.Execute(new ArraySegment<string>(empty, 0, 0), new RemoteAdmin.PlayerCommandSender(Server.Instance.ReferenceHub), out response);
-                    ServerConsole.AddLog(response);
-                }
-                catch (Exception ex)
-                {
-                    ServerConsole.AddLog(ex.ToString());
-                }
-            });
             if (config.RoundTime > 5.0f)
                 Timing.CallDelayed(60.0f * (config.RoundTime - 5.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 5 minutes</color>"); });
             if (config.RoundTime > 1.0f)
@@ -265,6 +261,10 @@ namespace TheRiptide
                     Log.Error("round end Error: " + ex.ToString());
                 }
             });
+
+            Server.Instance.SetRole(RoleTypeId.Scp939);
+            Server.Instance.ReferenceHub.nicknameSync.SetNick(config.DummyPlayerName);
+            Server.Instance.Position = new Vector3(128.8f, 994.0f, 18.0f);
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
@@ -294,7 +294,6 @@ namespace TheRiptide
         {
             Timing.KillCoroutines(round_timer_handle);
             Timing.KillCoroutines(restart_handle);
-            Timing.KillCoroutines();
         }
 
         public static bool IsPlayerValid(Player player)

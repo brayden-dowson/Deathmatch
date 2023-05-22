@@ -107,6 +107,7 @@
     <Compile Include="Dependencies\HintOverride.cs" />
     <Compile Include="Dependencies\Teleport.cs" />
     <Compile Include="Features\AttachmentBlacklist.cs" />
+    <Compile Include="Features\Cleanup.cs" />
     <Compile Include="Features\Database.cs" />
     <Compile Include="Features\Experience.cs" />
     <Compile Include="Features\Menus.cs" />
