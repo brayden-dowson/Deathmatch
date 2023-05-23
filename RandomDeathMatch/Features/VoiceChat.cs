@@ -75,12 +75,16 @@ namespace TheRiptide
 
         private bool IsGlobalTalk(int id)
         {
-            return player_mode[id] == TalkMode.GlobalTalkGlobalReceive ? true : false;
+            if (player_mode.ContainsKey(id))
+                return player_mode[id] == TalkMode.GlobalTalkGlobalReceive ? true : false;
+            return false;
         }
 
         private bool IsGlobalReceive(int id)
         {
-            return player_mode[id] == TalkMode.ProximityTalkProximityReceive ? false : true;
+            if (player_mode.ContainsKey(id))
+                return player_mode[id] == TalkMode.ProximityTalkProximityReceive ? false : true;
+            return false;
         }
 
         [HarmonyPatch(typeof(VoiceTransceiver), nameof(VoiceTransceiver.ServerReceiveMessage))]

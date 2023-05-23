@@ -79,6 +79,9 @@ namespace TheRiptide
         [PluginConfig("voice_chat_config.yml")]
         public VoiceChatConfig voice_chat_config;
 
+        [PluginConfig("cleanup_config.yml")]
+        public CleanupConfig cleanup_config;
+
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
         private Action OnConfigReloaded;
@@ -114,14 +117,17 @@ namespace TheRiptide
 
             OnConfigReloaded = new Action(() =>
             {
-                Server.FriendlyFire = true;
-                FriendlyFireConfig.PauseDetector = true;
-                Server.IsHeavilyModded = true;
-                ServerConsole.CustomGamemodeServerConfig = true;
-                Round.IsLocked = true;
-                Warhead.IsLocked = true;
-                DecontaminationController.Singleton.DecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
-                AttackerDamageHandler._ffMultiplier = 1.0f;
+                try
+                {
+                    ServerConsole.FriendlyFire = true;
+                    FriendlyFireConfig.PauseDetector = true;
+                    ServerConsole.HeavilyModdedServerConfig = true;
+                    ServerConsole.CustomGamemodeServerConfig = true;
+                }
+                catch(Exception ex)
+                {
+                    Log.Error("config override error: " + ex.ToString());
+                }
             });
         }
 
@@ -155,6 +161,8 @@ namespace TheRiptide
                 EventManager.RegisterEvents<AttachmentBlacklist>(this);
             if (voice_chat_config.IsEnabled)
                 EventManager.RegisterEvents<VoiceChat>(this);
+            if (cleanup_config.IsEnabled)
+                EventManager.RegisterEvents<Cleanup>(this);
 
             Statistics.Init();
             Rooms.Singleton.Init(rooms_config);
@@ -171,6 +179,8 @@ namespace TheRiptide
                 AttachmentBlacklist.Singleton.Init(attachment_blacklist_config);
             if (voice_chat_config.IsEnabled)
                 VoiceChat.Singleton.Init(voice_chat_config);
+            if (cleanup_config.IsEnabled)
+                Cleanup.Singleton.Init(cleanup_config);
 
             translation = translation_config;
             DeathmatchMenu.Singleton.SetupMenus();
@@ -265,6 +275,10 @@ namespace TheRiptide
             Server.Instance.SetRole(RoleTypeId.Scp939);
             Server.Instance.ReferenceHub.nicknameSync.SetNick(config.DummyPlayerName);
             Server.Instance.Position = new Vector3(128.8f, 994.0f, 18.0f);
+            Round.IsLocked = true;
+            Warhead.IsLocked = true;
+            DecontaminationController.Singleton.NetworkDecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
+            AttackerDamageHandler._ffMultiplier = 1.0f;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
