@@ -19,18 +19,22 @@ namespace TheRiptide
     {
         public bool IsEnabled { get; set; } = true;
 
-        public string BadgeFormat { get; set; } = "Rank: {0}\n";
+        public string BadgeFormat { get; set; } = "Rank: {name}\n";
+        public string LeaderBoardFormat { get; set; } = "{tag}";
 
-        public string DntTag { get; set; } = "Rank: DNT\n";
+        public string DntName { get; set; } = "Do Not Track";
+        public string DntTag { get; set; } = "DNT";
         public string DntColor { get; set; } = "nickel";
 
         [Description("players start unranked. unranked players cannot influence placement/ranked players. once the MinXpForPlacement is achieved they will progress to placement")]
-        public string UnrankedTag { get; set; } = "Rank: --/--/--\n";
+        public string UnrankedName { get; set; } = "Unranked";
+        public string UnrankedTag { get; set; } = "----";
         public string UnrankedColor { get; set; } = "nickel";
         public Experiences.XP MinXpForPlacement { get; set; } = new Experiences.XP { value = 0, level = 0, stage = 2, tier = 0 };
 
         [Description("placement players rank is influenced by other placement players and ranked players but ranked players are not influenced by placement players")]
-        public string PlacementTag { get; set; } = "Rank: ?\n";
+        public string PlacementName { get; set; } = "Placement";
+        public string PlacementTag { get; set; } = "?";
         public string PlacementColor { get; set; } = "magenta";
         [Description("matches referes to kill/deaths against placement and ranked players. this is how many until you become ranked")]
         public int PlacementMatches { get; set; } = 300;
@@ -43,24 +47,24 @@ namespace TheRiptide
         [Description("ranks must be in order of least rating to most rating and colors must be a valid servergroup color see https://en.scpslgame.com/index.php/Docs:Permissions")]
         public List<RankInfo> Ranks { get; set; } = new List<RankInfo>
         {
-            new RankInfo{ Tag = "Silver I",                         Rating = -500,     Color = "nickel" },
-            new RankInfo{ Tag = "Silver II",                        Rating = -250,     Color = "nickel" },
-            new RankInfo{ Tag = "Silver III",                       Rating = 0,        Color = "nickel" },
-            new RankInfo{ Tag = "Silver IV",                        Rating = 250,      Color = "nickel" },
-            new RankInfo{ Tag = "Silver Elite",                     Rating = 500,      Color = "silver" },
-            new RankInfo{ Tag = "Silver Elite Master",              Rating = 750,      Color = "silver" },
-            new RankInfo{ Tag = "Gold Nova I",                      Rating = 1000,     Color = "cyan" },
-            new RankInfo{ Tag = "Gold Nova II",                     Rating = 1250,     Color = "cyan" },
-            new RankInfo{ Tag = "Gold Nova III",                    Rating = 1500,     Color = "cyan" },
-            new RankInfo{ Tag = "Gold Nova Master",                 Rating = 1750,     Color = "aqua" },
-            new RankInfo{ Tag = "Master Guardian I",                Rating = 2000,     Color = "blue_green" },
-            new RankInfo{ Tag = "Master Gaurdian II",               Rating = 2250,     Color = "blue_green" },
-            new RankInfo{ Tag = "Master Gaurdian Elite",            Rating = 2500,     Color = "emerald" },
-            new RankInfo{ Tag = "Distinguished Master Gaurdian",    Rating = 2750,     Color = "mint" },
-            new RankInfo{ Tag = "Legendary Eagle",                  Rating = 3000,     Color = "yellow" },
-            new RankInfo{ Tag = "Legendary Eagle Master",           Rating = 3250,     Color = "yellow" },
-            new RankInfo{ Tag = "Supreme Master First Class",       Rating = 3500,     Color = "orange" },
-            new RankInfo{ Tag = "Global Elite",                     Rating = 3750,     Color = "crimson" },
+            new RankInfo{ Name = "Silver I",                        Tag = "S1",     Rating = -500,     Color = "nickel" },
+            new RankInfo{ Name = "Silver II",                       Tag = "S2",     Rating = -250,     Color = "nickel" },
+            new RankInfo{ Name = "Silver III",                      Tag = "S3",     Rating = 0,        Color = "nickel" },
+            new RankInfo{ Name = "Silver IV",                       Tag = "S4",     Rating = 250,      Color = "nickel" },
+            new RankInfo{ Name = "Silver Elite",                    Tag = "SE",     Rating = 500,      Color = "silver" },
+            new RankInfo{ Name = "Silver Elite Master",             Tag = "SEM",    Rating = 750,      Color = "silver" },
+            new RankInfo{ Name = "Gold Nova I",                     Tag = "GN1",    Rating = 1000,     Color = "cyan" },
+            new RankInfo{ Name = "Gold Nova II",                    Tag = "GN2",    Rating = 1250,     Color = "cyan" },
+            new RankInfo{ Name = "Gold Nova III",                   Tag = "GN3",    Rating = 1500,     Color = "cyan" },
+            new RankInfo{ Name = "Gold Nova Master",                Tag = "GNM",    Rating = 1750,     Color = "aqua" },
+            new RankInfo{ Name = "Master Guardian I",               Tag = "MG1",    Rating = 2000,     Color = "blue_green" },
+            new RankInfo{ Name = "Master Gaurdian II",              Tag = "MG2",    Rating = 2250,     Color = "blue_green" },
+            new RankInfo{ Name = "Master Gaurdian Elite",           Tag = "MGE",    Rating = 2500,     Color = "emerald" },
+            new RankInfo{ Name = "Distinguished Master Gaurdian",   Tag = "DMG",    Rating = 2750,     Color = "mint" },
+            new RankInfo{ Name = "Legendary Eagle",                 Tag = "LE",     Rating = 3000,     Color = "yellow" },
+            new RankInfo{ Name = "Legendary Eagle Master",          Tag = "LEM",    Rating = 3250,     Color = "yellow" },
+            new RankInfo{ Name = "Supreme Master First Class",      Tag = "SMFC",   Rating = 3500,     Color = "orange" },
+            new RankInfo{ Name = "Global Elite",                    Tag = "GE",     Rating = 3750,     Color = "crimson" },
         };
 
         public List<PlayerPermissions> RankCmdPermissions = new List<PlayerPermissions>()
@@ -71,6 +75,7 @@ namespace TheRiptide
 
     public class RankInfo
     {
+        public string Name { get; set; }
         public string Tag { get; set; }
         /// <summary>
         /// min rating for rank
@@ -82,7 +87,7 @@ namespace TheRiptide
     public class Ranks
     {
         public static Ranks Singleton { get; private set; }
-        private RankConfig config;
+        public RankConfig config;
 
         private Dictionary<int, Database.Rank> player_ranks = new Dictionary<int, Database.Rank>();
         private Dictionary<string, GlickoPlayer> player_glikco = new Dictionary<string, GlickoPlayer>();
@@ -123,7 +128,7 @@ namespace TheRiptide
             }
             else
             {
-                BadgeOverride.Singleton.SetBadge(player, 0, config.DntTag);
+                BadgeOverride.Singleton.SetBadge(player, 0, config.BadgeFormat.Replace("{tag}", config.DntTag));
                 BadgeOverride.Singleton.SetBadgeColor(player, config.DntColor);
             }
         }
@@ -203,7 +208,6 @@ namespace TheRiptide
                 }
                 if (player != null)
                 {
-                    RankInfo info = GetInfo(rank.rating);
                     ShowRankHint(player, rank, 30.0f);
                     SetBadge(player, rank);
                 }
@@ -226,55 +230,44 @@ namespace TheRiptide
             return player_ranks[player.PlayerId];
         }
 
-        private RankInfo GetInfo(float rating)
+        public RankInfo GetInfo(Database.Rank rank)
         {
-            int index = config.Ranks.Count - 1;
-            while (index > 0 && rating < config.Ranks[index].Rating)
-                index--;
-            return config.Ranks[index];
+            RankInfo info = new RankInfo { Name = config.UnrankedName, Tag = config.UnrankedTag, Color = config.UnrankedColor };
+            if (rank.state == Database.RankState.Placement)
+            {
+                info.Name = config.PlacementName;
+                info.Tag = config.PlacementTag;
+                info.Color = config.PlacementColor;
+            }
+            else if (rank.state == Database.RankState.Ranked)
+            {
+                int index = config.Ranks.Count - 1;
+                while (index > 0 && rank.rating < config.Ranks[index].Rating)
+                    index--;
+
+                info.Name = config.Ranks[index].Name;
+                info.Tag = config.Ranks[index].Tag;
+                info.Color = config.Ranks[index].Color;
+            }
+            return info;
         }
 
         private void SetBadge(Player player, Database.Rank rank)
         {
-            string tag = config.UnrankedTag;
-            string color = config.UnrankedColor;
-            if (rank.state == Database.RankState.Placement)
-            {
-                tag = config.PlacementTag;
-                color = config.PlacementColor;
-            }
-            else if (rank.state == Database.RankState.Ranked)
-            {
-                RankInfo info = GetInfo(rank.rating);
-                tag = string.Format(config.BadgeFormat, info.Tag);
-                color = info.Color;
-            }
-            BadgeOverride.Singleton.SetBadge(player, 0, tag);
-            BadgeOverride.Singleton.SetBadgeColor(player, color);
+            RankInfo info = GetInfo(rank);
+            BadgeOverride.Singleton.SetBadge(player, 0, config.BadgeFormat.Replace("{name}", info.Name));
+            BadgeOverride.Singleton.SetBadgeColor(player, info.Color);
         }
 
         private void ShowRankHint(Player player, Database.Rank rank, float duration)
         {
-            string tag = config.UnrankedTag;
-            string color = config.UnrankedColor;
-            if (rank.state == Database.RankState.Placement)
+            RankInfo info = GetInfo(rank);
+            if (!BadgeOverride.ColorNameToHex.ContainsKey(info.Color))
             {
-                tag = config.PlacementTag;
-                color = config.PlacementColor;
-            }
-            else if (rank.state == Database.RankState.Ranked)
-            {
-                RankInfo info = GetInfo(rank.rating);
-                tag = string.Format(config.BadgeFormat, info.Tag);
-                color = info.Color;
-            }
-
-            if (!BadgeOverride.ColorNameToHex.ContainsKey(color))
-            {
-                Log.Error("invalid rank color: " + color);
+                Log.Error("invalid rank color: " + info.Color);
                 return;
             }
-            string rank_hint = translation.RankMsg.Replace("{color}", BadgeOverride.ColorNameToHex[color]).Replace("{rank}", tag);
+            string rank_hint = translation.RankMsg.Replace("{color}", BadgeOverride.ColorNameToHex[info.Color]).Replace("{rank}", config.BadgeFormat.Replace("{name}", info.Name));
             HintOverride.Add(player, 0, rank_hint, duration);
         }
 

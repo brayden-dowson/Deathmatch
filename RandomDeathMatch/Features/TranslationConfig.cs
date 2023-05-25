@@ -107,6 +107,7 @@ namespace TheRiptide
         public string Spectator { get; set; } = "<color=#eb0d47>[FLASH LIGHT]</color> = <b>Enable spectator mode</b>";
         public string EnableRage { get; set; } = "<color=#eb0d47>[COIN]</color> = <b>Enable [DATA EXPUNGED]</b>";
         public string DeleteData { get; set; } = "<color=#eb0d47>[JANITOR]</color> = <b>Delete Data stats/configs/ranks/xp/preferences (can not be undone)</b>";
+        public string LeaderBoard { get; set; } = "<color=#eb0d47>[SCP1576]</color> = <b><color=#43BFF0>[LEADER BOARD]</color></b>";
 
         [Description("stats menu")]
         public string StatsMenu { get; set; } = "<b><color=#43BFF0>[STATS]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
@@ -117,6 +118,9 @@ namespace TheRiptide
         public string AreYouSure { get; set; } = "<b>Are you sure? You must have 'Do Not Track' on for this to work. <color=#FF0000>deletion can not be undone.</color> <color=#43BFF0>If sure, right click on the janitor keycard to delete your data</color></b>";
         public string FailedToDeleteData { get; set; } = "<b>failed to delete data, you must have 'Do Not Track' on in your settings</b>";
         public string DeletedData { get; set; } = "data deleted";
+
+        [Description("leader board menu")]
+        public string LeaderBoardMenu { get; set; } = "<b><color=#43BFF0>[LEADER BOARD]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
 
         [Description("rooms")]
         public string SecondPlayerJoined { get; set; } = "Player <color=#43BFF0>{name}</color> joined, waiting for them to select a loadout";
@@ -176,29 +180,29 @@ namespace TheRiptide
     }
 
 
-    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
-    //public class H : ICommand
-    //{
-    //    public string Command { get; } = "h";
+    [CommandHandler(typeof(RemoteAdminCommandHandler))]
+    public class H : ICommand
+    {
+        public string Command { get; } = "h";
 
-    //    public string[] Aliases { get; } = new string[] { };
+        public string[] Aliases { get; } = new string[] { };
 
-    //    public string Description { get; } = "send hint";
+        public string Description { get; } = "send hint";
 
-    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-    //    {
-    //        Player player;
-    //        if (Player.TryGet(sender, out player))
-    //        {
-    //            string h = "";
-    //            foreach (var a in arguments)
-    //                h += a;
-    //            player.ReceiveHint(h, 300);
-    //            response = "success";
-    //            return true;
-    //        }
-    //        response = "failed";
-    //        return false;
-    //    }
-    //}
+        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+        {
+            Player player;
+            if (Player.TryGet(sender, out player))
+            {
+                string h = "";
+                foreach (var a in arguments)
+                    h += a;
+                player.ReceiveHint(h, 300);
+                response = "success";
+                return true;
+            }
+            response = "failed";
+            return false;
+        }
+    }
 }

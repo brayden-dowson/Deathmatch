@@ -73,10 +73,10 @@ namespace TheRiptide
         public float TierExponent { get; set; } = 1.5f;
 
         public int XpRounding { get; set; } = 5;
-        [Description("{0} = tier {1} = stage {2} = level {3} = XpToNextLevelFormat")]
-        public string BadgeFormat { get; set; } = "{0} | {1} | {2} | {3}";
-        [Description("{0} = xp {1} = max_xp")]
-        public string XpToNextLevelFormat { get; set; } = "XP: {0}/{1}";
+        [Description("value = xp to next level")]
+        public string BadgeFormat { get; set; } = "{tier} | {stage} | {level} | {value}";
+        public string LeaderBoardFormat { get; set; } = "{tier} {stage} {level}";
+        public string XpToNextLevelFormat { get; set; } = "XP: {xp}/{max}";
         public List<string> LevelTags { get; set; } = new List<string>
         {
             "Level: 1",
@@ -126,6 +126,55 @@ namespace TheRiptide
             "Tier: 7",
         };
 
+        public List<string> LeaderBoardLevelTags { get; set; } = new List<string>
+        {
+            "L:1",
+            "L:2",
+            "L:3",
+            "L:4",
+            "L:5",
+            "L:6",
+            "L:7",
+            "L:8",
+            "L:9",
+            "L:10",
+            "L:11",
+            "L:12",
+            "L:13",
+            "L:14",
+            "L:15",
+            "L:16",
+            "L:17",
+            "L:18",
+            "L:19",
+            "L:20",
+            "L:21",
+            "L:22",
+            "L:23",
+            "L:24",
+            "L:25",
+        };
+        public List<string> LeaderBoardStageTags { get; set; } = new List<string>
+        {
+            "S:1",
+            "S:2",
+            "S:3",
+            "S:4",
+            "S:5",
+            "S:6",
+            "S:7",
+        };
+        public List<string> LeaderBoardTierTags { get; set; } = new List<string>
+        {
+            "T:1",
+            "T:2",
+            "T:3",
+            "T:4",
+            "T:5",
+            "T:6",
+            "T:7",
+        };
+
         public List<PlayerPermissions> XpCmdPermissions = new List<PlayerPermissions>
         {
             PlayerPermissions.ServerConsoleCommands
@@ -135,7 +184,7 @@ namespace TheRiptide
     public class Experiences
     {
         public static Experiences Singleton { get; private set; }
-        private ExperienceConfig config;
+        public ExperienceConfig config;
 
         class Tracking
         {
@@ -187,7 +236,7 @@ namespace TheRiptide
                 if (!player.DoNotTrack)
                     Database.Singleton.LoadExperience(player);
                 else
-                    BadgeOverride.Singleton.SetBadge(player, 1, XpString(player_xp[id]));
+                    BadgeOverride.Singleton.SetBadge(player, 1, BadgeString(player_xp[id]));
             }
 
             if (!player_tracking.ContainsKey(id))
@@ -278,7 +327,7 @@ namespace TheRiptide
         {
             XP xp = player_xp[player.PlayerId];
             previous_xp.Add(player.PlayerId, new XP { tier = xp.tier, level = xp.level, stage = xp.stage, value = xp.value });
-            BadgeOverride.Singleton.SetBadge(player, 1, XpString(xp));
+            BadgeOverride.Singleton.SetBadge(player, 1, BadgeString(xp));
             ShowXpHint(player, xp, 10.0f);
             HintOverride.Refresh(player);
         }
@@ -350,29 +399,48 @@ namespace TheRiptide
                     if (!p.DoNotTrack)
                         Database.Singleton.SaveExperience(p);
                     HintOverride.Add(p, 1, translation.XpGainedMsg.Replace("{xp}", gained.ToString()), 30.0f);
-                    BadgeOverride.Singleton.SetBadge(p, 1, XpString(xp));
+                    BadgeOverride.Singleton.SetBadge(p, 1, BadgeString(xp));
                 }
             }
         }
 
-        private string XpString(XP xp)
+        public int XpToNextLevel(XP xp)
+        {
+            float exact_value = config.BaseXpLevel * Mathf.Pow(config.LevelExponent, (float)xp.level) * Mathf.Pow(config.StageExponent, (float)xp.stage) * Mathf.Pow(config.TierExponent, (float)xp.tier);
+            return Mathf.RoundToInt(exact_value / config.XpRounding) * config.XpRounding;
+        }
+
+        public int MaxLevelXp()
+        {
+            return XpToNextLevel(new XP { level = config.LevelTags.Count() - 2, stage = config.StageTags.Count - 1, tier = config.TierTags.Count });
+        }
+
+        public string BadgeString(XP xp)
         {
             string tier = config.TierTags[Mathf.Min(config.TierTags.Count - 1, xp.tier)];
             string stage = config.StageTags[Mathf.Min(config.StageTags.Count - 1, xp.stage)];
             string level = config.LevelTags[Mathf.Min(config.LevelTags.Count - 1, xp.level)];
-            return string.Format(config.BadgeFormat, tier, stage, level, string.Format(config.XpToNextLevelFormat, xp.value, XpToNextLevel(xp)));
+            return config.BadgeFormat.
+                Replace("{tier}", tier).
+                Replace("{stage}", stage).
+                Replace("{level}", level).
+                Replace("{value}", config.XpToNextLevelFormat.
+                Replace("{xp}", xp.value.ToString()).
+                Replace("{max}", XpToNextLevel(xp).ToString()));
+        }
+
+        public string LeaderBoardString(XP xp)
+        {
+            string tier = config.LeaderBoardTierTags[Mathf.Min(config.LeaderBoardTierTags.Count - 1, xp.tier)];
+            string stage = config.LeaderBoardStageTags[Mathf.Min(config.LeaderBoardStageTags.Count - 1, xp.stage)];
+            string level = config.LeaderBoardLevelTags[Mathf.Min(config.LeaderBoardLevelTags.Count - 1, xp.level)];
+            return config.LeaderBoardFormat.Replace("{tier}", tier).Replace("{stage}", stage).Replace("{level}", level);
         }
 
         private void ShowXpHint(Player player, XP xp, float duration)
         {
-            string xp_hint = translation.XpMsg.Replace("{xp}", XpString(xp));
+            string xp_hint = translation.XpMsg.Replace("{xp}", BadgeString(xp));
             HintOverride.Add(player, 1, xp_hint, duration);
-        }
-
-        private int XpToNextLevel(XP xp)
-        {
-            float exact_value = config.BaseXpLevel * Mathf.Pow(config.LevelExponent, (float)xp.level) * Mathf.Pow(config.StageExponent, (float)xp.stage) * Mathf.Pow(config.TierExponent, (float)xp.tier);
-            return Mathf.RoundToInt(exact_value / config.XpRounding) * config.XpRounding;
         }
 
         [CommandHandler(typeof(RemoteAdminCommandHandler))]

@@ -82,6 +82,9 @@ namespace TheRiptide
         [PluginConfig("cleanup_config.yml")]
         public CleanupConfig cleanup_config;
 
+        [PluginConfig("leader_board.yml")]
+        public LeaderBoardConfig leader_board_config;
+
         private static bool game_started = false;
         public static SortedSet<int> players = new SortedSet<int>();
         private Action OnConfigReloaded;
@@ -163,6 +166,9 @@ namespace TheRiptide
                 EventManager.RegisterEvents<VoiceChat>(this);
             if (cleanup_config.IsEnabled)
                 EventManager.RegisterEvents<Cleanup>(this);
+            if (leader_board_config.IsEnabled)
+                EventManager.RegisterEvents<LeaderBoard>(this);
+
 
             Statistics.Init();
             Rooms.Singleton.Init(rooms_config);
@@ -181,6 +187,8 @@ namespace TheRiptide
                 VoiceChat.Singleton.Init(voice_chat_config);
             if (cleanup_config.IsEnabled)
                 Cleanup.Singleton.Init(cleanup_config);
+            if (leader_board_config.IsEnabled)
+                LeaderBoard.Singleton.Init(leader_board_config);
 
             translation = translation_config;
             DeathmatchMenu.Singleton.SetupMenus();
@@ -193,6 +201,8 @@ namespace TheRiptide
             Database.Singleton.UnLoad();
 
             //features
+            EventManager.UnregisterEvents<LeaderBoard>(this);
+            EventManager.UnregisterEvents<Cleanup>(this);
             EventManager.UnregisterEvents<VoiceChat>(this);
             EventManager.UnregisterEvents<AttachmentBlacklist>(this);
             EventManager.UnregisterEvents<Tracking>(this);
