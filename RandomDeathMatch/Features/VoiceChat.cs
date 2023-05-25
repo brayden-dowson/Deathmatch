@@ -111,7 +111,7 @@ namespace TheRiptide
                             msg.Channel = VoiceChatChannel.RoundSummary;
                             allHub.connectionToClient.Send(msg);
                         }
-                        if (!dead_talk && !dead_receive && currentRole2.VoiceModule is HumanVoiceModule hvm && hvm.CheckProximity(msg.Speaker))
+                        else if (!dead_talk && !dead_receive && currentRole2.VoiceModule is HumanVoiceModule hvm && hvm.CheckProximity(msg.Speaker))
                         {
                             msg.Channel = VoiceChatChannel.Proximity;
                             allHub.connectionToClient.Send(msg);
