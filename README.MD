@@ -17,7 +17,7 @@
 - Loadouts, Roles and preferences are saved when player leaves
 - Round stats displayed at end of round
 - Base game features overriden for minimal setup
-- Cleanup automatically cleans up items/corpses 
+- Cleanup, automatically cleans up items/corpses 
 
 ## Install
 ### LocalAdmin
