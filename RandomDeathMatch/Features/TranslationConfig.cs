@@ -195,29 +195,29 @@ namespace TheRiptide
     }
 
 
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
-    public class H : ICommand
-    {
-        public string Command { get; } = "h";
+    //[CommandHandler(typeof(RemoteAdminCommandHandler))]
+    //public class H : ICommand
+    //{
+    //    public string Command { get; } = "h";
 
-        public string[] Aliases { get; } = new string[] { };
+    //    public string[] Aliases { get; } = new string[] { };
 
-        public string Description { get; } = "send hint";
+    //    public string Description { get; } = "send hint";
 
-        public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
-        {
-            Player player;
-            if (Player.TryGet(sender, out player))
-            {
-                string h = "";
-                foreach (var a in arguments)
-                    h += a;
-                player.ReceiveHint(h, 300);
-                response = "success";
-                return true;
-            }
-            response = "failed";
-            return false;
-        }
-    }
+    //    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+    //    {
+    //        Player player;
+    //        if (Player.TryGet(sender, out player))
+    //        {
+    //            string h = "";
+    //            foreach (var a in arguments)
+    //                h += a;
+    //            player.ReceiveHint(h, 300);
+    //            response = "success";
+    //            return true;
+    //        }
+    //        response = "failed";
+    //        return false;
+    //    }
+    //}
 }
