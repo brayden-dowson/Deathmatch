@@ -14,6 +14,8 @@ using System.Diagnostics;
 using System.Text.RegularExpressions;
 using PlayerRoles.FirstPersonControl;
 using static TheRiptide.Translation;
+using CommandSystem;
+using RemoteAdmin;
 
 namespace TheRiptide
 {
@@ -70,6 +72,11 @@ namespace TheRiptide
         public string BottomLeftCorner { get; set; } = "╹";
         public string BottomJunction { get; set; } = "┷";
         public string BottomRightCorner { get; set; } = "╹";
+
+        public List<PlayerPermissions> lbCmdPermissions = new List<PlayerPermissions>
+        {
+            PlayerPermissions.ServerConsoleCommands
+        };
     }
 
     enum LeaderBoardType { Rank, Experience, Killstreak, Kills, Time }
@@ -78,7 +85,7 @@ namespace TheRiptide
     {
         public static LeaderBoard Singleton { get; private set; }
 
-        private LeaderBoardConfig config;
+        public LeaderBoardConfig config;
 
         class PlayerDetails
         {
@@ -300,62 +307,6 @@ namespace TheRiptide
             HintOverride.Add(player, 0, lb, 1500);
             HintOverride.Refresh(player);
         }
-
-        //public void DisplayLeaderBoard1(Player player, LeaderBoardType type, int page)
-        //{
-        //    if (player_details.IsEmpty())
-        //        ReloadLeaderBoard();
-        //
-        //    int name_space = 18;
-        //    int rank_space = Ranks.Singleton.config.Ranks.Max(x => x.Tag.Length);
-        //    int xp_space = Experiences.Singleton.config.LeaderBoardFormat.Replace("{tier}", "").Replace("{stage}", "").Replace("{level}", "").Length + Experiences.Singleton.config.LeaderBoardTierTags.Max(x => x.Length) + Experiences.Singleton.config.LeaderBoardStageTags.Max(x => x.Length) + Experiences.Singleton.config.LeaderBoardLevelTags.Max(x => x.Length);
-        //    int ks_space = Killstreaks.Singleton.config.KillstreakTables.Keys.Max(x => x.Length);
-        //
-        //    int line = page * config.LinesPerPage;
-        //    int max = Mathf.Min((page + 1) * config.LinesPerPage, type_order[type].Count);
-        //    Func<string, bool, string> highlight = new Func<string, bool, string>((s, b) => { return b ? "<b><color=#FF0000>" + s + "</color></b>" : s; });
-        //    string leader_board_control = "\n<b><color=#FF0000>Controls: uses player movement for page/menu scrolling Left/Right = Type, Forward/Backward = Page. Note, wont work when up against a wall</color></b>\n";
-        //    string leader_board_title = "<color=#43BFF0><b><size=64>Leader Board</size></b></color>";
-        //    string leader_board_legend = "Pos" +
-        //        " " + ("Name").PadRight(name_space) +
-        //        " " + highlight(("Rank").PadRight(rank_space), type == LeaderBoardType.Rank) +
-        //        " " + highlight(("Experience").PadRight(xp_space), type == LeaderBoardType.Experience) +
-        //        " " + highlight(("Top Killstreak").PadRight(ks_space + 4), type == LeaderBoardType.Killstreak) +
-        //        " " + highlight(("Kills").PadRight(5), type == LeaderBoardType.Kills) +
-        //        " " + highlight(("Time").PadRight(4), type == LeaderBoardType.Time);
-        //    int width = leader_board_legend.Length - highlight("", true).Length;
-        //    string hint = "<voffset=4em>" + (EnableTitle ? leader_board_title : "") + "<size=29><line-height=75%><mspace=0.55em>\n" + leader_board_control + '\n' + "<color=#43BFF0>" + leader_board_legend + "</color>" + "\n" + new string('—', width);
-        //    for (int i = line; i < max; i++)
-        //    {
-        //        PlayerDetails details = player_details[type_order[type].ElementAt(i)];
-        //        string killstreak_color = "#FFFFFF";
-        //        if (details.killstreak_tag == "")
-        //            details.killstreak_tag = Killstreaks.Singleton.config.DefaultKillstreak;
-        //        if (Killstreaks.Singleton.config.KillstreakTables.ContainsKey(details.killstreak_tag))
-        //            killstreak_color = Killstreaks.Singleton.config.KillstreakTables[details.killstreak_tag].ColorHex;
-        //        string bold_tag = "";
-        //        string end_bold_tag = "";
-        //        if (user_index.ContainsKey(player.UserId) && user_index[player.UserId] == type_order[type].ElementAt(i))
-        //        {
-        //            bold_tag = "<b>";
-        //            end_bold_tag = "</b>";
-        //        }
-        //        if (details.rank_color == "")
-        //            details.rank_color = BadgeOverride.ColorNameToHex["nickel"];
-        //        details.name = details.name.Length > name_space ? details.name.Substring(0, name_space) : details.name;
-        //        string name_str = "<noparse>" + details.name.PadRight(name_space).Replace("{", "｛").Replace("}", "｝") + "</noparse>";
-        //        string rank_str = details.rank_tag.PadRight(rank_space);
-        //        string xp_str = details.xp_tag.PadRight(xp_space);
-        //        string ks_str = details.killstreak_tag.PadRight(ks_space);
-        //        string rank_color = "<color=" + details.rank_color + ">";
-        //        string ks_color = "<color=" + killstreak_color + ">";
-        //        hint += "\n" + bold_tag + "|" + (i + 1).ToString().PadLeft(3) + "|" + name_str + "|" + rank_color + rank_str + "</color>|" + xp_str + "|" + ks_color + ks_str + "</color> " + details.highest_killstreak.ToString().PadRight(3) + "|" + details.total_kills.ToString().PadRight(5) + "|" + (details.total_play_time).ToString().PadRight(4) + "|" + end_bold_tag;
-        //    }
-        //    hint += "\n" + new string('—', width) + "\n";
-        //    hint += "Page " + (page + 1) + " of " + (MaxPages(type) + 1) + " [" + (line + 1) + " - " + max + "]/" + type_order[type].Count;
-        //    HintOverride.Add(player, 0, hint, 1500);
-        //    HintOverride.Refresh(player);
-        //}
 
         public void ReloadLeaderBoard()
         {
@@ -588,6 +539,27 @@ namespace TheRiptide
                     Log.Error("LeaderBoard _Controller error: " + ex.ToString());
                 }
                 yield return Timing.WaitForOneFrame;
+            }
+        }
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmRebuildLeaderBoard : ICommand
+        {
+            public string Command { get; } = "dmrebuildlb";
+
+            public string[] Aliases { get; } = new string[] { "dmrblb" };
+
+            public string Description { get; } = "rebuilds leader board using the updated config. warning this command might be very slow";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.lbCmdPermissions.ToArray(), out response))
+                    return false;
+
+                Singleton.RebuildLeaderBoard();
+
+                response = "rebuilding... check server console for results";
+                return true;
             }
         }
     }

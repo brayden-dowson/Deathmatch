@@ -7,6 +7,7 @@ using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using MEC;
 using PlayerRoles;
+using UnityEngine;
 
 namespace TheRiptide
 {
@@ -451,6 +452,38 @@ namespace TheRiptide
                     Tracking player_tracking = player_tracking = new Tracking();
                     player_tracking.sessions.Add(session);
                     tracking.Upsert(player_tracking);
+                }
+
+                //leader board
+                if (!player.DoNotTrack && 
+                    TheRiptide.LeaderBoard.Singleton.config.BeginEpoch < session.connect && 
+                    session.connect < TheRiptide.LeaderBoard.Singleton.config.EndEpoch)
+                {
+                    var leader_board = db.GetCollection<LeaderBoard>("leader_board");
+                    leader_board.EnsureIndex(x => x.UserId);
+                    LeaderBoard lb = leader_board.FindById(player.UserId);
+                    if (lb == null)
+                        lb = new LeaderBoard { UserId = player.UserId };
+
+                    lb.total_play_time += Mathf.CeilToInt((float)(session.disconnect - session.connect).TotalSeconds);
+                    foreach(var life in session.lives)
+                    {
+                        int ks = 0;
+                        foreach(var kill in life.kills)
+                        {
+                            if(life.death == null || kill != life.death)
+                            {
+                                lb.total_kills++;
+                                ks++;
+                            }
+                        }
+                        if(ks>lb.highest_killstreak)
+                        {
+                            lb.highest_killstreak = ks;
+                            lb.killstreak_tag = life.loadout.killstreak_mode;
+                        }
+                    }
+                    leader_board.Upsert(lb);
                 }
             });
         }
