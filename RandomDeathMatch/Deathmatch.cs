@@ -86,6 +86,7 @@ namespace TheRiptide
         public LeaderBoardConfig leader_board_config;
 
         private static bool game_started = false;
+        public static bool game_ended = false;
         public static SortedSet<int> players = new SortedSet<int>();
         private Action OnConfigReloaded;
         private CoroutineHandle restart_handle;
@@ -245,6 +246,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.WaitingForPlayers)]
         void WaitingForPlayers()
         {
+            game_ended = false;
             GenerateGlobalReferenceConfig();
             Database.Singleton.Checkpoint();
         }
@@ -275,6 +277,8 @@ namespace TheRiptide
                     HintOverride.Refresh();
                     VoiceChat.Singleton.ForceGlobalTalkGlobalReceive();
                     Server.Instance.SetRole(RoleTypeId.Spectator);
+                    game_ended = true;
+                    Tracking.Singleton.UpdateLeaderBoard();
                     LeaderBoard.Singleton.ReloadLeaderBoard();
                     if (leader_board_config.DisplayEndRoundDelay < config.RoundEndTime)
                     {

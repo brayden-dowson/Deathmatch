@@ -453,10 +453,15 @@ namespace TheRiptide
                     player_tracking.sessions.Add(session);
                     tracking.Upsert(player_tracking);
                 }
+            });
+        }
 
-                //leader board
-                if (!player.DoNotTrack && 
-                    TheRiptide.LeaderBoard.Singleton.config.BeginEpoch < session.connect && 
+        public void UpdateLeaderBoard(Player player)
+        {
+            Session session = TheRiptide.Tracking.Singleton.GetSession(player);
+            DbAsync(() =>
+            {
+                if (TheRiptide.LeaderBoard.Singleton.config.BeginEpoch < session.connect && 
                     session.connect < TheRiptide.LeaderBoard.Singleton.config.EndEpoch)
                 {
                     var leader_board = db.GetCollection<LeaderBoard>("leader_board");
@@ -477,7 +482,7 @@ namespace TheRiptide
                                 ks++;
                             }
                         }
-                        if(ks>lb.highest_killstreak)
+                        if(ks > lb.highest_killstreak)
                         {
                             lb.highest_killstreak = ks;
                             lb.killstreak_tag = life.loadout.killstreak_mode;

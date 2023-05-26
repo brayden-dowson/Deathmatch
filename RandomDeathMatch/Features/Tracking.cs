@@ -105,6 +105,8 @@ namespace TheRiptide
             {
                 player_sessions[player.PlayerId].disconnect = System.DateTime.Now;
                 Database.Singleton.SaveTrackingSession(player);
+                if (!Deathmatch.game_ended && !player.DoNotTrack)
+                    Database.Singleton.UpdateLeaderBoard(player);
                 player_sessions.Remove(id);
             }
 
@@ -160,6 +162,16 @@ namespace TheRiptide
                     if (life != null)
                         life.shots++;
                 }
+            }
+        }
+
+        public void UpdateLeaderBoard()
+        {
+            foreach(var id in player_sessions.Keys.ToList())
+            {
+                Player player;
+                if(Player.TryGet(id, out player))
+                    Database.Singleton.UpdateLeaderBoard(player);
             }
         }
 
