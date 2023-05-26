@@ -275,6 +275,16 @@ namespace TheRiptide
                     HintOverride.Refresh();
                     VoiceChat.Singleton.ForceGlobalTalkGlobalReceive();
                     Server.Instance.SetRole(RoleTypeId.Spectator);
+                    LeaderBoard.Singleton.ReloadLeaderBoard();
+                    if (leader_board_config.DisplayEndRoundDelay < config.RoundEndTime)
+                    {
+                        LeaderBoard.Singleton.EnableTitle = false;
+                        Timing.CallDelayed(leader_board_config.DisplayEndRoundDelay,()=>
+                        {
+                            foreach (var p in Player.GetPlayers())
+                                LeaderBoard.Singleton.EnableLeaderBoardMode(p, Enum.IsDefined(typeof(LeaderBoardType), leader_board_config.LeaderBoardType) ? (LeaderBoardType)leader_board_config.LeaderBoardType : (LeaderBoardType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(LeaderBoardType)).Length));
+                        });
+                    }
                 }
                 catch(Exception ex)
                 {

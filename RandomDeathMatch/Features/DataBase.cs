@@ -467,6 +467,8 @@ namespace TheRiptide
                 ranks.Delete(player.UserId);
                 var configs = db.GetCollection<Config>("configs");
                 configs.Delete(player.UserId);
+                var leader_boards = db.GetCollection<LeaderBoard>("leader_board");
+                leader_boards.Delete(player.UserId);
             });
         }
 
