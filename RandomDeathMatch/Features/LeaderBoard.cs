@@ -23,9 +23,9 @@ namespace TheRiptide
     {
         public bool IsEnabled { get; set; } = true;
 
-        [Description("Sessions before this date are ignored in the leader board, applies to total kills, highest killstreak and total time ")]
+        [Description("Sessions before this date are ignored in the leader board, applies to total kills, highest killstreak and total time. leaderboard needs to be rebuilt with dmrblb in RA console to apply the changes")]
         public DateTime BeginEpoch { get; set; } = new DateTime(DateTime.Now.Year, 1, 1);
-        [Description("Sessions after this date are ignored in the leader board, applies to total kills, highest killstreak and total time ")]
+        [Description("Sessions after this date are ignored in the leader board, applies to total kills, highest killstreak and total time. leaderboard needs to be rebuilt with dmrblb in RA console to apply the changes")]
         public DateTime EndEpoch { get; set; } = new DateTime(DateTime.Now.Year, 4, 1);
         [Description("How often to advance the Epoch in months. Triggered when the current date is beyond the EndEpoch")]
         public int AutoIncrementPeriod { get; set; } = 3;
@@ -73,6 +73,7 @@ namespace TheRiptide
         public string BottomJunction { get; set; } = "┷";
         public string BottomRightCorner { get; set; } = "╹";
 
+        [Description("use this after changing the start/end epoch. rebuilding might be very slow")]
         public List<PlayerPermissions> lbCmdPermissions = new List<PlayerPermissions>
         {
             PlayerPermissions.ServerConsoleCommands
