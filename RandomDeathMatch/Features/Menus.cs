@@ -22,7 +22,7 @@ namespace TheRiptide
             }
         }
 
-        public enum MenuPage { None, Main, GunSlot1, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, DeleteData, Debug };
+        public enum MenuPage { None, Main, GunSlot1, GunSlot2, GunSlot3, GunClass, MtfGun, ChaosGun, KillstreakMode, KillstreakModeSecret, Preference, Role, Stats, DeleteData, LeaderBoard, Debug };
 
         private DeathmatchMenu() { }
 
@@ -347,6 +347,12 @@ namespace TheRiptide
                 {
                     InventoryMenu.ShowMenu(player, (int)MenuPage.DeleteData);
                     return false;
+                }),
+                new MenuItem(ItemType.SCP1576, translation.LeaderBoard, (player)=>
+                {
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.LeaderBoard);
+                    LeaderBoard.Singleton.EnableLeaderBoardMode(player, LeaderBoardType.Rank);
+                    return false;
                 })
             });
 
@@ -379,6 +385,17 @@ namespace TheRiptide
                     }
                     else
                         BroadcastOverride.BroadcastLine(player, 3, 1500, BroadcastPriority.High, translation.FailedToDeleteData);
+                    return false;
+                })
+            });
+
+            InventoryMenu.CreateMenu((int)MenuPage.LeaderBoard, translation.LeaderBoardMenu, new List<MenuItem>
+            {
+                new MenuItem(ItemType.KeycardO5, translation.BackToPreferences, (player)=>
+                {
+                    BroadcastOverride.ClearLines(player, BroadcastPriority.Highest);
+                    InventoryMenu.ShowMenu(player, (int)MenuPage.Preference);
+                    LeaderBoard.Singleton.DisableLeaderBoardMode(player);
                     return false;
                 })
             });

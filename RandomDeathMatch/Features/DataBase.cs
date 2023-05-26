@@ -138,8 +138,8 @@ namespace TheRiptide
             public float rv { get; set; } = 0;
         }
 
-        //experience collecion
-        class Experience
+        //experience collection
+        public class Experience
         {
             [BsonId]
             public string UserId { get; set; }
@@ -147,6 +147,17 @@ namespace TheRiptide
             public int level { get; set; } = 0;
             public int stage { get; set; } = 0;
             public int tier { get; set; } = 0;
+        }
+
+        //leader board collection
+        public class LeaderBoard
+        {
+            [BsonId]
+            public string UserId { get; set; }
+            public int total_kills { get; set; } = 0;
+            public int highest_killstreak { get; set; } = 0;
+            public string killstreak_tag { get; set; } = "";
+            public int total_play_time { get; set; } = 0;
         }
 
         private static Database instance = null;
@@ -161,6 +172,7 @@ namespace TheRiptide
         }
 
         private LiteDatabase db;
+        public LiteDatabase DB { get { return db; } }
 
         private Database()
         {
@@ -177,9 +189,10 @@ namespace TheRiptide
                 {
                     BsonDocument doc = value.AsDocument;
                     byte[] data = System.BitConverter.GetBytes(doc["data"].AsInt32);
-                    return new Hit { HitId = doc["_id"], health = data[0], damage = data[1], hitbox = data[2], weapon = data[4] };
+                    return new Hit { HitId = doc["_id"], health = data[0], damage = data[1], hitbox = data[2], weapon = data[3] };
                 }
             );
+            BsonMapper.Global.EmptyStringToNull = false;
         }
 
         public void Load(string config_path)
@@ -454,7 +467,27 @@ namespace TheRiptide
                 ranks.Delete(player.UserId);
                 var configs = db.GetCollection<Config>("configs");
                 configs.Delete(player.UserId);
+                var leader_boards = db.GetCollection<LeaderBoard>("leader_board");
+                leader_boards.Delete(player.UserId);
             });
+        }
+
+        public void Async(System.Action<LiteDatabase> action)
+        {
+            new Task(() =>
+            {
+                try
+                {
+                    lock (db)
+                    {
+                        action.Invoke(db);
+                    }
+                }
+                catch (System.Exception ex)
+                {
+                    Log.Error("Database error: " + ex.ToString());
+                }
+            }).Start();
         }
 
         private void DbAsync(System.Action action)

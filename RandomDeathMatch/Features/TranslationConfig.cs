@@ -60,8 +60,8 @@ namespace TheRiptide
 
         [Description("main menu")]
         public string MainMenu { get; set; } = "<b><color=#43BFF0>[MAIN MENU]</color></b> <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
-        public string BackToMainMenu { get; set; } = "<color=#5900ff>[O5]</color> = <b>Back to <color=#43BFF0>[MAIN MENU]</color></b>";
-        public string SaveAndExit { get; set; } = "<color=#5900ff>[O5]</color> = <b><color=#5900ff>Save and Exit</color></b>";
+        public string BackToMainMenu { get; set; } = "<color=#5d318c>[O5]</color> = <b>Back to <color=#43BFF0>[MAIN MENU]</color></b>";
+        public string SaveAndExit { get; set; } = "<color=#5d318c>[O5]</color> = <b><color=#5d318c>Save and Exit</color></b>";
         public string CustomiseLoadout { get; set; } = "<color=#e7d77b>[SCIENTIST]</color> = <b><color=#FF0000>Customise Loadout - </color><color=#43BFF0>[GUN SLOT]</color></b>";
         public string KillstreakRewardSystem { get; set; } = "<color=#e1ab21>[RESEARCH SUPERVISOR]</color> = <b><color=#43BFF0>[KILLSTREAK REWARD SYSTEM]</color></b>";
         public string Role { get; set; } = "<color=#bd8f86>[CONTAINMENT ENGINEER]</color> = <b><color=#43BFF0>[ROLE]</color></b>";
@@ -107,16 +107,20 @@ namespace TheRiptide
         public string Spectator { get; set; } = "<color=#eb0d47>[FLASH LIGHT]</color> = <b>Enable spectator mode</b>";
         public string EnableRage { get; set; } = "<color=#eb0d47>[COIN]</color> = <b>Enable [DATA EXPUNGED]</b>";
         public string DeleteData { get; set; } = "<color=#eb0d47>[JANITOR]</color> = <b>Delete Data stats/configs/ranks/xp/preferences (can not be undone)</b>";
+        public string LeaderBoard { get; set; } = "<color=#eb0d47>[SCP1576]</color> = <b><color=#43BFF0>[LEADER BOARD]</color></b>";
 
         [Description("stats menu")]
         public string StatsMenu { get; set; } = "<b><color=#43BFF0>[STATS]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
-        public string BackToPreferences { get; set; } = "<color=#5900ff>[O5]</color> = <b>Back to <color=#43BFF0>[PREFERENCES]</color></b>";
+        public string BackToPreferences { get; set; } = "<color=#5d318c>[O5]</color> = <b>Back to <color=#43BFF0>[PREFERENCES]</color></b>";
 
         [Description("confirm delete data menu")]
         public string DeleteDataMenu { get; set; } = "<b><color=#43BFF0>[DATA DELETION CONFIRMATION]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
         public string AreYouSure { get; set; } = "<b>Are you sure? You must have 'Do Not Track' on for this to work. <color=#FF0000>deletion can not be undone.</color> <color=#43BFF0>If sure, right click on the janitor keycard to delete your data</color></b>";
         public string FailedToDeleteData { get; set; } = "<b>failed to delete data, you must have 'Do Not Track' on in your settings</b>";
         public string DeletedData { get; set; } = "data deleted";
+
+        [Description("leader board menu")]
+        public string LeaderBoardMenu { get; set; } = "<b><color=#43BFF0>[LEADER BOARD]</color></b> - <b><color=#FF0000>RIGHT CLICK TO SELECT</color></b>";
 
         [Description("rooms")]
         public string SecondPlayerJoined { get; set; } = "Player <color=#43BFF0>{name}</color> joined, waiting for them to select a loadout";
@@ -168,6 +172,21 @@ namespace TheRiptide
         public string GlobalTalkGlobalReceive { get; set; } = "<color=#43BFF0>Voice Chat: Global Talk Global Receive</color>";
         public string ProximityTalkGlobalReceive { get; set; } = "<color=#43BFF0>Voice Chat:</color> <color=#FF0000>Proximity Talk</color> <color=#43BFF0>Global Receive</color>";
         public string ProximityTalkProximityReceive { get; set; } = "<color=#43BFF0>Voice Chat:</color> <color=#FF0000>Proximity Talk Proximity Receive</color>";
+
+        [Description("leader board")]
+        public string LeaderBoardTitle { get; set; } = "<color=#d4af37><b><size=128>Leader Board</size></b></color>";
+
+        public string LeaderBoardControl { get; set; } = "\n<size=24><b><color=#FF0000>Controls: uses player movement for page/menu scrolling Left/Right = Type, Forward/Backward = Page. Note, wont work when up against a wall</color></b></size>";
+
+        public string LedgendPos { get; set; } = "Pos";
+        public string LedgendName { get; set; } = "Name";
+        public string LedgendRank { get; set; } = "Rank";
+        public string LedgendExperience { get; set; } = "Experience";
+        public string LedgendKillstreak { get; set; } = "Killstreak";
+        public string LedgendKills { get; set; } = "Kills";
+        public string LedgendTime { get; set; } = "Time";
+
+        public string PageAndLine { get; set; } = "Page {page} of {page_max} [{line_start} - {line_end}]/{line_max}";
     }
 
     public static class Translation
