@@ -128,7 +128,7 @@ namespace TheRiptide
             }
             else
             {
-                BadgeOverride.Singleton.SetBadge(player, 0, config.BadgeFormat.Replace("{tag}", config.DntTag));
+                BadgeOverride.Singleton.SetBadge(player, 0, config.BadgeFormat.Replace("{name}", config.DntName));
                 BadgeOverride.Singleton.SetBadgeColor(player, config.DntColor);
             }
         }
