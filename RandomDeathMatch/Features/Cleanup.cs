@@ -34,7 +34,7 @@ namespace TheRiptide
         };
 
         [Description("how often to cleanup ragdolls in seconds. -1 = never")]
-        public int RagdollCleanupPeriod = -1;
+        public int RagdollCleanupPeriod { get; set; } = -1;
     }
 
     class Cleanup
