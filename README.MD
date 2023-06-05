@@ -9,6 +9,7 @@
 - Dynamic facility size (rooms open and close depending on player count)
 - Ranks and Experience
 - Statistics tracking
+- Leader board with multi-column sorting
 - Weapon and Attachment blacklists
 - Translation config
 - First player gets to choose starting area in facility
@@ -16,17 +17,12 @@
 - Loadouts, Roles and preferences are saved when player leaves
 - Round stats displayed at end of round
 - Base game features overriden for minimal setup
+- Cleanup, automatically cleans up items/corpses 
 
 ## Install
 ### LocalAdmin
-To install via LocalAdmin console use "p install brayden-dowson/Deathmatch" and make the following changes to your config_gameplay.cfg (assuming default config)
-1. friendly_fire_multiplier: 1.0
-2. disable_decontamination: true
-3. custom_gamemode_server: true
+To install via LocalAdmin console use "p install brayden-dowson/Deathmatch"
 
 ### Manual
-To manually install get LiteDB.dll from [github](https://github.com/mbdavid/LiteDB) or from the [releases](https://github.com/brayden-dowson/Deathmatch/releases) and place in your PluginAPI/plugins/"your server port number"/dependencies/ folder. Similarly get Glicko2.dll from [github](https://github.com/ikhanage/Glicko2) or from the [releases](https://github.com/brayden-dowson/Deathmatch/releases) and place in the same folder. Place Deathmatch.dll inside the PluginAPI/plugins/"your server port number"/ folder and make the following changes to your config_gameplay.cfg (assuming default config)
-1. friendly_fire_multiplier: 1.0
-2. disable_decontamination: true
-3. custom_gamemode_server: true
+To manually install put Deathmatch.dll in PluginAPI/plugins/"your server port number"/ and put everything inside the dependencies.zip inside PluginAPI/plugins/"your server port number"/dependencies/. You can also get the dependencies here [LiteDB.dll](https://github.com/mbdavid/LiteDB), [Glicko2.dll](https://github.com/ikhanage/Glicko2), [0Harmony.dll](https://github.com/pardeike/Harmony) and [EventSubscriber](https://github.com/brayden-dowson/Deathmatch/tree/master/EventSubscriber)
 
