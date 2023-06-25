@@ -22,10 +22,9 @@ namespace TheRiptide
         private static Dictionary<RoomIdentifier, HashSet<DoorVariant>> room_edges = new Dictionary<RoomIdentifier, HashSet<DoorVariant>>();
 
         //facility lights
-        private static Dictionary<RoomIdentifier, FlickerableLightController> room_lights = new Dictionary<RoomIdentifier, FlickerableLightController>();
+        private static Dictionary<RoomIdentifier, RoomLightController> room_lights = new Dictionary<RoomIdentifier, RoomLightController>();
 
-        [PluginEvent(ServerEventType.WaitingForPlayers)]
-        void WaitingForPlayers()
+        public static void WaitingForPlayers()
         {
             room_adjacent_rooms.Clear();
             room_lights.Clear();
@@ -38,7 +37,7 @@ namespace TheRiptide
             {
                 room_adjacent_rooms.Add(room, new Dictionary<RoomIdentifier, Direction>());
                 room_edges.Add(room, new HashSet<DoorVariant>());
-                room_lights.Add(room, room.GetComponentInChildren<FlickerableLightController>());
+                room_lights.Add(room, room.GetComponentInChildren<RoomLightController>());
             }
 
             foreach (DoorVariant door in DoorVariant.AllDoors)
@@ -64,8 +63,7 @@ namespace TheRiptide
             }
         }
 
-        [PluginEvent(ServerEventType.RoundRestart)]
-        void OnRoundRestart()
+        public static void RoundRestart()
         {
             room_adjacent_rooms.Clear();
             room_lights.Clear();
@@ -217,20 +215,15 @@ namespace TheRiptide
         {
             foreach (var controller in room_lights.Values)
             {
-                controller.WarheadLightColor = FlickerableLightController.DefaultWarheadColor;
-                controller.WarheadLightOverride = false;
+                controller.NetworkOverrideColor = Color.white;
                 controller.NetworkLightsEnabled = true;
-                controller.LightIntensityMultiplier = 1.0f;
             }
         }
 
         public static void SetAllRoomLightColors(Color color)
         {
-            foreach(var controller in room_lights.Values)
-            {
-                controller.WarheadLightColor = color;
-                controller.WarheadLightOverride = true;
-            }
+            foreach (var controller in room_lights.Values)
+                controller.NetworkOverrideColor = color;
         }
 
         public static void SetAllRoomLightStates(bool is_enabled)
@@ -239,35 +232,21 @@ namespace TheRiptide
                 controller.NetworkLightsEnabled = is_enabled;
         }
 
-        public static void SetAllRoomLightIntensities(float intensity)
-        {
-            foreach (var controller in room_lights.Values)
-                controller.LightIntensityMultiplier = intensity;
-        }
-
         public static void ResetRoomLight(RoomIdentifier room)
         {
-            room_lights[room].WarheadLightColor = FlickerableLightController.DefaultWarheadColor;
-            room_lights[room].WarheadLightOverride = false;
+            room_lights[room].NetworkOverrideColor = Color.white;
             room_lights[room].NetworkLightsEnabled = true;
-            room_lights[room].LightIntensityMultiplier = 1.0f;
         }
 
         public static void SetRoomLightColor(RoomIdentifier room, Color color)
         {
-            room_lights[room].WarheadLightColor = color;
-            room_lights[room].WarheadLightOverride = true;
+            room_lights[room].NetworkOverrideColor = color;
         }
 
         //turn lights on or off
         public static void SetRoomLightState(RoomIdentifier room, bool is_enabled)
         {
             room_lights[room].NetworkLightsEnabled = is_enabled;
-        }
-
-        public static void SetRoomLightIntensity(RoomIdentifier room, float intensity)
-        {
-            room_lights[room].LightIntensityMultiplier = intensity;
         }
 
         private static HashSet<DoorVariant> JointDoors(HashSet<RoomIdentifier> rooms, Dictionary<RoomIdentifier, HashSet<DoorVariant>> dict)

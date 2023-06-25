@@ -10,7 +10,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using static TheRiptide.Utility;
-using static TheRiptide.EventSubscriber;
 using UnityEngine;
 
 namespace TheRiptide
@@ -58,12 +57,11 @@ namespace TheRiptide
                         Log.Error("on damage error: " + ex.ToString());
                     }
                 });
-                SubscribeOnDamaged(OnPlayerDamaged);
+                PlayerStats.OnAnyPlayerDamaged += OnPlayerDamaged;
             }
         }
 
-        [PluginEvent(ServerEventType.WaitingForPlayers)]
-        void WaitingForPlayers()
+        public void WaitingForPlayers()
         {
             current_round = null;
         }
@@ -105,7 +103,7 @@ namespace TheRiptide
             {
                 player_sessions[player.PlayerId].disconnect = System.DateTime.Now;
                 Database.Singleton.SaveTrackingSession(player);
-                if (!Deathmatch.game_ended && !player.DoNotTrack)
+                if (!DmRound.game_ended && !player.DoNotTrack)
                     Database.Singleton.UpdateLeaderBoard(player);
                 player_sessions.Remove(id);
             }

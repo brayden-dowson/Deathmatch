@@ -154,8 +154,7 @@ namespace TheRiptide
             controller = Timing.RunCoroutine(_Controller());
         }
 
-        [PluginEvent(ServerEventType.MapGenerated)]
-        public void OnMapGenerated()
+        public void MapGenerated()
         {
             EnableTitle = true;
             bool dirty = false;

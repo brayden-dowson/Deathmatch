@@ -62,8 +62,7 @@ namespace TheRiptide
                 avaliable_spawn_rooms.Add(i);
         }
 
-        [PluginEvent(ServerEventType.MapGenerated)]
-        void OnMapGenerated()
+        public void MapGenerated()
         {
             BuildSpawn(config.SpawnDimX, config.SpawnDimY);
             round_started = false;
@@ -94,7 +93,7 @@ namespace TheRiptide
 
             if(Player.Count == 1)
             {
-                Deathmatch.GameStarted = false;
+                DmRound.GameStarted = false;
             }
             else if (Player.Count == 2)
             {
@@ -117,7 +116,7 @@ namespace TheRiptide
 
             if(Player.Count == 2)
             {
-                Deathmatch.GameStarted = false;
+                DmRound.GameStarted = false;
                 foreach (var p in Player.GetPlayers())
                     if (p.IsAlive)
                         ApplyGameNotStartedEffects(player);
@@ -211,9 +210,9 @@ namespace TheRiptide
                             BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, translation.WaitingForPlayers);
                             BroadcastOverride.UpdateIfDirty(player);
                         }
-                        else if (Player.GetPlayers().Count >= 2 && !Deathmatch.GameStarted)
+                        else if (Player.GetPlayers().Count >= 2 && !DmRound.GameStarted)
                         {
-                            Deathmatch.GameStarted = true;
+                            DmRound.GameStarted = true;
                             BroadcastOverride.ClearLines(BroadcastPriority.Low);
                             BroadcastOverride.UpdateAllDirty();
                         }
@@ -231,7 +230,7 @@ namespace TheRiptide
         }
 
         [PluginEvent(ServerEventType.TeamRespawn)]
-        bool OnRespawn(SpawnableTeamType team)
+        bool OnRespawn(SpawnableTeamType team, List<Player> player, int count)
         {
             return false;
         }
@@ -276,9 +275,9 @@ namespace TheRiptide
                                 BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, translation.WaitingForPlayers);
                                 BroadcastOverride.UpdateIfDirty(player);
                             }
-                            else if (Player.GetPlayers().Count >= 2 && !Deathmatch.GameStarted)
+                            else if (Player.GetPlayers().Count >= 2 && !DmRound.GameStarted)
                             {
-                                Deathmatch.GameStarted = true;
+                                DmRound.GameStarted = true;
                                 BroadcastOverride.ClearLines(BroadcastPriority.Low);
                                 BroadcastOverride.UpdateAllDirty();
                             }
@@ -295,9 +294,9 @@ namespace TheRiptide
                         BroadcastOverride.BroadcastLines(player, 1, 1500.0f, BroadcastPriority.Low, translation.WaitingForPlayers);
                         BroadcastOverride.UpdateIfDirty(player);
                     }
-                    else if (Player.GetPlayers().Count >= 2 && !Deathmatch.GameStarted)
+                    else if (Player.GetPlayers().Count >= 2 && !DmRound.GameStarted)
                     {
-                        Deathmatch.GameStarted = true;
+                        DmRound.GameStarted = true;
                         BroadcastOverride.ClearLines(BroadcastPriority.Low);
                         BroadcastOverride.UpdateAllDirty();
                     }
@@ -460,7 +459,7 @@ namespace TheRiptide
                                     indexes.Add(i);
                             Teleport.RoomAt(player, room, indexes.RandomItem());
                         }
-                        if (Deathmatch.GameStarted)
+                        if (DmRound.GameStarted)
                         {
                             Statistics.SetPlayerStartTime(player, Time.time);
                             Killstreaks.Singleton.AddKillstreakStartEffects(player);

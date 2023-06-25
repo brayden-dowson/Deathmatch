@@ -85,7 +85,7 @@ namespace TheRiptide
                             BroadcastOverride.UpdateIfDirty(p);
                             Timing.CallDelayed(10.0f, () =>
                             {
-                                if (ValidPlayerInRoom(p) && Deathmatch.IsPlayerValid(player) && !Deathmatch.GameStarted)
+                                if (ValidPlayerInRoom(p) && Deathmatch.IsPlayerValid(player) && !DmRound.GameStarted)
                                     BroadcastOverride.BroadcastLine(p, 2, 290.0f, BroadcastPriority.Low, translation.SecondPlayerHelp.Replace("{name}", player.Nickname));
                                 BroadcastOverride.UpdateIfDirty(p);
                             });
@@ -129,12 +129,9 @@ namespace TheRiptide
             }
         }
 
-        [PluginEvent(ServerEventType.RoundRestart)]
-        void OnRoundRestart()
+        public void RoundRestart()
         {
-            Timing.KillCoroutines(update_handle);
-            Timing.KillCoroutines(light_update_handle);
-            Timing.KillCoroutines(decontamination_update_handle);
+            Timing.KillCoroutines(update_handle, light_update_handle, decontamination_update_handle);
         }
 
         private static IEnumerable<RoomIdentifier> ValidRooms = RoomIdentifier.AllRoomIdentifiers.Where((r) => r.Zone != FacilityZone.Other && r.Zone != FacilityZone.None);

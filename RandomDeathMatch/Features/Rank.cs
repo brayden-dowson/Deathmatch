@@ -103,8 +103,7 @@ namespace TheRiptide
             this.config = config;
         }
 
-        [PluginEvent(ServerEventType.MapGenerated)]
-        void OnMapGenerated()
+        public void MapGenerated()
         {
             player_ranks.Clear();
             player_glikco.Clear();

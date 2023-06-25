@@ -14,7 +14,7 @@ using InventorySystem.Items.Firearms.Attachments;
 using LightContainmentZoneDecontamination;
 using PlayerStatsSystem;
 using static TheRiptide.Translation;
-using static TheRiptide.EventSubscriber;
+using static RoundSummary;
 
 //todo voice and spectate cmd
 namespace TheRiptide
@@ -85,61 +85,18 @@ namespace TheRiptide
         [PluginConfig("leader_board.yml")]
         public LeaderBoardConfig leader_board_config;
 
-        private static bool game_started = false;
-        public static bool game_ended = false;
-        public static SortedSet<int> players = new SortedSet<int>();
-        private Action OnConfigReloaded;
-        private CoroutineHandle restart_handle;
-        private CoroutineHandle round_timer_handle;
-
-
-        public static bool GameStarted
-        {
-            get => game_started;
-            set
-            {
-                if (value == true)
-                {
-                    foreach (var player in Player.GetPlayers())
-                        if (player.IsAlive)
-                            Killstreaks.Singleton.AddKillstreakStartEffects(player);
-                }
-                else
-                {
-                    foreach (var player in Player.GetPlayers())
-                        if (player.IsAlive)
-                            Lobby.ApplyGameNotStartedEffects(player);
-                }
-                game_started = value;
-            }
-        }
-
         public Deathmatch()
         {
             Singleton = this;
-            Killfeeds.Init(2, 5, 20);
-
-            OnConfigReloaded = new Action(() =>
-            {
-                try
-                {
-                    ServerConsole.FriendlyFire = true;
-                    FriendlyFireConfig.PauseDetector = true;
-                    ServerConsole.HeavilyModdedServerConfig = true;
-                    ServerConsole.CustomGamemodeServerConfig = true;
-                }
-                catch(Exception ex)
-                {
-                    Log.Error("config override error: " + ex.ToString());
-                }
-            });
         }
 
         public void Start()
         {
             Database.Singleton.Load(PluginHandler.Get(this).MainConfigPath);
 
-            EventManager.RegisterEvents(this);
+            if (config.IsEnabled)
+                EventManager.RegisterEvents(this);
+            EventManager.RegisterEvents<DmRound>(this);
             //dependencies
             EventManager.RegisterEvents<InventoryMenu>(this);
             EventManager.RegisterEvents<BroadcastOverride>(this);
@@ -170,7 +127,7 @@ namespace TheRiptide
             if (leader_board_config.IsEnabled)
                 EventManager.RegisterEvents<LeaderBoard>(this);
 
-
+            DmRound.Singleton.Init(config);
             Statistics.Init();
             Rooms.Singleton.Init(rooms_config);
             Killstreaks.Singleton.Init(killstreak_config);
@@ -194,7 +151,7 @@ namespace TheRiptide
             translation = translation_config;
             DeathmatchMenu.Singleton.SetupMenus();
 
-            SubscribeOnConfigReloaded(OnConfigReloaded);
+            GameCore.ConfigFile.OnConfigReloaded += DmRound.Singleton.OnConfigReloaded;
         }
 
         public void Stop()
@@ -224,17 +181,19 @@ namespace TheRiptide
             EventManager.UnregisterEvents<InventoryMenu>(this);
 
             EventManager.UnregisterEvents(this);
+            EventManager.UnregisterEvents<DmRound>(this);
 
             DeathmatchMenu.Singleton.ClearMenus();
 
-            UnsubscribeOnConfigReloaded(OnConfigReloaded);
+            GameCore.ConfigFile.OnConfigReloaded -= DmRound.Singleton.OnConfigReloaded;
         }
 
         [PluginEntryPoint("Deathmatch", "1.0", "needs no explanation", "The Riptide")]
         void EntryPoint()
         {
-            if (config.IsEnabled)
-                Start();
+            if (!config.IsEnabled)
+                return;
+            Start();
         }
 
         [PluginUnload]
@@ -243,100 +202,47 @@ namespace TheRiptide
             Stop();
         }
 
+        [PluginEvent(ServerEventType.MapGenerated)]
+        public void OnMapGenerated()
+        {
+            Lobby.Singleton.MapGenerated();
+            if (rank_config.IsEnabled)
+                Ranks.Singleton.MapGenerated();
+            if (leader_board_config.IsEnabled)
+                LeaderBoard.Singleton.MapGenerated();
+        }
+
         [PluginEvent(ServerEventType.WaitingForPlayers)]
-        void WaitingForPlayers()
+        public void OnWaitingForPlayers()
         {
-            game_ended = false;
             GenerateGlobalReferenceConfig();
-            Database.Singleton.Checkpoint();
+            DmRound.Singleton.WaitingForPlayers();
+            FacilityManager.WaitingForPlayers();
+            if (tracking_config.IsEnabled)
+                Tracking.Singleton.WaitingForPlayers();
+            if (voice_chat_config.IsEnabled)
+                VoiceChat.Singleton.WaitingForPlayers();
         }
 
-        [PluginEvent(ServerEventType.RoundStart)]
-        void OnRoundStart()
+        [PluginEvent(ServerEventType.RoundEnd)]
+        public void OnRoundEnd(LeadingTeam team)
         {
-            if (config.RoundTime > 5.0f)
-                Timing.CallDelayed(60.0f * (config.RoundTime - 5.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 5 minutes</color>"); });
-            if (config.RoundTime > 1.0f)
-                Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
-            round_timer_handle = Timing.CallDelayed(60.0f * config.RoundTime, () => 
-            {
-                try
-                {
-                    restart_handle = Timing.CallDelayed(config.RoundEndTime, () => Round.Restart(false));
-                    Timing.CallPeriodically(config.RoundEndTime, 0.2f, () =>
-                    {
-                        foreach (var p in Player.GetPlayers())
-                            p.IsGodModeEnabled = true;
-                    });
-                    try { Statistics.DisplayRoundStats(); }
-                    catch(Exception ex) { Log.Error(ex.ToString()); }
-                    try { Experiences.Singleton.SaveExperiences(); }
-                    catch (Exception ex) { Log.Error(ex.ToString()); }
-                    try { Ranks.Singleton.CalculateAndSaveRanks(); }
-                    catch (Exception ex) { Log.Error(ex.ToString()); }
-                    HintOverride.Refresh();
-                    VoiceChat.Singleton.ForceGlobalTalkGlobalReceive();
-                    Server.Instance.SetRole(RoleTypeId.Spectator);
-                    game_ended = true;
-                    Tracking.Singleton.UpdateLeaderBoard();
-                    LeaderBoard.Singleton.ReloadLeaderBoard();
-                    if (leader_board_config.DisplayEndRoundDelay < config.RoundEndTime)
-                    {
-                        LeaderBoard.Singleton.EnableTitle = false;
-                        Timing.CallDelayed(leader_board_config.DisplayEndRoundDelay,()=>
-                        {
-                            foreach (var p in Player.GetPlayers())
-                                LeaderBoard.Singleton.EnableLeaderBoardMode(p, Enum.IsDefined(typeof(LeaderBoardType), leader_board_config.LeaderBoardType) ? (LeaderBoardType)leader_board_config.LeaderBoardType : (LeaderBoardType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(LeaderBoardType)).Length));
-                        });
-                    }
-                }
-                catch(Exception ex)
-                {
-                    Log.Error("round end Error: " + ex.ToString());
-                }
-            });
-
-            Server.Instance.SetRole(RoleTypeId.Scp939);
-            Server.Instance.ReferenceHub.nicknameSync.SetNick(config.DummyPlayerName);
-            Server.Instance.Position = new Vector3(128.8f, 994.0f, 18.0f);
-            Round.IsLocked = true;
-            Warhead.IsLocked = true;
-            DecontaminationController.Singleton.NetworkDecontaminationOverride = DecontaminationController.DecontaminationStatus.Disabled;
-            AttackerDamageHandler._ffMultiplier = 1.0f;
-        }
-
-        [PluginEvent(ServerEventType.PlayerJoined)]
-        void OnPlayerJoined(Player player)
-        {
-            players.Add(player.PlayerId);
-            if (!player.DoNotTrack)
-                Database.Singleton.LoadConfig(player);
-            else
-                Timing.CallDelayed(1.0f, () => { HintOverride.Add(player, 0, translation.DntMsg, 30.0f); HintOverride.Refresh(player); });
-        }
-
-        [PluginEvent(ServerEventType.PlayerLeft)]
-        void OnPlayerLeft(Player player)
-        {
-            players.Remove(player.PlayerId);
-        }
-
-        [PluginEvent(ServerEventType.RoundEndConditionsCheck)]
-        RoundEndConditionsCheckCancellationData OnRoundEndConditionsCheck(bool baseGameConditionsSatisfied)
-        {
-            return RoundEndConditionsCheckCancellationData.Override(false);
+            DmRound.Singleton.RoundEnd();
         }
 
         [PluginEvent(ServerEventType.RoundRestart)]
-        void OnRoundRestart()
+        public void OnRoundRestart()
         {
-            Timing.KillCoroutines(round_timer_handle);
-            Timing.KillCoroutines(restart_handle);
+            DmRound.Singleton.RoundRestart();
+            FacilityManager.RoundRestart();
+            Rooms.Singleton.RoundRestart();
+            if (cleanup_config.IsEnabled)
+                Cleanup.Singleton.RoundRestart();
         }
 
         public static bool IsPlayerValid(Player player)
         {
-            return players.Contains(player.PlayerId);
+            return DmRound.players.Contains(player.PlayerId);
         }
 
         private void GenerateGlobalReferenceConfig()

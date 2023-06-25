@@ -421,14 +421,14 @@ namespace TheRiptide
                 }),
                 new MenuItem(ItemType.KeycardNTFLieutenant, "start game", (player)=>
                 {
-                    Deathmatch.GameStarted = true;
+                    DmRound.GameStarted = true;
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "start");
                     //Rooms.ExpandFacility(1);
                     return false;
                 }),
                 new MenuItem(ItemType.KeycardNTFCommander, "end game", (player)=>
                 {
-                    Deathmatch.GameStarted = false;
+                    DmRound.GameStarted = false;
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "end");
                     //Rooms.ShrinkFacility(1);
                     return false;

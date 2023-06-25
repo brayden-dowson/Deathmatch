@@ -76,10 +76,9 @@ namespace TheRiptide
             });
         }
 
-        [PluginEvent(ServerEventType.RoundRestart)]
-        void OnRoundRestart()
+        public void RoundRestart()
         {
-            Timing.KillCoroutines(item_cleanup);
+            Timing.KillCoroutines(item_cleanup, ragdoll_cleanup);
         }
 
         private IEnumerator<float> _ItemCleanup()

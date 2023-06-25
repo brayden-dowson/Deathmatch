@@ -44,8 +44,7 @@ namespace TheRiptide
             this.config = config;
         }
 
-        [PluginEvent(ServerEventType.WaitingForPlayers)]
-        void OnWaitingForPlayers()
+        public void WaitingForPlayers()
         {
             force_mode = false;
         }

@@ -10,7 +10,6 @@ using UnityEngine;
 using CustomPlayerEffects;
 using PlayerRoles;
 using static TheRiptide.Translation;
-using static TheRiptide.EventSubscriber;
 
 namespace TheRiptide
 {
@@ -76,7 +75,7 @@ namespace TheRiptide
                     Log.Error("on damage error: " + ex.ToString());
                 }
             });
-            SubscribeOnDamaged(OnPlayerDamaged);
+            PlayerStats.OnAnyPlayerDamaged += OnPlayerDamaged;
         }
 
         [PluginEvent(ServerEventType.PlayerJoined)]
