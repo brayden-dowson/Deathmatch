@@ -131,7 +131,7 @@ namespace TheRiptide
         }
 
         [PluginEvent(ServerEventType.PlayerDamage)]
-        void OnPlayerDamage(Player victim, Player attacker, DamageHandlerBase damage)
+        void OnPlayerDamage(Player attacker, Player victim, DamageHandlerBase damage)
         {
             if (config.TrackHits && victim != null && attacker != null && player_life.ContainsKey(victim.PlayerId) && player_life.ContainsKey(attacker.PlayerId))
             {
