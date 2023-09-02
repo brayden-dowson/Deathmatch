@@ -63,8 +63,6 @@ namespace TheRiptide
                 {
                     ServerConsole.FriendlyFire = true;
                     FriendlyFireConfig.PauseDetector = true;
-                    ServerConsole.HeavilyModdedServerConfig = true;
-                    ServerConsole.CustomGamemodeServerConfig = true;
                 }
                 catch (Exception ex)
                 {
@@ -119,7 +117,8 @@ namespace TheRiptide
                         Timing.CallDelayed(Deathmatch.Singleton.leader_board_config.DisplayEndRoundDelay, () =>
                         {
                             foreach (var p in Player.GetPlayers())
-                                LeaderBoard.Singleton.EnableLeaderBoardMode(p, Enum.IsDefined(typeof(LeaderBoardType), Deathmatch.Singleton.leader_board_config.LeaderBoardType) ? (LeaderBoardType)Deathmatch.Singleton.leader_board_config.LeaderBoardType : (LeaderBoardType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(LeaderBoardType)).Length));
+                                if (p.IsReady)
+                                    LeaderBoard.Singleton.EnableLeaderBoardMode(p, Enum.IsDefined(typeof(LeaderBoardType), Deathmatch.Singleton.leader_board_config.LeaderBoardType) ? (LeaderBoardType)Deathmatch.Singleton.leader_board_config.LeaderBoardType : (LeaderBoardType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(LeaderBoardType)).Length));
                         });
                     }
                 }

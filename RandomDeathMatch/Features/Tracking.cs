@@ -167,9 +167,16 @@ namespace TheRiptide
         {
             foreach(var id in player_sessions.Keys.ToList())
             {
-                Player player;
-                if(Player.TryGet(id, out player))
-                    Database.Singleton.UpdateLeaderBoard(player);
+                try
+                {
+                    Player player;
+                    if (Player.TryGet(id, out player))
+                        Database.Singleton.UpdateLeaderBoard(player);
+                }
+                catch(Exception ex)
+                {
+                    Log.Error(ex.ToString());
+                }
             }
         }
 

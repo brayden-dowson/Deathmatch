@@ -239,7 +239,9 @@ namespace TheRiptide
             lb += ledgend;
             lb += build_row(config.LeftJunction, config.LedgendHorizontal, config.LedgendIntersection, config.RightJunction);
 
-            PlayerDetails pd = player_details[user_index[player.UserId]];
+            PlayerDetails pd = null;
+            if (!user_index.ContainsKey(player.UserId) || !player_details.TryGet(user_index[player.UserId], out pd))
+                pd = new PlayerDetails { connected = true, name = player.Nickname, position_cache = new Dictionary<LeaderBoardType, int> { {LeaderBoardType.Experience, 99999 }, { LeaderBoardType.Kills, 99999 }, { LeaderBoardType.Killstreak, 99999 }, { LeaderBoardType.Rank, 99999 }, { LeaderBoardType.Time, 99999 } }};
             if(!pd.position_cache.ContainsKey(type))
                 pd.position_cache.Add(type, type_order[type].FindIndex((p) => user_index[player.UserId] == p));
 
@@ -269,13 +271,20 @@ namespace TheRiptide
                 Func<string, bool, string> record_highlight = new Func<string, bool, string>((s, b) => b ? config.RecordHighlightColor + s + "</color>" : config.RecordColor + s + "</color>");
                 if(rd.record_cache == "")
                 {
-                    foreach (var p in Player.GetPlayers())
+                    try
                     {
-                        if (p != null && p.UserId != null && player_details[user_index[p.UserId]] == rd)
+                        foreach (var p in Player.GetPlayers())
                         {
-                            rd.connected = true;
-                            break;
+                            if (p != null && p.UserId != null && user_index.ContainsKey(p.UserId) && player_details[user_index[p.UserId]] == rd)
+                            {
+                                rd.connected = true;
+                                break;
+                            }
                         }
+                    }
+                    catch(Exception ex)
+                    {
+                        Log.Error("connection highlight error: " + ex.ToString());
                     }
                     string ks_color = config.RecordColor;
                     if (Killstreaks.Singleton.config.KillstreakTables.ContainsKey(rd.killstreak_tag))
@@ -387,9 +396,16 @@ namespace TheRiptide
 
                     foreach(int id in player_leader_board_state.Keys.ToList())
                     {
-                        Player player;
-                        if(Player.TryGet(id, out player))
-                            DisplayLeaderBoard(player, player_leader_board_state[id].type, player_leader_board_state[id].page);
+                        try
+                        {
+                            Player player;
+                            if (Player.TryGet(id, out player))
+                                DisplayLeaderBoard(player, player_leader_board_state[id].type, player_leader_board_state[id].page);
+                        }
+                        catch (System.Exception ex)
+                        {
+                            Log.Error("update leaderboard error: " + ex.ToString());
+                        }
                     }
                 });
             });

@@ -169,48 +169,55 @@ namespace TheRiptide
         {
             foreach (var id in player_ranks.Keys.ToList())
             {
-                Database.Rank rank = player_ranks[id];
-                Player player = Player.Get(id);
-                if (rank.state == Database.RankState.Unranked)
+                try
                 {
-                    if (player != null)
+                    Database.Rank rank = player_ranks[id];
+                    Player player = Player.Get(id);
+                    if (rank.state == Database.RankState.Unranked)
                     {
-                        Experiences.XP xp = Experiences.Singleton.GetXP(player);
-                        Experiences.XP min = config.MinXpForPlacement;
-                        if (xp.tier >= min.tier && xp.stage >= min.stage && xp.level >= min.level && xp.value >= min.value)
+                        if (player != null)
                         {
-                            rank.state = Database.RankState.Placement;
-                            rank.rating = config.Rating;
-                            rank.rd = config.RatingDeviation;
-                            rank.rv = config.RatingVolatility;
+                            Experiences.XP xp = Experiences.Singleton.GetXP(player);
+                            Experiences.XP min = config.MinXpForPlacement;
+                            if (xp.tier >= min.tier && xp.stage >= min.stage && xp.level >= min.level && xp.value >= min.value)
+                            {
+                                rank.state = Database.RankState.Placement;
+                                rank.rating = config.Rating;
+                                rank.rd = config.RatingDeviation;
+                                rank.rv = config.RatingVolatility;
+                            }
                         }
                     }
-                }
-                if (rank.state == Database.RankState.Placement)
-                {
-                    if (rank.placement_matches >= config.PlacementMatches)
-                        rank.state = Database.RankState.Ranked;
-                }
-                if (player_glikco.ContainsKey(rank.UserId))
-                {
-                    try
+                    if (rank.state == Database.RankState.Placement)
                     {
-                        GlickoPlayer new_rank = GlickoCalculator.CalculateRanking(new GlickoPlayer(rank.rating, rank.rd, rank.rv), player_matches[rank.UserId]);
-                        rank.rating = (float)new_rank.Rating;
-                        rank.rd = (float)new_rank.RatingDeviation;
-                        rank.rv = (float)new_rank.Volatility;
+                        if (rank.placement_matches >= config.PlacementMatches)
+                            rank.state = Database.RankState.Ranked;
                     }
-                    catch(Exception ex)
+                    if (player_glikco.ContainsKey(rank.UserId))
                     {
-                        Log.Error("glicko error: " + ex.ToString());
+                        try
+                        {
+                            GlickoPlayer new_rank = GlickoCalculator.CalculateRanking(new GlickoPlayer(rank.rating, rank.rd, rank.rv), player_matches[rank.UserId]);
+                            rank.rating = (float)new_rank.Rating;
+                            rank.rd = (float)new_rank.RatingDeviation;
+                            rank.rv = (float)new_rank.Volatility;
+                        }
+                        catch (Exception ex)
+                        {
+                            Log.Error("glicko error: " + ex.ToString());
+                        }
+                    }
+                    Database.Singleton.SaveRank(rank);
+                    if (player != null)
+                    {
+                        ShowRankHint(player, rank, 30.0f);
+                        SetBadge(player, rank);
                     }
                 }
-                if (player != null)
+                catch(System.Exception ex)
                 {
-                    ShowRankHint(player, rank, 30.0f);
-                    SetBadge(player, rank);
+                    Log.Error("rank save error: " + ex.ToString());
                 }
-                Database.Singleton.SaveRank(rank);
             }
         }
 

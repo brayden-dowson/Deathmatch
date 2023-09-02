@@ -112,6 +112,12 @@ namespace TheRiptide
                 case ItemType.GunE11SR:
                     result = true;
                     break;
+                case ItemType.GunFRMG0:
+                    result = true;
+                    break;
+                case ItemType.GunA7:
+                    result = true;
+                    break;
                 case ItemType.GunAK:
                     result = true;
                     break;
@@ -144,8 +150,10 @@ namespace TheRiptide
                     ammo = ItemType.Ammo9x19;
                     break;
                 case ItemType.GunE11SR:
+                case ItemType.GunFRMG0:
                     ammo = ItemType.Ammo556x45;
                     break;
+                case ItemType.GunA7:
                 case ItemType.GunAK:
                 case ItemType.GunLogicer:
                     ammo = ItemType.Ammo762x39;

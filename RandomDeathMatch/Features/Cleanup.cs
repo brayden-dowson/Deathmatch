@@ -119,22 +119,9 @@ namespace TheRiptide
             {
                 try
                 {
-                    ItemPickupBase[] items = UnityEngine.Object.FindObjectsOfType<ItemPickupBase>();
-                    int num = items.Length;
-                    for (int i = 0; i < num; i++)
-                    {
-                        ItemPickupBase item = items[i];
-                        if (item is AmmoPickup)
-                            NetworkServer.Destroy(items[i].gameObject);
-                        else if (item is BodyArmorPickup)
-                            NetworkServer.Destroy(items[i].gameObject);
-                        else if (item is FirearmPickup)
-                            NetworkServer.Destroy(items[i].gameObject);
-                        else if (item is KeycardPickup)
-                            NetworkServer.Destroy(items[i].gameObject);
-                        else if (config.ItemCleanupBlacklist.Contains(item.NetworkInfo.ItemId))
-                            NetworkServer.Destroy(items[i].gameObject);
-                    }
+                    BasicRagdoll[] ragdolls = UnityEngine.Object.FindObjectsOfType<BasicRagdoll>();
+                    foreach (var ragdoll in ragdolls)
+                        NetworkServer.Destroy(ragdoll.gameObject);
                 }
                 catch (Exception ex)
                 {

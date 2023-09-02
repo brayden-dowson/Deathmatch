@@ -159,7 +159,7 @@ namespace TheRiptide
                 "Intermediate",
                 new KillstreakRewardTable
                 {
-                    MenuItem = ItemType.KeycardNTFOfficer,
+                    MenuItem = ItemType.KeycardMTFPrivate,
                     MenuDescription = "<color=#accfe1>[PRIVATE]</color> = <b><color=#8bd346>Intermediate</color> - spawn with combat armor and painkillers, max killstreak cap 15</b>",
                     LoadoutLock = false,
                     ColorHex = "#8bd346",
@@ -198,7 +198,7 @@ namespace TheRiptide
                 "Advanced",
                 new KillstreakRewardTable
                 {
-                    MenuItem = ItemType.KeycardNTFLieutenant,
+                    MenuItem = ItemType.KeycardMTFOperative,
                     MenuDescription = "<color=#177dde>[SERGEANT]</color> = <b><color=#efdf48>Advanced</color> - spawn with light armor, max killstreak 20+</b>",
                     LoadoutLock = false,
                     ColorHex = "#efdf48",
@@ -270,7 +270,7 @@ namespace TheRiptide
                 "Expert",
                 new KillstreakRewardTable
                 {
-                    MenuItem = ItemType.KeycardNTFCommander,
+                    MenuItem = ItemType.KeycardMTFCaptain,
                     MenuDescription = "<color=#1b43cb>[CAPTAIN]</color> = <b><color=#f9a52c>Expert</color> - spawn with light armor, max killstreak 25+</b>",
                     LoadoutLock = true,
                     ColorHex = "#f9a52c",

@@ -215,7 +215,8 @@ namespace TheRiptide
         public static void BroadcastLine(int line, float duration, BroadcastPriority priority, string msg)
         {
             foreach (Player player in Player.GetPlayers())
-                BroadcastLine(player, line, duration, priority, msg);
+                if (player.IsReady)
+                    BroadcastLine(player, line, duration, priority, msg);
         }
 
         public static void BroadcastLines(Player player, int line, float duration, BroadcastPriority priority, List<string> msgs)
@@ -233,7 +234,8 @@ namespace TheRiptide
         public static void BroadcastLines(int line, float duration, BroadcastPriority priority, List<string> msgs)
         {
             foreach (Player player in Player.GetPlayers())
-                BroadcastLines(player, line, duration, priority, msgs);
+                if (player.IsReady)
+                    BroadcastLines(player, line, duration, priority, msgs);
         }
 
         public static void ClearLines(Player player, BroadcastPriority priority)
@@ -245,7 +247,8 @@ namespace TheRiptide
         public static void ClearLines(BroadcastPriority priority)
         {
             foreach (Player player in Player.GetPlayers())
-                ClearLines(player, priority);
+                if (player.IsReady)
+                    ClearLines(player, priority);
         }
 
         public static void ClearLine(Player player, int line, BroadcastPriority priority)
@@ -257,7 +260,8 @@ namespace TheRiptide
         public static void ClearLine(int line, BroadcastPriority priority)
         {
             foreach (Player player in Player.GetPlayers())
-                ClearLine(player, line, priority);
+                if (player.IsReady)
+                    ClearLine(player, line, priority);
         }
 
         public static void UpdateIfDirty(Player player)
@@ -269,7 +273,8 @@ namespace TheRiptide
         public static void UpdateAllDirty()
         {
             foreach (Player player in Player.GetPlayers())
-                UpdateIfDirty(player);
+                if (player.IsReady)
+                    UpdateIfDirty(player);
         }
 
     }

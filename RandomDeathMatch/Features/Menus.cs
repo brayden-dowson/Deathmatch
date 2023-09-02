@@ -152,19 +152,19 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardNTFCommander, translation.HeavyPrimary, (player)=>
+                new MenuItem(ItemType.KeycardMTFCaptain, translation.HeavyPrimary, (player)=>
                 {
                     Loadouts.GetLoadout(player).slot = Loadouts.GunSlot.Primary;
                     InventoryMenu.ShowMenu(player, (int)MenuPage.GunClass);
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardNTFLieutenant, translation.HeavySecondary, (player)=>
+                new MenuItem(ItemType.KeycardMTFOperative, translation.HeavySecondary, (player)=>
                 {
                     Loadouts.GetLoadout(player).slot = Loadouts.GunSlot.Secondary;
                     InventoryMenu.ShowMenu(player, (int)MenuPage.GunClass);
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardNTFOfficer, translation.HeavyTertiary, (player)=>
+                new MenuItem(ItemType.KeycardMTFPrivate, translation.HeavyTertiary, (player)=>
                 {
                     Loadouts.GetLoadout(player).slot = Loadouts.GunSlot.Tertiary;
                     InventoryMenu.ShowMenu(player, (int)MenuPage.GunClass);
@@ -179,7 +179,7 @@ namespace TheRiptide
                     InventoryMenu.ShowMenu(player, (int)MenuPage.Main);
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardNTFCommander, translation.MtfGuns, (player)=>
+                new MenuItem(ItemType.KeycardMTFCaptain, translation.MtfGuns, (player)=>
                 {
                     InventoryMenu.ShowMenu(player, (int)MenuPage.MtfGun);
                     return false;
@@ -215,7 +215,8 @@ namespace TheRiptide
                 new MenuItem(ItemType.GunCOM18, "", (player)=> { return GunSelected(player, ItemType.GunCOM18);  }),
                 new MenuItem(ItemType.GunFSP9, "", (player)=> { return GunSelected(player, ItemType.GunFSP9);  }),
                 new MenuItem(ItemType.GunCrossvec, "", (player)=> { return GunSelected(player, ItemType.GunCrossvec); }),
-                new MenuItem(ItemType.GunE11SR, "", (player)=> { return GunSelected(player, ItemType.GunE11SR);  })
+                new MenuItem(ItemType.GunE11SR, "", (player)=> { return GunSelected(player, ItemType.GunE11SR);  }),
+                new MenuItem(ItemType.GunFRMG0, "", (player)=> { return GunSelected(player, ItemType.GunFRMG0);  })
             });
 
             InventoryMenu.CreateMenu((int)MenuPage.ChaosGun, translation.ChaosGunMenu, new List<MenuItem>
@@ -228,7 +229,8 @@ namespace TheRiptide
                 new MenuItem(ItemType.GunAK, "", (player)=> { GunSelected(player, ItemType.GunAK); return false; }),
                 new MenuItem(ItemType.GunLogicer, "", (player)=> { GunSelected(player, ItemType.GunLogicer); return false; }),
                 new MenuItem(ItemType.GunShotgun, "", (player)=> { GunSelected(player, ItemType.GunShotgun); return false; }),
-                new MenuItem(ItemType.GunRevolver, "", (player)=> { GunSelected(player, ItemType.GunRevolver); return false; })
+                new MenuItem(ItemType.GunRevolver, "", (player)=> { GunSelected(player, ItemType.GunRevolver); return false; }),
+                new MenuItem(ItemType.GunA7, "", (player)=> { GunSelected(player, ItemType.GunA7); return false;  })
             });
 
             List<MenuItem> killstreak_items = new List<MenuItem>()
@@ -301,15 +303,15 @@ namespace TheRiptide
                 {
                     return RoleSelected(player, RoleTypeId.FacilityGuard);
                 }),
-                new MenuItem(ItemType.KeycardNTFOfficer, translation.Private, (player)=>
+                new MenuItem(ItemType.KeycardMTFPrivate, translation.Private, (player)=>
                 {
                     return RoleSelected(player, RoleTypeId.NtfPrivate);
                 }),
-                new MenuItem(ItemType.KeycardNTFLieutenant, translation.Sergeant, (player)=>
+                new MenuItem(ItemType.KeycardMTFOperative, translation.Sergeant, (player)=>
                 {
                     return RoleSelected(player, RoleTypeId.NtfSergeant);
                 }),
-                new MenuItem(ItemType.KeycardNTFCommander, translation.Captain, (player)=>
+                new MenuItem(ItemType.KeycardMTFCaptain, translation.Captain, (player)=>
                 {
                     return RoleSelected(player, RoleTypeId.NtfCaptain);
                 }),
@@ -413,20 +415,20 @@ namespace TheRiptide
                     //Rooms.LockdownFacility();
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardNTFOfficer, "open all rooms", (player)=>
+                new MenuItem(ItemType.KeycardMTFPrivate, "open all rooms", (player)=>
                 {
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "opened all rooms");
                     //Rooms.UnlockFacility();
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardNTFLieutenant, "start game", (player)=>
+                new MenuItem(ItemType.KeycardMTFOperative, "start game", (player)=>
                 {
                     DmRound.GameStarted = true;
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "start");
                     //Rooms.ExpandFacility(1);
                     return false;
                 }),
-                new MenuItem(ItemType.KeycardNTFCommander, "end game", (player)=>
+                new MenuItem(ItemType.KeycardMTFCaptain, "end game", (player)=>
                 {
                     DmRound.GameStarted = false;
                     BroadcastOverride.BroadcastLine(player, 7, 3.0f, BroadcastPriority.High, "end");
