@@ -37,6 +37,7 @@ namespace TheRiptide
 
         public RoomsConfig config;
 
+        //private static bool open_facility = false;
         private static Dictionary<RoomIdentifier, int> opened_rooms = new Dictionary<RoomIdentifier, int>();
         private static Dictionary<RoomIdentifier, float> closing_rooms = new Dictionary<RoomIdentifier, float>();
         private static Dictionary<RoomIdentifier, int> closed_rooms = new Dictionary<RoomIdentifier, int>();
@@ -70,11 +71,24 @@ namespace TheRiptide
         {
             if(Player.Count == 1)
             {
-                UnlockFacility();
+                //UnlockFacility();
+                Timing.CallDelayed(7.0f, () =>
+                 {
+                     if (Player.Count == 1)
+                     {
+                         UnlockFacility();
+                         //open_facility = true;
+                     }
+                 });
             }
             else if(Player.Count == 2)
             {
                 LockdownFacility();
+                //if (open_facility)
+                //{
+                //    LockdownFacility();
+                //    open_facility = false;
+                //}
                 foreach (Player p in Player.GetPlayers())
                 {
                     if(p != player)

@@ -197,6 +197,10 @@ namespace TheRiptide
                     case ItemType.GunE11SR:
                         team_color = "<color=#0096ff>";
                         break;
+                    case ItemType.GunFRMG0:
+                        team_color = "<color=#1b43cb>";
+                        break;
+                    case ItemType.GunA7:
                     case ItemType.GunAK:
                     case ItemType.GunRevolver:
                     case ItemType.GunShotgun:

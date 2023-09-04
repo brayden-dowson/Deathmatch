@@ -48,7 +48,7 @@ namespace TheRiptide
                     {
                         if (hub != null)
                         {
-                            if (damage is AttackerDamageHandler attacker && player_life.ContainsKey(hub.PlayerId) && player_life.ContainsKey(attacker.Attacker.PlayerId))
+                            if (damage is AttackerDamageHandler attacker && player_life.ContainsKey(hub.PlayerId) && player_life.ContainsKey(attacker.Attacker.PlayerId) && !player_life[hub.PlayerId].received.IsEmpty())
                                 player_life[hub.PlayerId].received.Last().damage = (byte)Mathf.Clamp(Mathf.RoundToInt(attacker.DealtHealthDamage), 0, 255);
                         }
                     }

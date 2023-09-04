@@ -30,14 +30,14 @@ namespace TheRiptide
         public string UnrankedName { get; set; } = "Unranked";
         public string UnrankedTag { get; set; } = "----";
         public string UnrankedColor { get; set; } = "nickel";
-        public Experiences.XP MinXpForPlacement { get; set; } = new Experiences.XP { value = 0, level = 0, stage = 2, tier = 0 };
+        public Experiences.XP MinXpForPlacement { get; set; } = new Experiences.XP { value = 0, level = 0, stage = 1, tier = 0 };
 
         [Description("placement players rank is influenced by other placement players and ranked players but ranked players are not influenced by placement players")]
         public string PlacementName { get; set; } = "Placement";
         public string PlacementTag { get; set; } = "?";
         public string PlacementColor { get; set; } = "magenta";
         [Description("matches referes to kill/deaths against placement and ranked players. this is how many until you become ranked")]
-        public int PlacementMatches { get; set; } = 300;
+        public int PlacementMatches { get; set; } = 100;
 
         [Description("glicko-2 params set when a player start placement")]
         public float Rating { get; set; } = 1500;
@@ -231,6 +231,18 @@ namespace TheRiptide
             return false;
         }
 
+        public bool ResetRank(Player player)
+        {
+            if (player_ranks.ContainsKey(player.PlayerId))
+            {
+                player_ranks[player.PlayerId].rating = config.Rating;
+                player_ranks[player.PlayerId].rd = config.RatingDeviation;
+                player_ranks[player.PlayerId].rv = config.RatingVolatility;
+                return true;
+            }
+            return false;
+        }
+
         public Database.Rank GetRank(Player player)
         {
             return player_ranks[player.PlayerId];
@@ -275,6 +287,36 @@ namespace TheRiptide
             }
             string rank_hint = translation.RankMsg.Replace("{color}", BadgeOverride.ColorNameToHex[info.Color]).Replace("{rank}", config.BadgeFormat.Replace("{name}", info.Name));
             HintOverride.Add(player, 0, rank_hint, duration);
+        }
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmResetRank : ICommand
+        {
+            public string Command { get; } = "dmresetrank";
+
+            public string[] Aliases { get; } = new string[] { "dmrr" };
+
+            public string Description { get; } = "reset players rating. usage: dmresetrank [playerid]";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.RankCmdPermissions.ToArray(), out response))
+                    return false;
+
+                int id;
+                Player target = null;
+                if (!int.TryParse(arguments.ElementAt(0), out id) || !Player.TryGet(id, out target))
+                {
+                    response = "failed - invalid id: " + arguments.ElementAt(0);
+                    return false;
+                }
+
+                if (Singleton.ResetRank(target))
+                    response = "success";
+                else
+                    response = "failed - player does not have a rank yet";
+                return true;
+            }
         }
 
         [CommandHandler(typeof(RemoteAdminCommandHandler))]

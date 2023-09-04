@@ -201,11 +201,12 @@ namespace TheRiptide
 
         public void DisplayLeaderBoard(Player player, LeaderBoardType type, int page)
         {
-            if (player_details.IsEmpty() && !reloading_leader_board)
+            if (player_details.IsEmpty() || reloading_leader_board)
             {
                 HintOverride.Add(player, 0, "<color=#FF0000><size=128><b>Loading...</b></size></color>", 1500);
                 HintOverride.Refresh(player);
-                ReloadLeaderBoard();
+                if (!reloading_leader_board)
+                    ReloadLeaderBoard();
                 return;
             }
 
@@ -361,11 +362,15 @@ namespace TheRiptide
                     //rank
                     foreach (var rank in db_ranks)
                     {
-                        PlayerDetails details = player_details[user_index[rank.UserId]];
-                        RankInfo info = Ranks.Singleton.GetInfo(rank);
-                        details.rank_rating = rank.rating;
-                        details.rank_tag = info.Tag;
-                        details.rank_color = BadgeOverride.ColorNameToHex[info.Color];
+                        int index;
+                        PlayerDetails details;
+                        if (user_index.TryGetValue(rank.UserId, out index) && player_details.TryGet(index, out details))
+                        {
+                            RankInfo info = Ranks.Singleton.GetInfo(rank);
+                            details.rank_rating = rank.rating;
+                            details.rank_tag = info.Tag;
+                            details.rank_color = BadgeOverride.ColorNameToHex[info.Color];
+                        }
                     }
                     //xp
                     ulong level_stride = (ulong)Experiences.Singleton.MaxLevelXp();
@@ -373,19 +378,27 @@ namespace TheRiptide
                     ulong tier_stride = stage_stride * (ulong)Experiences.Singleton.config.StageTags.Count;
                     foreach (var xp in db_xps)
                     {
-                        PlayerDetails details = player_details[user_index[xp.UserId]];
-                        details.xp_total = (ulong)xp.tier * tier_stride + (ulong)xp.stage * stage_stride + (ulong)xp.level * level_stride + (ulong)xp.value;
-                        details.xp_tag = Experiences.Singleton.LeaderBoardString(new Experiences.XP { tier = xp.tier, stage = xp.stage, level = xp.level, value = xp.value });
+                        int index;
+                        PlayerDetails details;
+                        if (user_index.TryGetValue(xp.UserId, out index) && player_details.TryGet(index, out details))
+                        {
+                            details.xp_total = (ulong)xp.tier * tier_stride + (ulong)xp.stage * stage_stride + (ulong)xp.level * level_stride + (ulong)xp.value;
+                            details.xp_tag = Experiences.Singleton.LeaderBoardString(new Experiences.XP { tier = xp.tier, stage = xp.stage, level = xp.level, value = xp.value });
+                        }
                     }
 
                     //other
                     foreach (var record in db_leaderboard)
                     {
-                        PlayerDetails details = player_details[user_index[record.UserId]];
-                        details.total_kills = record.total_kills;
-                        details.highest_killstreak = record.highest_killstreak;
-                        details.killstreak_tag = record.killstreak_tag;
-                        details.total_play_time = record.total_play_time;
+                        int index;
+                        PlayerDetails details;
+                        if (user_index.TryGetValue(record.UserId, out index) && player_details.TryGet(index, out details))
+                        {
+                            details.total_kills = record.total_kills;
+                            details.highest_killstreak = record.highest_killstreak;
+                            details.killstreak_tag = record.killstreak_tag;
+                            details.total_play_time = record.total_play_time;
+                        }
                     }
 
                     type_order[LeaderBoardType.Rank] = SortIndex(x => x.rank_rating);
@@ -394,7 +407,9 @@ namespace TheRiptide
                     type_order[LeaderBoardType.Killstreak] = SortIndex(x => x.highest_killstreak);
                     type_order[LeaderBoardType.Time] = SortIndex(x => x.total_play_time);
 
-                    foreach(int id in player_leader_board_state.Keys.ToList())
+                    reloading_leader_board = false;
+
+                    foreach (int id in player_leader_board_state.Keys.ToList())
                     {
                         try
                         {
@@ -488,11 +503,11 @@ namespace TheRiptide
             stopwatch.Start();
             while (true)
             {
-                try
+                float delta = (float)stopwatch.Elapsed.TotalSeconds;
+                stopwatch.Restart();
+                foreach (var id in player_leader_board_state.Keys.ToList())
                 {
-                    float delta = (float)stopwatch.Elapsed.TotalSeconds;
-                    stopwatch.Restart();
-                    foreach (var id in player_leader_board_state.Keys.ToList())
+                    try
                     {
                         Player player;
                         if (Player.TryGet(id, out player))
@@ -500,7 +515,7 @@ namespace TheRiptide
                             State state = player_leader_board_state[id];
                             state.cooldown -= delta;
                             var mm = player.GameObject.GetComponentInChildren<FirstPersonMovementModule>();
-                            if(mm == null)
+                            if (mm == null)
                             {
                                 player_leader_board_state.Remove(id);
                                 HintOverride.Clear(player);
@@ -549,10 +564,11 @@ namespace TheRiptide
                         else
                             player_leader_board_state.Remove(id);
                     }
-                }
-                catch (Exception ex)
-                {
-                    Log.Error("LeaderBoard _Controller error: " + ex.ToString());
+                    catch (Exception ex)
+                    {
+                        Log.Error("LeaderBoard _Controller error: " + ex.ToString());
+                        player_leader_board_state.Remove(id);
+                    }
                 }
                 yield return Timing.WaitForOneFrame;
             }

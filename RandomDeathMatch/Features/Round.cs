@@ -6,6 +6,7 @@ using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using PluginAPI.Events;
+using Scp914;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -151,6 +152,12 @@ namespace TheRiptide
         void OnPlayerLeft(Player player)
         {
             players.Remove(player.PlayerId);
+        }
+
+        [PluginEvent(ServerEventType.Scp914Activate)]
+        bool OnScp914Activate(Player player, Scp914KnobSetting knob_setting)
+        {
+            return false;
         }
 
         [PluginEvent(ServerEventType.RoundEndConditionsCheck)]
