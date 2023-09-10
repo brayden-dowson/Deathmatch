@@ -74,7 +74,7 @@ namespace TheRiptide
         public string BottomRightCorner { get; set; } = "╹";
 
         [Description("use this after changing the start/end epoch. rebuilding might be very slow")]
-        public List<PlayerPermissions> lbCmdPermissions = new List<PlayerPermissions>
+        public List<PlayerPermissions> lbCmdPermissions { get; set; } = new List<PlayerPermissions>
         {
             PlayerPermissions.ServerConsoleCommands
         };
@@ -577,7 +577,7 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmRebuildLeaderBoard : ICommand
         {
-            public string Command { get; } = "dmrebuildlb";
+            public string Command { get; } = "dm_rebuild_lb";
 
             public string[] Aliases { get; } = new string[] { "dmrblb" };
 

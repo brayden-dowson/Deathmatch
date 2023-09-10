@@ -37,37 +37,37 @@ namespace TheRiptide
         public string PlacementTag { get; set; } = "?";
         public string PlacementColor { get; set; } = "magenta";
         [Description("matches referes to kill/deaths against placement and ranked players. this is how many until you become ranked")]
-        public int PlacementMatches { get; set; } = 100;
+        public int PlacementMatches { get; set; } = 150;
 
-        [Description("glicko-2 params set when a player start placement")]
-        public float Rating { get; set; } = 1500;
-        public float RatingDeviation { get; set; } = 350;
-        public float RatingVolatility { get; set; } = 0.06f;
+        //[Description("glicko-2 params set when a player start placement")]
+        //public float Rating { get; set; } = 1500;
+        //public float RatingDeviation { get; set; } = 350;
+        //public float RatingVolatility { get; set; } = 0.06f;
 
-        [Description("ranks must be in order of least rating to most rating and colors must be a valid servergroup color see https://en.scpslgame.com/index.php/Docs:Permissions")]
+        [Description("ranks must be in order of least rating to most rating and colors must be a valid servergroup colors see https://en.scpslgame.com/index.php/Docs:Permissions \n#All players start out with a 1500 rating when they enter placement. Ranks should be scaled around the 1500 mark.")]
         public List<RankInfo> Ranks { get; set; } = new List<RankInfo>
         {
-            new RankInfo{ Name = "Silver I",                        Tag = "S1",     Rating = -500,     Color = "nickel" },
-            new RankInfo{ Name = "Silver II",                       Tag = "S2",     Rating = -250,     Color = "nickel" },
-            new RankInfo{ Name = "Silver III",                      Tag = "S3",     Rating = 0,        Color = "nickel" },
-            new RankInfo{ Name = "Silver IV",                       Tag = "S4",     Rating = 250,      Color = "nickel" },
-            new RankInfo{ Name = "Silver Elite",                    Tag = "SE",     Rating = 500,      Color = "silver" },
-            new RankInfo{ Name = "Silver Elite Master",             Tag = "SEM",    Rating = 750,      Color = "silver" },
-            new RankInfo{ Name = "Gold Nova I",                     Tag = "GN1",    Rating = 1000,     Color = "cyan" },
-            new RankInfo{ Name = "Gold Nova II",                    Tag = "GN2",    Rating = 1250,     Color = "cyan" },
-            new RankInfo{ Name = "Gold Nova III",                   Tag = "GN3",    Rating = 1500,     Color = "cyan" },
-            new RankInfo{ Name = "Gold Nova Master",                Tag = "GNM",    Rating = 1750,     Color = "aqua" },
-            new RankInfo{ Name = "Master Guardian I",               Tag = "MG1",    Rating = 2000,     Color = "blue_green" },
-            new RankInfo{ Name = "Master Gaurdian II",              Tag = "MG2",    Rating = 2250,     Color = "blue_green" },
-            new RankInfo{ Name = "Master Gaurdian Elite",           Tag = "MGE",    Rating = 2500,     Color = "emerald" },
-            new RankInfo{ Name = "Distinguished Master Gaurdian",   Tag = "DMG",    Rating = 2750,     Color = "mint" },
-            new RankInfo{ Name = "Legendary Eagle",                 Tag = "LE",     Rating = 3000,     Color = "yellow" },
-            new RankInfo{ Name = "Legendary Eagle Master",          Tag = "LEM",    Rating = 3250,     Color = "yellow" },
-            new RankInfo{ Name = "Supreme Master First Class",      Tag = "SMFC",   Rating = 3500,     Color = "orange" },
-            new RankInfo{ Name = "Global Elite",                    Tag = "GE",     Rating = 3750,     Color = "crimson" },
+            new RankInfo{ Name = "Silver I",                        Tag = "S1",     Rating = -150,     Color = "nickel" },
+            new RankInfo{ Name = "Silver II",                       Tag = "S2",     Rating = 0,        Color = "nickel" },
+            new RankInfo{ Name = "Silver III",                      Tag = "S3",     Rating = 150,      Color = "nickel" },
+            new RankInfo{ Name = "Silver IV",                       Tag = "S4",     Rating = 300,      Color = "nickel" },
+            new RankInfo{ Name = "Silver Elite",                    Tag = "SE",     Rating = 550,      Color = "silver" },
+            new RankInfo{ Name = "Silver Elite Master",             Tag = "SEM",    Rating = 700,      Color = "silver" },
+            new RankInfo{ Name = "Gold Nova I",                     Tag = "GN1",    Rating = 950,      Color = "cyan" },
+            new RankInfo{ Name = "Gold Nova II",                    Tag = "GN2",    Rating = 1100,     Color = "cyan" },
+            new RankInfo{ Name = "Gold Nova III",                   Tag = "GN3",    Rating = 1350,     Color = "cyan" },
+            new RankInfo{ Name = "Gold Nova Master",                Tag = "GNM",    Rating = 1500,     Color = "aqua" },
+            new RankInfo{ Name = "Master Guardian I",               Tag = "MG1",    Rating = 1650,     Color = "blue_green" },
+            new RankInfo{ Name = "Master Gaurdian II",              Tag = "MG2",    Rating = 1800,     Color = "blue_green" },
+            new RankInfo{ Name = "Master Gaurdian Elite",           Tag = "MGE",    Rating = 1950,     Color = "emerald" },
+            new RankInfo{ Name = "Distinguished Master Gaurdian",   Tag = "DMG",    Rating = 2100,     Color = "mint" },
+            new RankInfo{ Name = "Legendary Eagle",                 Tag = "LE",     Rating = 2250,     Color = "yellow" },
+            new RankInfo{ Name = "Legendary Eagle Master",          Tag = "LEM",    Rating = 2400,     Color = "yellow" },
+            new RankInfo{ Name = "Supreme Master First Class",      Tag = "SMFC",   Rating = 2550,     Color = "orange" },
+            new RankInfo{ Name = "Global Elite",                    Tag = "GE",     Rating = 2700,     Color = "crimson" },
         };
 
-        public List<PlayerPermissions> RankCmdPermissions = new List<PlayerPermissions>()
+        public List<PlayerPermissions> RankCmdPermissions { get; set; } = new List<PlayerPermissions>()
         {
             PlayerPermissions.ServerConsoleCommands
         };
@@ -86,6 +86,10 @@ namespace TheRiptide
 
     public class Ranks
     {
+        private const float Rating = 1500.0f;
+        private const float RatingDeviation = 350.0f;
+        private const float RatingVolatility = 0.06f;
+
         public static Ranks Singleton { get; private set; }
         public RankConfig config;
 
@@ -172,7 +176,9 @@ namespace TheRiptide
                 try
                 {
                     Database.Rank rank = player_ranks[id];
-                    Player player = Player.Get(id);
+                    Player player = null;
+                    try { player = Player.Get(id); }
+                    catch (Exception) { }
                     if (rank.state == Database.RankState.Unranked)
                     {
                         if (player != null)
@@ -182,9 +188,9 @@ namespace TheRiptide
                             if (xp.tier >= min.tier && xp.stage >= min.stage && xp.level >= min.level && xp.value >= min.value)
                             {
                                 rank.state = Database.RankState.Placement;
-                                rank.rating = config.Rating;
-                                rank.rd = config.RatingDeviation;
-                                rank.rv = config.RatingVolatility;
+                                rank.rating = Rating;
+                                rank.rd = RatingDeviation;
+                                rank.rv = RatingVolatility;
                             }
                         }
                     }
@@ -235,12 +241,49 @@ namespace TheRiptide
         {
             if (player_ranks.ContainsKey(player.PlayerId))
             {
-                player_ranks[player.PlayerId].rating = config.Rating;
-                player_ranks[player.PlayerId].rd = config.RatingDeviation;
-                player_ranks[player.PlayerId].rv = config.RatingVolatility;
+                player_ranks[player.PlayerId].rating = Rating;
+                player_ranks[player.PlayerId].rd = RatingDeviation;
+                player_ranks[player.PlayerId].rv = RatingVolatility;
                 return true;
             }
             return false;
+        }
+
+        public void DeleteAllRanks()
+        {
+            Database.Singleton.Async((db)=>
+            {
+                var ranks = db.GetCollection<Database.Rank>("ranks");
+                ranks.DeleteAll();
+            });
+        }
+
+        public void NormalizeRanks()
+        {
+            double total = 0.0f;
+            int count = 0;
+            Database.Singleton.Async((db) =>
+            {
+                var ranks = db.GetCollection<Database.Rank>("ranks");
+                ranks.EnsureIndex(x => x.UserId);
+                foreach (var rank in ranks.FindAll())
+                {
+                    if(rank.state != Database.RankState.Unranked)
+                    {
+                        total += rank.rating;
+                        count++;
+                    }
+                }
+                float delta = (float)(Rating - (total / count));
+                foreach (var rank in ranks.FindAll())
+                {
+                    if(rank.state  != Database.RankState.Unranked)
+                    {
+                        rank.rating += delta;
+                        ranks.Upsert(rank);
+                    }
+                }
+            });
         }
 
         public Database.Rank GetRank(Player player)
@@ -290,13 +333,53 @@ namespace TheRiptide
         }
 
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmNormalizeRanks : ICommand
+        {
+            public string Command { get; } = "dm_normalize_ranks";
+
+            public string[] Aliases { get; } = new string[] { "dmnr" };
+
+            public string Description { get; } = "normalizes all ranks to be around 1500. usage: dm_normalize_ranks then soft restart";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.RankCmdPermissions.ToArray(), out response))
+                    return false;
+
+                Singleton.NormalizeRanks();
+                response = "success";
+                return true;
+            }
+        }
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmDeleteAllRanks : ICommand
+        {
+            public string Command { get; } = "dm_delete_all_ranks";
+
+            public string[] Aliases { get; } = new string[] { "dmdar" };
+
+            public string Description { get; } = "deletes all player ranks. usage: dm_delete_all_ranks";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.RankCmdPermissions.ToArray(), out response))
+                    return false;
+
+                Singleton.DeleteAllRanks();
+                response = "success";
+                return true;
+            }
+        }
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmResetRank : ICommand
         {
-            public string Command { get; } = "dmresetrank";
+            public string Command { get; } = "dm_reset_rank";
 
             public string[] Aliases { get; } = new string[] { "dmrr" };
 
-            public string Description { get; } = "reset players rating. usage: dmresetrank [playerid]";
+            public string Description { get; } = "reset players rating. usage: dm_reset_rank [playerid]";
 
             public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
             {
@@ -322,11 +405,11 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmSetRank : ICommand
         {
-            public string Command { get; } = "dmsetrank";
+            public string Command { get; } = "dm_set_rank";
 
-            public string[] Aliases { get; } = new string[] { "dmr"};
+            public string[] Aliases { get; } = new string[] { "dsr"};
 
-            public string Description { get; } = "set players rating. usage: dmsetrank [playerid] [rating]";
+            public string Description { get; } = "set players rating. usage: dm_set_rank [playerid] [rating]";
 
             public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
             {
@@ -335,7 +418,7 @@ namespace TheRiptide
 
                 if (arguments.Count != 2)
                 {
-                    response = "usage: dmsetrank [playerid] [rating]";
+                    response = "usage: dm_set_rank [playerid] [rating]";
                     return false;
                 }
 
@@ -365,11 +448,11 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmGetRank : ICommand
         {
-            public string Command { get; } = "dmgetrank";
+            public string Command { get; } = "dm_get_rank";
 
             public string[] Aliases { get; } = new string[] { "dmgr" };
 
-            public string Description { get; } = "set players rating. usage: dmsetrank [player_id] [rating]";
+            public string Description { get; } = "set players rating. usage: dm_get_rank [player_id] [rating]";
 
             public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
             {
@@ -378,7 +461,7 @@ namespace TheRiptide
 
                 if (arguments.Count != 1)
                 {
-                    response = "usage: dmgetrank [playerid]";
+                    response = "usage: dm_get_rank [playerid]";
                     return false;
                 }
 
@@ -401,11 +484,11 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmSetRankState : ICommand
         {
-            public string Command { get; } = "dmsetrankstate";
+            public string Command { get; } = "dm_set_rank_state";
 
             public string[] Aliases { get; } = new string[] { "dmrs" };
 
-            public string Description { get; } = "set players rank state. usage: dmsetrankstate [player_id] [state], states: 0 = Unranked 1 = Placement 2 = Ranked";
+            public string Description { get; } = "set players rank state. usage: dm_set_rank_state [player_id] [state], states: 0 = Unranked 1 = Placement 2 = Ranked";
 
             public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
             {
@@ -414,7 +497,7 @@ namespace TheRiptide
 
                 if(arguments.Count != 2)
                 {
-                    response = "usage: dmsetrankstate [playerid] [state], states: 0 = Unranked 1 = Placement 2 = Ranked";
+                    response = "usage: dm_set_rank_state [playerid] [state], states: 0 = Unranked 1 = Placement 2 = Ranked";
                     return false;
                 }
 

@@ -315,6 +315,8 @@ namespace TheRiptide
                         AddFirearm(player, loadout.tertiary, false);
                 }
                 Killstreaks.Singleton.AddKillstreakStartItems(player);
+                if (!Lobby.Singleton.InSpawn(player) && DmRound.GameStarted)
+                    Killstreaks.Singleton.AddKillstreakStartEffects(player);
             }
             player.AddItem(ItemType.KeycardO5);
         }
