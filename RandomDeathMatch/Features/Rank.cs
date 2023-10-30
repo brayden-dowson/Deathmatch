@@ -30,6 +30,7 @@ namespace TheRiptide
         public string UnrankedName { get; set; } = "Unranked";
         public string UnrankedTag { get; set; } = "----";
         public string UnrankedColor { get; set; } = "nickel";
+        [Description("minimum rank before players obtain placement rank status. values start at 0 not 1. e.g. level 0 = L:1 level 1 = L2")]
         public Experiences.XP MinXpForPlacement { get; set; } = new Experiences.XP { value = 0, level = 0, stage = 1, tier = 0 };
 
         [Description("placement players rank is influenced by other placement players and ranked players but ranked players are not influenced by placement players")]

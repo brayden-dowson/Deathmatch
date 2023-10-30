@@ -1,6 +1,8 @@
 ﻿using Interactables.Interobjects;
 using Interactables.Interobjects.DoorUtils;
 using MapGeneration;
+using MEC;
+using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
 using System;
@@ -26,41 +28,51 @@ namespace TheRiptide
 
         public static void WaitingForPlayers()
         {
-            room_adjacent_rooms.Clear();
-            room_lights.Clear();
-            room_edges.Clear();
-
-            edge_doors.Clear();
-            edge_elevators.Clear();
-
-            foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
+            Timing.CallDelayed(0.0f, () =>
             {
-                room_adjacent_rooms.Add(room, new Dictionary<RoomIdentifier, Direction>());
-                room_edges.Add(room, new HashSet<DoorVariant>());
-                room_lights.Add(room, room.GetComponentInChildren<RoomLightController>());
-            }
-
-            foreach (DoorVariant door in DoorVariant.AllDoors)
-            {
-                if (door.Rooms.Length == 2)
+                try
                 {
-                    edge_doors.Add(door);
-                    AddAdjacentRoom(door.Rooms);
-                    room_edges[door.Rooms[0]].Add(door);
-                    room_edges[door.Rooms[1]].Add(door);
-                }
-            }
+                    room_adjacent_rooms.Clear();
+                    room_lights.Clear();
+                    room_edges.Clear();
 
-            foreach (List<ElevatorDoor> elevators in ElevatorDoor.AllElevatorDoors.Values)
-            {
-                if (elevators.Count() == 2 && elevators[0].Rooms.First() != elevators[1].Rooms.First())
-                {
-                    edge_elevators.UnionWith(elevators);
-                    AddAdjacentRoom(new RoomIdentifier[] { elevators[0].Rooms.First(), elevators[1].Rooms.First() });
-                    room_edges[elevators[0].Rooms.First()].UnionWith(elevators);
-                    room_edges[elevators[1].Rooms.First()].UnionWith(elevators);
+                    edge_doors.Clear();
+                    edge_elevators.Clear();
+
+                    foreach (RoomIdentifier room in RoomIdentifier.AllRoomIdentifiers)
+                    {
+                        room_adjacent_rooms.Add(room, new Dictionary<RoomIdentifier, Direction>());
+                        room_edges.Add(room, new HashSet<DoorVariant>());
+                        room_lights.Add(room, room.GetComponentInChildren<RoomLightController>());
+                    }
+
+                    foreach (DoorVariant door in DoorVariant.AllDoors)
+                    {
+                        if (door.Rooms.Length == 2)
+                        {
+                            edge_doors.Add(door);
+                            AddAdjacentRoom(door.Rooms);
+                            room_edges[door.Rooms[0]].Add(door);
+                            room_edges[door.Rooms[1]].Add(door);
+                        }
+                    }
+
+                    foreach (List<ElevatorDoor> elevators in ElevatorDoor.AllElevatorDoors.Values)
+                    {
+                        if (elevators.Count() == 2 && elevators[0].Rooms.First() != elevators[1].Rooms.First())
+                        {
+                            edge_elevators.UnionWith(elevators);
+                            AddAdjacentRoom(new RoomIdentifier[] { elevators[0].Rooms.First(), elevators[1].Rooms.First() });
+                            room_edges[elevators[0].Rooms.First()].UnionWith(elevators);
+                            room_edges[elevators[1].Rooms.First()].UnionWith(elevators);
+                        }
+                    }
                 }
-            }
+                catch(Exception ex)
+                {
+                    Log.Error(ex.ToString());
+                }
+            });
         }
 
         public static void RoundRestart()

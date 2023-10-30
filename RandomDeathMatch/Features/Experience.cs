@@ -325,7 +325,7 @@ namespace TheRiptide
 
         public void XpLoaded(Player player)
         {
-            XP xp = player_xp[player.PlayerId];
+            XP xp = ApplyLevelUps(player_xp[player.PlayerId]);
             previous_xp.Add(player.PlayerId, new XP { tier = xp.tier, level = xp.level, stage = xp.stage, value = xp.value });
             BadgeOverride.Singleton.SetBadge(player, 1, BadgeString(xp));
             ShowXpHint(player, xp, 10.0f);
@@ -359,49 +359,92 @@ namespace TheRiptide
                         gained = xp.value - previous_xp[p.PlayerId].value;
                     else
                         gained = xp.value;
-                    bool maxed_tier = xp.tier >= config.TierTags.Count - 1;
-                    bool maxed_stage = xp.stage >= config.StageTags.Count - 1;
-                    bool maxed_level = xp.level >= config.LevelTags.Count - 1;
-                    int next = XpToNextLevel(xp);
-                    while (xp.value > next)
-                    {
-                        if (!(maxed_tier && maxed_stage && maxed_level))
-                        {
-                            xp.value -= next;
-                            xp.level++;
-                            if (xp.level > config.LevelTags.Count - 1)
-                            {
-                                if (!(maxed_tier && maxed_stage))
-                                {
-                                    xp.level = 0;
-                                    xp.stage++;
-                                    if (xp.stage > config.StageTags.Count - 1)
-                                    {
-                                        if (!maxed_tier)
-                                        {
-                                            xp.stage = 0;
-                                            xp.tier++;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                        else
-                        {
-                            xp.value = next;
-                            break;
-                        }
-                        maxed_tier = xp.tier >= config.TierTags.Count - 1;
-                        maxed_stage = xp.stage >= config.StageTags.Count - 1;
-                        maxed_level = xp.level >= config.LevelTags.Count - 1;
-                        next = XpToNextLevel(xp);
-                    }
+                    ApplyLevelUps(xp);
+                    //bool maxed_tier = xp.tier >= config.TierTags.Count - 1;
+                    //bool maxed_stage = xp.stage >= config.StageTags.Count - 1;
+                    //bool maxed_level = xp.level >= config.LevelTags.Count - 1;
+                    //int next = XpToNextLevel(xp);
+                    //while (xp.value > next)
+                    //{
+                    //    if (!(maxed_tier && maxed_stage && maxed_level))
+                    //    {
+                    //        xp.value -= next;
+                    //        xp.level++;
+                    //        if (xp.level > config.LevelTags.Count - 1)
+                    //        {
+                    //            if (!(maxed_tier && maxed_stage))
+                    //            {
+                    //                xp.level = 0;
+                    //                xp.stage++;
+                    //                if (xp.stage > config.StageTags.Count - 1)
+                    //                {
+                    //                    if (!maxed_tier)
+                    //                    {
+                    //                        xp.stage = 0;
+                    //                        xp.tier++;
+                    //                    }
+                    //                }
+                    //            }
+                    //        }
+                    //    }
+                    //    else
+                    //    {
+                    //        xp.value = next;
+                    //        break;
+                    //    }
+                    //    maxed_tier = xp.tier >= config.TierTags.Count - 1;
+                    //    maxed_stage = xp.stage >= config.StageTags.Count - 1;
+                    //    maxed_level = xp.level >= config.LevelTags.Count - 1;
+                    //    next = XpToNextLevel(xp);
+                    //}
                     if (!p.DoNotTrack)
                         Database.Singleton.SaveExperience(p);
                     HintOverride.Add(p, 1, translation.XpGainedMsg.Replace("{xp}", gained.ToString()), 30.0f);
                     BadgeOverride.Singleton.SetBadge(p, 1, BadgeString(xp));
                 }
             }
+        }
+
+        private XP ApplyLevelUps(XP xp)
+        {
+            bool maxed_tier = xp.tier >= config.TierTags.Count - 1;
+            bool maxed_stage = xp.stage >= config.StageTags.Count - 1;
+            bool maxed_level = xp.level >= config.LevelTags.Count - 1;
+            int next = XpToNextLevel(xp);
+            while (xp.value > next)
+            {
+                if (!(maxed_tier && maxed_stage && maxed_level))
+                {
+                    xp.value -= next;
+                    xp.level++;
+                    if (xp.level > config.LevelTags.Count - 1)
+                    {
+                        if (!(maxed_tier && maxed_stage))
+                        {
+                            xp.level = 0;
+                            xp.stage++;
+                            if (xp.stage > config.StageTags.Count - 1)
+                            {
+                                if (!maxed_tier)
+                                {
+                                    xp.stage = 0;
+                                    xp.tier++;
+                                }
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    xp.value = next;
+                    break;
+                }
+                maxed_tier = xp.tier >= config.TierTags.Count - 1;
+                maxed_stage = xp.stage >= config.StageTags.Count - 1;
+                maxed_level = xp.level >= config.LevelTags.Count - 1;
+                next = XpToNextLevel(xp);
+            }
+            return xp;
         }
 
         public int XpToNextLevel(XP xp)

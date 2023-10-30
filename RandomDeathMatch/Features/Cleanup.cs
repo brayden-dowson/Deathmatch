@@ -5,6 +5,7 @@ using InventorySystem.Items.Keycards;
 using InventorySystem.Items.Pickups;
 using MEC;
 using Mirror;
+using PlayerRoles.Ragdolls;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
