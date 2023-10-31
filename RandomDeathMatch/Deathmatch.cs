@@ -205,6 +205,7 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.MapGenerated)]
         public void OnMapGenerated()
         {
+            FacilityManager.MapGenerated();
             Lobby.Singleton.MapGenerated();
             if (rank_config.IsEnabled)
                 Ranks.Singleton.MapGenerated();
@@ -217,7 +218,6 @@ namespace TheRiptide
         {
             GenerateGlobalReferenceConfig();
             DmRound.Singleton.WaitingForPlayers();
-            FacilityManager.WaitingForPlayers();
             if (tracking_config.IsEnabled)
                 Tracking.Singleton.WaitingForPlayers();
             if (voice_chat_config.IsEnabled)

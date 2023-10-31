@@ -26,7 +26,7 @@ namespace TheRiptide
         //facility lights
         private static Dictionary<RoomIdentifier, RoomLightController> room_lights = new Dictionary<RoomIdentifier, RoomLightController>();
 
-        public static void WaitingForPlayers()
+        public static void MapGenerated()
         {
             Timing.CallDelayed(0.0f, () =>
             {
