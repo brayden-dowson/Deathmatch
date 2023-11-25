@@ -48,7 +48,7 @@ namespace TheRiptide
             Log.Info(EventName + " event is preparing");
             IsRunning = true;
             Deathmatch.Singleton.Start();
-            Deathmatch.Singleton.OnMapGenerated();
+            //Deathmatch.Singleton.OnMapGenerated();
             Deathmatch.Singleton.OnWaitingForPlayers();
             Log.Info(EventName + " event is prepared");
             PluginAPI.Events.EventManager.RegisterEvents<DmRound>(this);

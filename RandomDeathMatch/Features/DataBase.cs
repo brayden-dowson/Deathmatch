@@ -493,21 +493,26 @@ namespace TheRiptide
             });
         }
 
-        public void DeleteData(Player player)
+        public void DeleteData(string user_id)
         {
             DbAsync(() =>
             {
                 var users = db.GetCollection<User>("users");
-                users.Delete(player.UserId);
+                users.Delete(user_id);
                 var experiences = db.GetCollection<Experience>("experiences");
-                experiences.Delete(player.UserId);
+                experiences.Delete(user_id);
                 var ranks = db.GetCollection<Rank>("ranks");
-                ranks.Delete(player.UserId);
+                ranks.Delete(user_id);
                 var configs = db.GetCollection<Config>("configs");
-                configs.Delete(player.UserId);
+                configs.Delete(user_id);
                 var leader_boards = db.GetCollection<LeaderBoard>("leader_board");
-                leader_boards.Delete(player.UserId);
+                leader_boards.Delete(user_id);
             });
+        }
+
+        public void DeleteData(Player player)
+        {
+            DeleteData(player.UserId);
         }
 
         public void Async(System.Action<LiteDatabase> action)

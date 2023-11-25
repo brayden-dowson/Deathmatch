@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using static TheRiptide.Utility;
 using UnityEngine;
+using CommandSystem;
+using RemoteAdmin;
 
 namespace TheRiptide
 {
@@ -20,6 +22,11 @@ namespace TheRiptide
         public bool TrackHits { get; set; } = true;
         public bool TrackLoadouts { get; set; } = true;
         public bool TrackRounds { get; set; } = true;
+
+        public List<PlayerPermissions> TrackingCmdPermissions { get; set; } = new List<PlayerPermissions>
+        {
+            PlayerPermissions.ServerConsoleCommands
+        };
     }
 
     public class Tracking
@@ -227,6 +234,35 @@ namespace TheRiptide
         public Database.Session GetSession(Player player)
         {
             return player_sessions[player.PlayerId];
+        }
+
+
+        [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        public class DmDeleteUser : ICommand
+        {
+            public string Command { get; } = "dm_delete_user";
+
+            public string[] Aliases { get; } = new string[] {};
+
+            public string Description { get; } = "delete a player from the database using the players id e.g. 762394880234@steam. usage: dm_delete_user <user_id>";
+
+            public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
+            {
+                if (sender is PlayerCommandSender sender1 && !sender1.CheckPermission(Singleton.config.TrackingCmdPermissions.ToArray(), out response))
+                    return false;
+
+                if (arguments.Count == 0)
+                {
+                    response = "usage: dm_delete_user <user_id>";
+                    return false;
+                }
+
+                string user_id = arguments.At(0);
+                Database.Singleton.DeleteData(user_id);
+
+                response = "Deleting data for " + user_id + " if it exists";
+                return false;
+            }
         }
 
     }
