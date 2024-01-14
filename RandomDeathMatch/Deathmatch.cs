@@ -247,17 +247,24 @@ namespace TheRiptide
 
         private void GenerateGlobalReferenceConfig()
         {
-            global_reference_config.AllItems.Clear();
-            foreach (ItemType item in Enum.GetValues(typeof(ItemType)))
-                global_reference_config.AllItems.Add(item);
+            try
+            {
+                global_reference_config.AllItems.Clear();
+                foreach (ItemType item in Enum.GetValues(typeof(ItemType)))
+                    global_reference_config.AllItems.Add(item);
 
-            global_reference_config.AllEffects.Clear();
-            foreach (StatusEffectBase effect in Server.Instance.GameObject.GetComponentsInChildren<StatusEffectBase>(true))
-                global_reference_config.AllEffects.Add(effect.name);
-            global_reference_config.AllAttachments.Clear();
-            foreach (AttachmentName name in Enum.GetValues(typeof(AttachmentName)))
-                global_reference_config.AllAttachments.Add(name);
-            PluginHandler.Get(this).SaveConfig(this, nameof(global_reference_config));
+                global_reference_config.AllEffects.Clear();
+                foreach (StatusEffectBase effect in Server.Instance.GameObject.GetComponentsInChildren<StatusEffectBase>(true))
+                    global_reference_config.AllEffects.Add(effect.name);
+                global_reference_config.AllAttachments.Clear();
+                foreach (AttachmentName name in Enum.GetValues(typeof(AttachmentName)))
+                    global_reference_config.AllAttachments.Add(name);
+                PluginHandler.Get(this).SaveConfig(this, nameof(global_reference_config));
+            }
+            catch(Exception e)
+            {
+                Log.Error("Global reference config error delete config if this error is common\n " + e.ToString(), "NW API ERROR");
+            }
         }
     }
 }
