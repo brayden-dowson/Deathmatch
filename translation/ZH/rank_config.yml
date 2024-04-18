@@ -1,0 +1,100 @@
+is_enabled: true
+badge_format: >
+  段位: {name}
+leader_board_format: '{tag}'
+dnt_name: 未定段
+dnt_tag: DNT
+dnt_color: nickel
+# players start unranked. unranked players cannot influence placement/ranked players. once the MinXpForPlacement is achieved they will progress to placement
+unranked_name: 未定段
+unranked_tag: '----'
+unranked_color: nickel
+# minimum rank before players obtain placement rank status. values start at 0 not 1. e.g. level 0 = L:1 level 1 = L2
+min_xp_for_placement:
+  value: 0
+  level: 0
+  stage: 1
+  tier: 0
+# placement players rank is influenced by other placement players and ranked players but ranked players are not influenced by placement players
+placement_name: 定段中
+placement_tag: '?'
+placement_color: magenta
+# matches referes to kill/deaths against placement and ranked players. this is how many until you become ranked
+placement_matches: 150
+# ranks must be in order of least rating to most rating and colors must be a valid servergroup colors see https://en.scpslgame.com/index.php/Docs:Permissions 
+#All players start out with a 1500 rating when they enter placement. Ranks should be scaled around the 1500 mark.
+ranks:
+- name: 白银 I
+  tag: S1
+  rating: -150
+  color: nickel
+- name: 白银 II
+  tag: S2
+  rating: 0
+  color: nickel
+- name: 白银 III
+  tag: S3
+  rating: 150
+  color: nickel
+- name: 白银 IV
+  tag: S4
+  rating: 300
+  color: nickel
+- name: 白银精英
+  tag: SE
+  rating: 550
+  color: 白银
+- name: 白银精英大师
+  tag: SEM
+  rating: 700
+  color: 白银
+- name: 黄金 I
+  tag: GN1
+  rating: 950
+  color: cyan
+- name: 黄金 II
+  tag: GN2
+  rating: 1100
+  color: cyan
+- name: 黄金 III
+  tag: GN3
+  rating: 1350
+  color: cyan
+- name: 黄金大师
+  tag: GNM
+  rating: 1500
+  color: aqua
+- name: 铂金 I
+  tag: MG1
+  rating: 1650
+  color: blue_green
+- name: 铂金 II
+  tag: MG2
+  rating: 1800
+  color: blue_green
+- name: 铂金 Elite
+  tag: MGE
+  rating: 1950
+  color: emerald
+- name: 杰出铂金
+  tag: DMG
+  rating: 2100
+  color: mint
+- name: 传奇
+  tag: LE
+  rating: 2250
+  color: yellow
+- name: 传奇大师
+  tag: LEM
+  rating: 2400
+  color: yellow
+- name: 无上传奇
+  tag: SMFC
+  rating: 2550
+  color: orange
+- name: 全服精英
+  tag: GE
+  rating: 2700
+  color: crimson
+rank_cmd_permissions:
+- ServerConsoleCommands
