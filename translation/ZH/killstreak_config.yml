@@ -160,7 +160,7 @@ killstreak_tables:
     effect_table: {}
   Advanced:
     menu_item: KeycardMTFOperative
-    menu_description: <color=#177dde>[特工钥匙卡]</color> = <b><color=#efdf48>高级</color></b> - 出生时拥有轻型装甲，最大连杀 20+</b>
+    menu_description: <color=#177dde>[特工]</color> = <b><color=#efdf48>高级</color></b> - 出生时拥有轻型装甲，最大连杀 20+</b>
     loadout_lock: false
     color_hex: '#efdf48'
     item_overflow_action: Clamp
