@@ -2,7 +2,7 @@
 dnt_msg: <size=64><b><color=#FF0000>警告！你已启用 DNT，所以你在回合结束时会失去所有的经验和等级！你的配置、偏好、连杀、统计、角色和装备无法保存，因为你在游戏设置中启用了 DNT。为了保持公平，你对排名玩家的杀敌/死亡将被忽略。</color></b></size>
 # Hitbox
 body: 身体
-limb: 肢体
+limb: 四肢
 head: 头部
 # killfeed messages
 firearm_kill: '{killer} 用 {gun} 在 {hitbox} 射杀了 {victim}'
@@ -96,25 +96,25 @@ leader_board_menu: <b><color=#43BFF0>[排行榜]</color></b> - <b><color=#FF0000
 # rooms
 second_player_joined: 玩家 <color=#43BFF0>{name}</color> 加入，等待他们选择装备
 second_player_help: <color=#43BFF0>{name}</color> 正在努力设置他的装备，请用你的无线电帮助他
-decontaminating: <color=#FF0000>正在消毒!</color>
-caution: <color=#FFFF00>注意! 房间消毒在 {time}</color>
-warning: <color=#FF8000>警告! 房间消毒在 {time}</color>
-danger: <color=#FF0000>危险! 消毒即将开始! {time}</color>
+decontaminating: <color=#FF0000>净化中!</color>
+caution: <color=#FFFF00>请注意! 净化将在 {time} 秒后开始</color>
+warning: <color=#FF8000>警告! 净化将在 {time} 秒后开始</color>
+danger: <color=#FF0000>危险! 净化将在 {time} 秒开始!</color>
 # stats
 death_msg_killer: >2-
 
 
 
-  {killer} <color=#43BFF0>HP: {health}</color>
-death_msg_ahp: ' <color=#008f1c>AH: {ahp}</color>'
+  {killer} <color=#43BFF0>生命值: {health}</color>
+death_msg_ahp: ' <color=#008f1c>额外生命值: {ahp}</color>'
 death_msg_damage_reduction: ' <color=#5900ff> DR: {reduction}%</color>'
 death_msg_bodyshot_reduction: ' <color=#e7d77b> BSR: {reduction}%</color>'
 death_msg_damage_delt: >2-
 
-  <color=#43BFF0>造成 - DMG: {damage}</color> <color=#FF0000>HS: {head_shots}</color> <color=#36a832>BS: {body_shots}</color> <color=#43BFF0>LS: {limb_shots}</color>
+  <color=#43BFF0>造成伤害: {damage}</color> <color=#FF0000>头部命中: {head_shots}</color> <color=#36a832>身体命中: {body_shots}</color> <color=#43BFF0>四肢命中: {limb_shots}</color>
 death_msg_damage_taken: >2-
 
-  <color=#43BFF0>承受 - DMG: {damage}</color> <color=#FF0000>HS: {head_shots}</color> <color=#36a832>BS: {body_shots}</color> <color=#43BFF0>LS: {limb_shots}</color>
+  <color=#43BFF0>承受 - DMG: {damage}</color> <color=#FF0000>头部受击: {head_shots}</color> <color=#36a832>身体受击: {body_shots}</color> <color=#43BFF0>四肢受击: {limb_shots}</color>
 death_msg_damage_other: ' 其他: {other_hits}'
 player_stats_line1: <color=#76b8b5>杀敌:</color> <color=#FF0000>{kills}</color>    <color=#76b8b5>死亡:</color> <color=#FF0000>{deaths}</color>    <color=#76b8b5>K/D:</color> <color=#FF0000>{kd}</color>    <color=#76b8b5>最高连杀:</color> <color=#FF0000>{top_ks}</color></color>    <color=#76b8b5>分数:</color> <color=#FF0000>{score}</color>
 player_stats_line2: <color=#76b8b5>爆头杀敌:</color> <color=#FF0000>{hsk}%</color>    <color=#76b8b5>爆头:</color> <color=#FF0000>{hs}%</color>    <color=#76b8b5>命中率:</color> <color=#FF0000>{accuracy}%</color>    <color=#76b8b5>伤害造成:</color> <color=#FF0000>{dmg_delt}</color>    <color=#76b8b5>伤害承受:</color> <color=#FF0000>{dmg_taken}</color>
@@ -158,7 +158,7 @@ ledgend_pos: 位置
 ledgend_name: 名字
 ledgend_rank: 排名
 ledgend_experience: 经验
-ledgend_killstreak: 连杀
+ledgend_killstreak: 连杀配置
 ledgend_kills: 杀敌
 ledgend_time: 时间
 page_and_line: 第 {page} 页，共 {page_max} 页 [{line_start} - {line_end}]/{line_max}
