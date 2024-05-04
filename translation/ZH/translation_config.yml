@@ -35,16 +35,16 @@ waiting_for_players:
 - <color=#43BFF0>你可以选择起始区域！</color>
 respawn: <b><color=#FFFF00>左/右键重生</color></b>
 attachments: <b><color=#FF0000>按 Tab 编辑配件/预设</color></b>
-teleporting: <color=#43BFF0>7 秒后传送</color>
+teleporting: <color=#43BFF0>你将在 7 秒后传送</color>
 teleport_cancel: <color=#43BFF0>打开 [主菜单] 取消</color> - <color=#FF0000>右键 O5</color>
-fast_teleport: <color=#43BFF0>装备设置好了，3 秒后传送</color>
+fast_teleport: <color=#43BFF0>配置已载入，你将在 3 秒后传送</color>
 spectator_mode: 观看 939 重生，如果出现 bug，你可能需要离开并重新加入才能重生
 # main menu
 main_menu: <b><color=#43BFF0>[主菜单]</color></b> <b><color=#FF0000>右键选择</color></b>
 back_to_main_menu: <color=#5d318c>[O5]</color> = <b>返回 <color=#43BFF0>[主菜单]</color></b>
 save_and_exit: <color=#5d318c>[O5]</color> = <b><color=#5d318c>保存并退出</color></b>
 customise_loadout: <color=#e7d77b>[科学家]</color> = <b><color=#FF0000>自定义装备 - </color><color=#43BFF0>[枪械槽]</color></b>
-killstreak_reward_system: <color=#e1ab21>[研究主管]</color> = <b><color=#43BFF0>[连杀奖励系统]</color></b>
+killstreak_reward_system: <color=#e1ab21>[研究主管]</color> = <b><color=#43BFF0>[连杀配置]</color></b>
 role: <color=#bd8f86>[收容工程师]</color> = <b><color=#43BFF0>[角色]</color></b>
 preferences: <color=#bd1a4a>[设施总监]</color> = <b><color=#43BFF0>[偏好设置]</color></b>
 # gun slot menu
@@ -114,7 +114,7 @@ death_msg_damage_delt: >2-
   <color=#43BFF0>造成伤害: {damage}</color> <color=#FF0000>头部命中: {head_shots}</color> <color=#36a832>身体命中: {body_shots}</color> <color=#43BFF0>四肢命中: {limb_shots}</color>
 death_msg_damage_taken: >2-
 
-  <color=#43BFF0>承受 - DMG: {damage}</color> <color=#FF0000>头部受击: {head_shots}</color> <color=#36a832>身体受击: {body_shots}</color> <color=#43BFF0>四肢受击: {limb_shots}</color>
+  <color=#43BFF0>承受伤害: {damage}</color> <color=#FF0000>头部受击: {head_shots}</color> <color=#36a832>身体受击: {body_shots}</color> <color=#43BFF0>四肢受击: {limb_shots}</color>
 death_msg_damage_other: ' 其他: {other_hits}'
 player_stats_line1: <color=#76b8b5>杀敌:</color> <color=#FF0000>{kills}</color>    <color=#76b8b5>死亡:</color> <color=#FF0000>{deaths}</color>    <color=#76b8b5>K/D:</color> <color=#FF0000>{kd}</color>    <color=#76b8b5>最高连杀:</color> <color=#FF0000>{top_ks}</color></color>    <color=#76b8b5>分数:</color> <color=#FF0000>{score}</color>
 player_stats_line2: <color=#76b8b5>爆头杀敌:</color> <color=#FF0000>{hsk}%</color>    <color=#76b8b5>爆头:</color> <color=#FF0000>{hs}%</color>    <color=#76b8b5>命中率:</color> <color=#FF0000>{accuracy}%</color>    <color=#76b8b5>伤害造成:</color> <color=#FF0000>{dmg_delt}</color>    <color=#76b8b5>伤害承受:</color> <color=#FF0000>{dmg_taken}</color>
