@@ -5,7 +5,7 @@ body: 身体
 limb: 四肢
 head: 头部
 # killfeed messages
-firearm_kill: '{killer} 用 {gun} 在 {hitbox} 射杀了 {victim}'
+firearm_kill: '{killer} 用 {gun} 击杀了 {victim} 部位：{hitbox}'
 explosion_kill: '{killer} 用手榴弹炸死了 {victim}'
 explosion_self_kill: '{victim} 用 <b><color=#eb0d47>手榴弹</color></b> 丢脸地自杀了'
 jailbird_head_kill: '{killer} 用 <b><color=#eb0d47>囚鸟</color></b> 在 {hitbox} 砸了 {victim} 一下'
@@ -122,20 +122,20 @@ highest_killstreak: <b><color=#43BFF0>{name}</color></b> <color=#d4af37>达到�
 highest_kills: <b><color=#43BFF0>{name}</color></b> <color=#c0c0c0>杀敌最多</color> <b><color=#FF0000>{kills}</color></b>
 highest_score: <b><color=#43BFF0>{name}</color></b> <color=#a97142>是最佳玩家，分数为 </color> <b><color=#FF0000>{score}</color></b>
 # experience
-reward_xp_kill: 获得 {xp} 经验，因为杀死了玩家
+reward_xp_kill: 杀死了玩家, 获得 {xp} 经验
 reward_xp_minute: 游玩服务器 {time} 分钟，获得 {xp} 经验
-reward_xp100_damage: 获得 {xp} 经验，因为造成了 100 点伤害
-reward_xp500_damage: 获得 {xp} 经验，因为造成了 500 点伤害
-reward_xp2500_damage: 获得 {xp} 经验，因为造成了 2500 点伤害
-reward_xp10000_damage: 获得 {xp} 经验，因为造成了 10000 点伤害
-reward_xp5_killstreak: 获得 {xp} 经验，因为达到了 5 连杀
-reward_xp10_killstreak: 获得 {xp} 经验，因为达到了 10 连杀
-reward_xp15_killstreak: 获得 {xp} 经验，因为达到了 15 连杀
-reward_xp20_killstreak: 获得 {xp} 经验，因为达到了 20 连杀
-reward_xp25_killstreak: 获得 {xp} 经验，因为达到了 25 连杀
-reward_xp_round_start: 获得 {xp} 经验，因为获得了回合开始奖励
-reward_xp_item_used: 获得 {xp} 经验，因为使用了 {item}
-reward_xp_item_thrown: 获得 {xp} 经验，因为扔了 {item}
+reward_xp100_damage: 造成 100 点伤害，获得 {xp} 经验
+reward_xp500_damage: 造成 500 点伤害，获得 {xp} 经验
+reward_xp2500_damage: 造成 2500 点伤害，获得 {xp} 经验
+reward_xp10000_damage: 造成 10000 点伤害，获得 {xp} 经验
+reward_xp5_killstreak: 达到 5 连杀，获得 {xp} 经验
+reward_xp10_killstreak: 达到 10 连杀，获得 {xp} 经验
+reward_xp15_killstreak: 达到 15 连杀，获得 {xp} 经验
+reward_xp20_killstreak: 达到 20 连杀，获得 {xp} 经验
+reward_xp25_killstreak: 达到 25 连杀，获得 {xp} 经验
+reward_xp_round_start: 获得了回合开始奖励，获得 {xp} 经验
+reward_xp_item_used: 使用 {item} ，获得 {xp} 经验
+reward_xp_item_thrown: 使用 {item} ，获得 {xp} 经验
 xp_msg: >
   <align=center><voffset=2em><b><size=48>{xp}</size></b>
 xp_gained_msg: >
