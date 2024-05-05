@@ -18,7 +18,7 @@ custom_reason_kill: '{victim} 被杀死了: <b><color=#43BFF0>{reason}</color></
 failed_first_grade: '{victim} <b><color=#eb0d47>不会读书，所以他们丢脸地离开了比赛</color></b>'
 self_kill: <b><color=#eb0d47>{victim}</color></b> 丢脸地自杀了
 # killstreak
-global_killstreak: <b>{killstreak} <color=#43BFF0>{name}</color></b> 正在进行 <b><color=#FF0000>{count}</color></b> 连杀
+global_killstreak: <b>{killstreak} <color=#43BFF0>{name}</color></b> 达成了 <b><color=#FF0000>{count}</color></b> 连杀
 private_killstreak: 你已经连续击杀 <b><color=#FF0000>{count}</color></b> 名玩家
 global_killstreak_ended: <b>{killer_killstreak} <color=#43BFF0>{killer}</color></b> 终结了 <b>{victim_killstreak} <color=#43BFF0>{victim} 的</color></b><b><color=#FF0000>{count}</color></b> 连杀
 # loadout
