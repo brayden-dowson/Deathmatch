@@ -577,6 +577,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmRebuildLeaderBoard : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_rebuild_lb";
 
             public string[] Aliases { get; } = new string[] { "dmrblb" };

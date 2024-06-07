@@ -87,9 +87,9 @@ namespace TheRiptide
         void OnRoundStart()
         {
             if (config.RoundTime > 5.0f)
-                round_5_minute_warning = Timing.CallDelayed(60.0f * (config.RoundTime - 5.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 5 minutes</color>"); });
+                round_5_minute_warning = Timing.CallDelayed(60.0f * (config.RoundTime - 5.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, translation.RoundEnd5Minutes ); });
             if (config.RoundTime > 1.0f)
-                round_1_minute_warning = Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, "<color=#43BFF0>Round Ends in 1 minute</color>"); });
+                round_1_minute_warning = Timing.CallDelayed(60.0f * (config.RoundTime - 1.0f), () => { BroadcastOverride.BroadcastLine(1, 30, BroadcastPriority.Medium, translation.RoundEnd1Minute ); });
             round_timer_handle = Timing.CallDelayed(60.0f * config.RoundTime, () =>
             {
                 try
@@ -129,6 +129,7 @@ namespace TheRiptide
                 }
             });
 
+            Log.Info($"Server.Instance.IpAddress: {Server.Instance.IpAddress == null}");
             Server.Instance.SetRole(RoleTypeId.Scp939);
             Server.Instance.ReferenceHub.nicknameSync.SetNick(config.DummyPlayerName);
             Server.Instance.Position = new Vector3(128.8f, 994.0f, 18.0f);

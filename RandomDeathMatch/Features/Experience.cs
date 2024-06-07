@@ -489,6 +489,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmSetXp : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_set_xp";
 
             public string[] Aliases { get; } = new string[] { "dmxp" };

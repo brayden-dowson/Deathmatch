@@ -336,6 +336,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmNormalizeRanks : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_normalize_ranks";
 
             public string[] Aliases { get; } = new string[] { "dmnr" };
@@ -356,6 +358,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmDeleteAllRanks : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_delete_all_ranks";
 
             public string[] Aliases { get; } = new string[] { "dmdar" };
@@ -376,6 +380,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmResetRank : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_reset_rank";
 
             public string[] Aliases { get; } = new string[] { "dmrr" };
@@ -406,6 +412,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmSetRank : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_set_rank";
 
             public string[] Aliases { get; } = new string[] { "dsr"};
@@ -449,6 +457,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmGetRank : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_get_rank";
 
             public string[] Aliases { get; } = new string[] { "dmgr" };
@@ -485,6 +495,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmSetRankState : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_set_rank_state";
 
             public string[] Aliases { get; } = new string[] { "dmrs" };

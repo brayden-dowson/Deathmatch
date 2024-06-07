@@ -187,6 +187,10 @@ namespace TheRiptide
         public string LedgendTime { get; set; } = "Time";
 
         public string PageAndLine { get; set; } = "Page {page} of {page_max} [{line_start} - {line_end}]/{line_max}";
+
+        [Description("round")]
+        public string RoundEnd5Minutes { get; set; } = "<color=#43BFF0>Round Ends in 5 minutes</color>";
+        public string RoundEnd1Minute { get; set; } = "<color=#43BFF0>Round Ends in 1 minute</color>";
     }
 
     public static class Translation

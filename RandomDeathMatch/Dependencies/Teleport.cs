@@ -142,6 +142,8 @@ namespace TheRiptide
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class tp : ICommand
     {
+        public bool SanitizeResponse => false;
+
         public string Command { get; } = "tp";
 
         public string[] Aliases { get; } = new string[] { };
@@ -266,6 +268,8 @@ namespace TheRiptide
     [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class gp : ICommand
     {
+        public bool SanitizeResponse => false;
+
         public string Command { get; } = "gp";
 
         public string[] Aliases { get; } = new string[] { };

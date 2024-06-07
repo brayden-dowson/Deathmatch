@@ -240,6 +240,8 @@ namespace TheRiptide
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
         public class DmDeleteUser : ICommand
         {
+            public bool SanitizeResponse => false;
+
             public string Command { get; } = "dm_delete_user";
 
             public string[] Aliases { get; } = new string[] {};

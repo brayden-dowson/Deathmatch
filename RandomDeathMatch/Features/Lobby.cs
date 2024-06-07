@@ -126,6 +126,9 @@ namespace TheRiptide
         [PluginEvent(ServerEventType.PlayerDeath)]
         void OnPlayerDeath(Player target, Player killer, DamageHandlerBase damage)
         {
+            if (target == null)
+                return;
+
             if (player_spawns.ContainsKey(target.PlayerId))
             {
                 Timing.KillCoroutines(player_spawns[target.PlayerId].teleport_handle);
