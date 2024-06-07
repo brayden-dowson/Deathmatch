@@ -1,0 +1,1691 @@
+# if disabled the player cannot select RAGE killstreak even if they have found it
+rage_enabled: true
+# default killstreak must be included in the killstreak table otherwise the plugin will not load
+default_killstreak: Novice
+# you can define up to 7 killstreaks
+# the RAGE killstreak in an easter egg that can only appear when found correctly
+# Items rewards - Action [Add, Remove], Item [see global reference config for types]
+# Effect rewards - Effect [see global reference config for types], Intensity [0-255], Duration[0=infinite, 1-255 seconds]
+# Ammo rewards - Action [Add, Remove, Set], Stat [Inventory, Gun], Proportion [0.0-1.0]
+# Player rewards - Action [Add, Remove, Set], Stat [HP, AHP, Stamina], Value [float], Sustain [float for AHP], Persistent [bool for AHP]
+# Overflow action [End, Rollover, Clamp] Rollover will rollover to 1 not 0
+# anything with a 0 killstreak items/ammo/effects/players stats are granted when the player spawns
+killstreak_tables:
+  Noob:
+    menu_item: KeycardJanitor
+    menu_description: <color=#bdafe4>[清洁工]</color> = <b><color=#16a4d8>菜鸟</color> - 生成带有重型装甲和3个医疗包的新手，最大杀伤连击数限制为5</b>
+    loadout_lock: false
+    color_hex: '#16a4d8'
+    item_overflow_action: End
+    item_table:
+      0:
+      - action: Add
+        item: ArmorHeavy
+      - action: Add
+        item: Medkit
+      - action: Add
+        item: Medkit
+      - action: Add
+        item: Medkit
+      2:
+      - action: Add
+        item: Painkillers
+      5:
+      - action: Add
+        item: GrenadeFlash
+    ammo_overflow_action: Rollover
+    ammo_table:
+      0:
+      - action: Set
+        stat: Inventory
+        proportion: 1
+      1:
+      - action: Add
+        stat: Inventory
+        proportion: 0.100000001
+    player_overflow_action: End
+    player_table: {}
+    effect_overflow_action: End
+    effect_table: {}
+  Novice:
+    menu_item: KeycardScientist
+    menu_description: <color=#e7d77b>[科学家]</color> = <b><color=#60dbe8>新手</color></b> - 出生时拥有战斗装甲，医疗包和止痛药，最大连杀上限 10</b>
+    loadout_lock: false
+    color_hex: '#60dbe8'
+    item_overflow_action: End
+    item_table:
+      0:
+      - action: Add
+        item: ArmorCombat
+      - action: Add
+        item: Medkit
+      - action: Add
+        item: Painkillers
+      2:
+      - action: Add
+        item: Painkillers
+      4:
+      - action: Add
+        item: Medkit
+      6:
+      - action: Add
+        item: Painkillers
+      8:
+      - action: Add
+        item: Medkit
+      10:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: GrenadeHE
+    ammo_overflow_action: Rollover
+    ammo_table:
+      0:
+      - action: Set
+        stat: Inventory
+        proportion: 1
+      1:
+      - action: Add
+        stat: Inventory
+        proportion: 0.150000006
+    player_overflow_action: End
+    player_table: {}
+    effect_overflow_action: End
+    effect_table: {}
+  Intermediate:
+    menu_item: KeycardMTFPrivate
+    menu_description: <color=#accfe1>[列兵]</color> = <b><color=#8bd346>中级</color></b> - 出生时拥有战斗装甲和止痛药，最大连杀上限 15</b>
+    loadout_lock: false
+    color_hex: '#8bd346'
+    item_overflow_action: End
+    item_table:
+      0:
+      - action: Add
+        item: ArmorCombat
+      - action: Add
+        item: Painkillers
+      3:
+      - action: Add
+        item: Painkillers
+      6:
+      - action: Add
+        item: Medkit
+      8:
+      - action: Add
+        item: Painkillers
+      9:
+      - action: Add
+        item: SCP330
+      10:
+      - action: Add
+        item: Medkit
+      - action: Add
+        item: GrenadeFlash
+      11:
+      - action: Add
+        item: SCP330
+      12:
+      - action: Add
+        item: Painkillers
+      13:
+      - action: Add
+        item: Medkit
+      - action: Add
+        item: SCP2176
+      - action: Add
+        item: SCP330
+      14:
+      - action: Add
+        item: Adrenaline
+      15:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Jailbird
+    ammo_overflow_action: Rollover
+    ammo_table:
+      0:
+      - action: Set
+        stat: Inventory
+        proportion: 0.5
+      1:
+      - action: Add
+        stat: Inventory
+        proportion: 0.200000003
+    player_overflow_action: End
+    player_table: {}
+    effect_overflow_action: End
+    effect_table: {}
+  Advanced:
+    menu_item: KeycardMTFOperative
+    menu_description: <color=#177dde>[特工]</color> = <b><color=#efdf48>高级</color></b> - 出生时拥有轻型装甲，最大连杀 20+</b>
+    loadout_lock: false
+    color_hex: '#efdf48'
+    item_overflow_action: Clamp
+    item_table:
+      0:
+      - action: Add
+        item: ArmorLight
+      1:
+      - action: Add
+        item: Painkillers
+      2:
+      - action: Add
+        item: SCP330
+      3:
+      - action: Add
+        item: Medkit
+      4:
+      - action: Add
+        item: SCP330
+      5:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP1853
+      6:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      7:
+      - action: Add
+        item: Medkit
+      8:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      9:
+      - action: Add
+        item: Painkillers
+      10:
+      - action: Remove
+        item: ArmorLight
+      - action: Add
+        item: ArmorCombat
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      11:
+      - action: Add
+        item: Medkit
+      12:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Adrenaline
+      13:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: Adrenaline
+      14:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Adrenaline
+      15:
+      - action: Remove
+        item: ArmorCombat
+      - action: Add
+        item: ArmorHeavy
+      - action: Add
+        item: SCP244a
+      16:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Adrenaline
+      17:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: Jailbird
+      18:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Adrenaline
+      19:
+      - action: Add
+        item: Medkit
+      - action: Add
+        item: SCP268
+      20:
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Adrenaline
+    ammo_overflow_action: Rollover
+    ammo_table:
+      0:
+      - action: Set
+        stat: Inventory
+        proportion: 1
+      1:
+      - action: Add
+        stat: Inventory
+        proportion: 0.25
+      - action: Add
+        stat: Gun
+        proportion: 0.25
+    player_overflow_action: Clamp
+    player_table:
+      5:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      6:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      7:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      8:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      9:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      10:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 0
+        persistent: false
+      11:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 0
+        persistent: false
+      12:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 0
+        persistent: false
+      13:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 0
+        persistent: false
+      14:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 0
+        persistent: false
+      15:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      16:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      17:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      18:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      19:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      20:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 30
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+    effect_overflow_action: End
+    effect_table:
+      7:
+      - effect: MovementBoost
+        intensity: 10
+        duration: 0
+      15:
+      - effect: MovementBoost
+        intensity: 15
+        duration: 0
+      20:
+      - effect: MovementBoost
+        intensity: 20
+        duration: 0
+  Expert:
+    menu_item: KeycardMTFCaptain
+    menu_description: <color=#1b43cb>[指挥官]</color> = <b><color=#f9a52c>专家</color></b> - 出生时拥有轻型装甲，最大连杀 25+</b>
+    loadout_lock: true
+    color_hex: '#f9a52c'
+    item_overflow_action: Clamp
+    item_table:
+      0:
+      - action: Add
+        item: ArmorLight
+      - action: Add
+        item: GunFSP9
+      2:
+      - action: Add
+        item: Painkillers
+      4:
+      - action: Add
+        item: SCP330
+      5:
+      - action: Remove
+        item: GunFSP9
+      - action: Add
+        item: GunCrossvec
+      6:
+      - action: Add
+        item: Painkillers
+      8:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: GrenadeHE
+      10:
+      - action: Remove
+        item: GunCrossvec
+      - action: Add
+        item: GunE11SR
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP244a
+      11:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      12:
+      - action: Remove
+        item: ArmorLight
+      - action: Add
+        item: ArmorCombat
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: GunCom45
+      13:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      14:
+      - action: Add
+        item: Painkillers
+      15:
+      - action: Remove
+        item: GunE11SR
+      - action: Add
+        item: GunAK
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP268
+      16:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Jailbird
+      17:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      18:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP330
+      19:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      20:
+      - action: Remove
+        item: GunAK
+      - action: Add
+        item: GunLogicer
+      - action: Add
+        item: SCP018
+      - action: Add
+        item: GrenadeHE
+      21:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      22:
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: SCP330
+      23:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      24:
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Jailbird
+      25:
+      - action: Remove
+        item: ArmorCombat
+      - action: Add
+        item: ArmorHeavy
+      - action: Add
+        item: GunShotgun
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP244b
+      26:
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+    ammo_overflow_action: Rollover
+    ammo_table:
+      0:
+      - action: Set
+        stat: Inventory
+        proportion: 1
+      1:
+      - action: Add
+        stat: Inventory
+        proportion: 0.300000012
+      - action: Add
+        stat: Gun
+        proportion: 0.300000012
+    player_overflow_action: Clamp
+    player_table:
+      5:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      6:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      7:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      8:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      9:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      10:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 5
+        sustain: 0
+        persistent: false
+      11:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 5
+        sustain: 1
+        persistent: false
+      12:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 2
+        persistent: false
+      13:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 3
+        persistent: false
+      14:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 15
+        sustain: 4
+        persistent: false
+      15:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 15
+        sustain: 5
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      16:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 6
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      17:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 7
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      18:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 25
+        sustain: 8
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      19:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 25
+        sustain: 9
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      20:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 30
+        sustain: 10
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      21:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 30
+        sustain: 11
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      22:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 35
+        sustain: 12
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      23:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 35
+        sustain: 13
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      24:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 40
+        sustain: 14
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      25:
+      - action: Add
+        stat: Stamina
+        value: 100
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 40
+        sustain: 15
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 45
+        sustain: 0
+        persistent: false
+    effect_overflow_action: Clamp
+    effect_table:
+      5:
+      - effect: MovementBoost
+        intensity: 10
+        duration: 0
+      10:
+      - effect: MovementBoost
+        intensity: 20
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 1
+        duration: 0
+      15:
+      - effect: MovementBoost
+        intensity: 30
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 2
+        duration: 0
+      - effect: Scp1853
+        intensity: 1
+        duration: 0
+      20:
+      - effect: MovementBoost
+        intensity: 40
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      21:
+      - effect: MovementBoost
+        intensity: 40
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      22:
+      - effect: MovementBoost
+        intensity: 40
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      23:
+      - effect: MovementBoost
+        intensity: 40
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      24:
+      - effect: MovementBoost
+        intensity: 40
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      25:
+      - effect: MovementBoost
+        intensity: 50
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 4
+        duration: 0
+      - effect: Scp1853
+        intensity: 3
+        duration: 0
+  RAGE:
+    menu_item: KeycardChaosInsurgency
+    menu_description: <color=#008f1c>[混沌]</color> = <b><color=#d64e12>[数据删除]</color></b>
+    loadout_lock: true
+    color_hex: '#d64e12'
+    item_overflow_action: Clamp
+    item_table:
+      0:
+      - action: Add
+        item: ArmorLight
+      - action: Add
+        item: GunCOM15
+      1:
+      - action: Add
+        item: SCP330
+      2:
+      - action: Add
+        item: Painkillers
+      3:
+      - action: Remove
+        item: GunCOM15
+      - action: Add
+        item: GunCOM18
+      4:
+      - action: Add
+        item: SCP330
+      5: []
+      6:
+      - action: Remove
+        item: GunCOM18
+      - action: Add
+        item: GunRevolver
+      - action: Add
+        item: Painkillers
+      8:
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: GrenadeHE
+      9:
+      - action: Remove
+        item: GunRevolver
+      - action: Add
+        item: GunFSP9
+      10:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP244a
+      11:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      12:
+      - action: Remove
+        item: GunFSP9
+      - action: Add
+        item: GunCrossvec
+      - action: Remove
+        item: ArmorLight
+      - action: Add
+        item: ArmorCombat
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: GunCom45
+      13:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      14:
+      - action: Add
+        item: Painkillers
+      15:
+      - action: Remove
+        item: GunCrossvec
+      - action: Add
+        item: GunE11SR
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP268
+      16:
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Jailbird
+      17:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      18:
+      - action: Remove
+        item: GunE11SR
+      - action: Add
+        item: GunAK
+      - action: Add
+        item: Painkillers
+      - action: Add
+        item: SCP330
+      19:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      20:
+      - action: Add
+        item: SCP018
+      - action: Add
+        item: GrenadeHE
+      21:
+      - action: Remove
+        item: GunAK
+      - action: Add
+        item: GunLogicer
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      22:
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: SCP330
+      23:
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      24:
+      - action: Add
+        item: GunShotgun
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: Jailbird
+      25:
+      - action: Remove
+        item: ArmorCombat
+      - action: Add
+        item: ArmorHeavy
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+      - action: Add
+        item: SCP244b
+      26:
+      - action: Add
+        item: SCP500
+      - action: Add
+        item: Adrenaline
+      - action: Add
+        item: SCP330
+    ammo_overflow_action: Clamp
+    ammo_table:
+      0:
+      - action: Set
+        stat: Inventory
+        proportion: 1
+      1:
+      - action: Add
+        stat: Inventory
+        proportion: 0.200000003
+      2:
+      - action: Add
+        stat: Inventory
+        proportion: 0.200000003
+      3:
+      - action: Add
+        stat: Inventory
+        proportion: 0.200000003
+      4:
+      - action: Add
+        stat: Inventory
+        proportion: 0.25
+      5:
+      - action: Add
+        stat: Inventory
+        proportion: 0.25
+      6:
+      - action: Add
+        stat: Inventory
+        proportion: 0.25
+      7:
+      - action: Add
+        stat: Inventory
+        proportion: 0.300000012
+      8:
+      - action: Add
+        stat: Inventory
+        proportion: 0.300000012
+      9:
+      - action: Add
+        stat: Inventory
+        proportion: 0.300000012
+      10:
+      - action: Add
+        stat: Inventory
+        proportion: 0.349999994
+      - action: Add
+        stat: Gun
+        proportion: 0.100000001
+      11:
+      - action: Add
+        stat: Inventory
+        proportion: 0.349999994
+      - action: Add
+        stat: Gun
+        proportion: 0.100000001
+      12:
+      - action: Add
+        stat: Inventory
+        proportion: 0.349999994
+      - action: Add
+        stat: Gun
+        proportion: 0.100000001
+      13:
+      - action: Add
+        stat: Inventory
+        proportion: 0.100000001
+      - action: Add
+        stat: Gun
+        proportion: 0.150000006
+      14:
+      - action: Add
+        stat: Inventory
+        proportion: 0.100000001
+      - action: Add
+        stat: Gun
+        proportion: 0.150000006
+      15:
+      - action: Add
+        stat: Inventory
+        proportion: 0.100000001
+      - action: Add
+        stat: Gun
+        proportion: 0.150000006
+      16:
+      - action: Add
+        stat: Inventory
+        proportion: 0.150000006
+      - action: Add
+        stat: Gun
+        proportion: 0.300000012
+      17:
+      - action: Add
+        stat: Inventory
+        proportion: 0.150000006
+      - action: Add
+        stat: Gun
+        proportion: 0.300000012
+      18:
+      - action: Add
+        stat: Inventory
+        proportion: 0.150000006
+      - action: Add
+        stat: Gun
+        proportion: 0.300000012
+      19:
+      - action: Add
+        stat: Inventory
+        proportion: 0.25
+      - action: Add
+        stat: Gun
+        proportion: 0.349999994
+      20:
+      - action: Add
+        stat: Inventory
+        proportion: 0.25
+      - action: Add
+        stat: Gun
+        proportion: 0.349999994
+      21:
+      - action: Add
+        stat: Inventory
+        proportion: 0.25
+      - action: Add
+        stat: Gun
+        proportion: 0.349999994
+      22:
+      - action: Add
+        stat: Inventory
+        proportion: 0.400000006
+      - action: Add
+        stat: Gun
+        proportion: 0.400000006
+      23:
+      - action: Add
+        stat: Inventory
+        proportion: 0.400000006
+      - action: Add
+        stat: Gun
+        proportion: 0.400000006
+      24:
+      - action: Add
+        stat: Inventory
+        proportion: 0.400000006
+      - action: Add
+        stat: Gun
+        proportion: 0.400000006
+      25:
+      - action: Add
+        stat: Inventory
+        proportion: 0.5
+      - action: Add
+        stat: Gun
+        proportion: 0.5
+    player_overflow_action: Clamp
+    player_table:
+      5:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      6:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      7:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      8:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      9:
+      - action: Add
+        stat: Stamina
+        value: 20
+        sustain: 0
+        persistent: false
+      10:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 5
+        sustain: 0
+        persistent: false
+      11:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 5
+        sustain: 2
+        persistent: false
+      12:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 4
+        persistent: false
+      13:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 10
+        sustain: 6
+        persistent: false
+      14:
+      - action: Add
+        stat: Stamina
+        value: 40
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 15
+        sustain: 8
+        persistent: false
+      15:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 15
+        sustain: 10
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      16:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 12
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      17:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 20
+        sustain: 14
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      18:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 25
+        sustain: 16
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      19:
+      - action: Add
+        stat: Stamina
+        value: 60
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 25
+        sustain: 18
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 15
+        sustain: 0
+        persistent: false
+      20:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 30
+        sustain: 20
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      21:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 30
+        sustain: 22
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      22:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 35
+        sustain: 24
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      23:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 35
+        sustain: 26
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      24:
+      - action: Add
+        stat: Stamina
+        value: 80
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 40
+        sustain: 28
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 30
+        sustain: 0
+        persistent: false
+      25:
+      - action: Add
+        stat: Stamina
+        value: 100
+        sustain: 0
+        persistent: false
+      - action: Add
+        stat: AHP
+        value: 40
+        sustain: 30
+        persistent: false
+      - action: Add
+        stat: HP
+        value: 45
+        sustain: 0
+        persistent: false
+    effect_overflow_action: Clamp
+    effect_table:
+      0:
+      - effect: Hemorrhage
+        intensity: 1
+        duration: 0
+      - effect: Burned
+        intensity: 1
+        duration: 0
+      - effect: Exhasted
+        intensity: 1
+        duration: 0
+      - effect: Disabled
+        intensity: 1
+        duration: 0
+      - effect: Bleeding
+        intensity: 1
+        duration: 0
+      3:
+      - effect: Bleeding
+        intensity: 0
+        duration: 0
+      5:
+      - effect: MovementBoost
+        intensity: 10
+        duration: 0
+      6:
+      - effect: Disabled
+        intensity: 0
+        duration: 0
+      9:
+      - effect: Exhausted
+        intensity: 0
+        duration: 0
+      10:
+      - effect: MovementBoost
+        intensity: 20
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 1
+        duration: 0
+      12:
+      - effect: Burned
+        intensity: 0
+        duration: 0
+      15:
+      - effect: Heomorrhage
+        intensity: 0
+        duration: 0
+      - effect: MovementBoost
+        intensity: 30
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 2
+        duration: 0
+      - effect: Scp1853
+        intensity: 1
+        duration: 0
+      20:
+      - effect: MovementBoost
+        intensity: 40
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      21:
+      - effect: MovementBoost
+        intensity: 46
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      22:
+      - effect: MovementBoost
+        intensity: 52
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      23:
+      - effect: MovementBoost
+        intensity: 58
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      24:
+      - effect: MovementBoost
+        intensity: 64
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 3
+        duration: 0
+      - effect: Scp1853
+        intensity: 2
+        duration: 0
+      25:
+      - effect: MovementBoost
+        intensity: 72
+        duration: 0
+      - effect: BodyshotReduction
+        intensity: 4
+        duration: 0
+      - effect: Scp1853
+        intensity: 3
+        duration: 0
