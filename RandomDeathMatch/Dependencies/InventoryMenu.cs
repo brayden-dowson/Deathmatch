@@ -144,6 +144,7 @@ namespace TheRiptide
             Menu menu = menus[menu_id];
 
             player.ClearInventory();
+            player.ReferenceHub.inventory.SendAmmoNextFrame = true;
             BroadcastOverride.ClearLines(player, BroadcastPriority.High);
             List<string> broadcast = new List<string>();
             List<ItemType> items = new List<ItemType>();

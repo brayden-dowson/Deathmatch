@@ -1,11 +1,12 @@
-﻿using InventorySystem.Items;
+﻿using InventorySystem;
+using InventorySystem.Items;
 using InventorySystem.Items.Armor;
 using InventorySystem.Items.Firearms;
 using InventorySystem.Items.Firearms.Attachments;
+using InventorySystem.Items.Firearms.Modules;
 using PlayerRoles;
 using PlayerStatsSystem;
 using PluginAPI.Core;
-using PluginAPI.Core.Items;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Mathematics;
@@ -62,7 +63,8 @@ namespace TheRiptide
             IEnumerable<ItemBase> matches = player.Items.Where((i) => i.ItemTypeId == type);
             if (matches.Count() >= 1)
             {
-                player.RemoveItem(new Item(matches.First()));
+                player.ReferenceHub.inventory.ServerRemoveItem(matches.First().ItemSerial, null);
+                //player.RemoveItem(new Item(matches.First()));
                 return true;
             }
             return false;
@@ -72,20 +74,23 @@ namespace TheRiptide
         {
             int ammo_reserve = 0;
             int load_ammo = 0;
-            Firearm firearm = player.AddItem(type) as Firearm;
+            Firearm firearm = player.ReferenceHub.inventory.ServerAddItem(type, ItemAddReason.AdminCommand) as Firearm;
             if (firearm != null)
             {
+                firearm.TryGetModule(out IPrimaryAmmoContainerModule ammo);
+
                 if (grant_ammo)
-                    ammo_reserve = player.GetAmmoLimit(firearm.AmmoType);
+                    ammo_reserve = player.GetAmmoLimit(ammo.AmmoType);
                 else
-                    ammo_reserve = player.GetAmmo(firearm.AmmoType);
+                    ammo_reserve = player.GetAmmo(ammo.AmmoType);
 
                 uint attachment_code = AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub][type];
                 AttachmentsUtils.ApplyAttachmentsCode(firearm, attachment_code, true);
-                load_ammo = math.min(ammo_reserve, firearm.AmmoManagerModule.MaxAmmo);
-                firearm.Status = new FirearmStatus((byte)load_ammo, FirearmStatusFlags.MagazineInserted, attachment_code);
+                load_ammo = math.min(ammo_reserve, ammo.AmmoMax);
+                firearm.ApplyAttachmentsCode(attachment_code, true);
+                //firearm.Status = new FirearmStatus((byte)load_ammo, FirearmStatusFlags.MagazineInserted, attachment_code);
                 ammo_reserve -= load_ammo;
-                player.SetAmmo(firearm.AmmoType, (ushort)ammo_reserve);
+                player.SetAmmo(ammo.AmmoType, (ushort)ammo_reserve);
             }
         }
 

@@ -13,6 +13,9 @@ using System.Linq;
 using Unity.Mathematics;
 using static TheRiptide.Utility;
 using static TheRiptide.Translation;
+using InventorySystem.Items.Firearms.Modules;
+using InventorySystem;
+using System.Runtime.ExceptionServices;
 
 namespace TheRiptide
 {
@@ -769,25 +772,26 @@ namespace TheRiptide
 
         private void GrantAmmoReward(Player player, Firearm firearm, AmmoReward reward)
         {
+            firearm.TryGetModule(out IPrimaryAmmoContainerModule ammo);
             switch (reward.Action)
             {
                 case AmmoAction.Add:
                     if (reward.Stat == AmmoStat.Inventory)
-                        GrantAmmo(player, firearm.AmmoType, reward.Proportion);
+                        GrantAmmo(player, ammo.AmmoType, reward.Proportion);
                     else if (reward.Stat == AmmoStat.Gun)
                         GrantWeaponAmmo(firearm, reward.Proportion);
                     break;
                 case AmmoAction.Remove:
                     if (reward.Stat == AmmoStat.Inventory)
-                        GrantAmmo(player, firearm.AmmoType, -reward.Proportion);
+                        GrantAmmo(player, ammo.AmmoType, -reward.Proportion);
                     else if (reward.Stat == AmmoStat.Gun)
                         GrantWeaponAmmo(firearm, -reward.Proportion);
                     break;
                 case AmmoAction.Set:
                     if (reward.Stat == AmmoStat.Inventory)
-                        player.SetAmmo(firearm.AmmoType, (ushort)UnityEngine.Mathf.Clamp(player.GetAmmoLimit(firearm.AmmoType) * reward.Proportion, 0.0f, player.GetAmmoLimit(firearm.AmmoType)));
+                        player.SetAmmo(ammo.AmmoType, (ushort)UnityEngine.Mathf.Clamp(player.GetAmmoLimit(ammo.AmmoType) * reward.Proportion, 0.0f, player.GetAmmoLimit(ammo.AmmoType)));
                     else if (reward.Stat == AmmoStat.Gun)
-                        firearm.Status = new FirearmStatus((byte)UnityEngine.Mathf.Clamp(firearm.AmmoManagerModule.MaxAmmo * reward.Proportion, 0.0f, firearm.AmmoManagerModule.MaxAmmo), firearm.Status.Flags, firearm.Status.Attachments);
+                        ammo.ServerModifyAmmo((int)UnityEngine.Mathf.Clamp(ammo.AmmoMax * reward.Proportion, 0.0f, ammo.AmmoMax) - ammo.AmmoStored);
                     break;
             }
         }
@@ -852,8 +856,9 @@ namespace TheRiptide
 
         private void GrantWeaponAmmo(Firearm firearm, float proportion)
         {
-            byte ammo = (byte)UnityEngine.Mathf.Clamp(firearm.Status.Ammo + (firearm.AmmoManagerModule.MaxAmmo * proportion), 0.0f, firearm.AmmoManagerModule.MaxAmmo);
-            firearm.Status = new FirearmStatus(ammo, firearm.Status.Flags, firearm.Status.Attachments);
+            firearm.TryGetModule(out IPrimaryAmmoContainerModule ammo);
+            int delta_ammo = (int)UnityEngine.Mathf.Clamp(ammo.AmmoStored + ammo.AmmoMax * proportion, 0.0f, ammo.AmmoMax) - ammo.AmmoStored;
+            ammo.ServerModifyAmmo(delta_ammo);
         }
 
         private void GrantAmmo(Player player, ItemType ammo_type, float proportion)
@@ -864,21 +869,18 @@ namespace TheRiptide
 
         private void GrantFirearm(Player player, ItemType type)
         {
-            Firearm firearm = player.AddItem(type) as Firearm;
-            uint code = firearm.Status.Attachments;
-            if (firearm is ParticleDisruptor)
-            {
-                firearm.Status = new FirearmStatus(5, firearm.Status.Flags, code);
-            }
-            else
+            Firearm firearm = player.ReferenceHub.inventory.ServerAddItem(type, ItemAddReason.AdminCommand) as Firearm;
+            uint code = firearm.GetCurrentAttachmentsCode();
+            if (!(firearm is ParticleDisruptor))
             {
                 if (AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub].ContainsKey(type))
                     code = AttachmentsServerHandler.PlayerPreferences[player.ReferenceHub][type];
-                AttachmentsUtils.ApplyAttachmentsCode(firearm, code, true);
-                ushort ammo_reserve = player.GetAmmo(firearm.AmmoType);
-                byte ammo_loaded = (byte)UnityEngine.Mathf.Min(ammo_reserve, firearm.AmmoManagerModule.MaxAmmo);
-                player.SetAmmo(firearm.AmmoType, (ushort)(ammo_reserve - ammo_loaded));
-                firearm.Status = new FirearmStatus(ammo_loaded, FirearmStatusFlags.MagazineInserted, code);
+
+                firearm.ApplyAttachmentsCode(code, true);
+                firearm.TryGetModule(out IPrimaryAmmoContainerModule ammo);
+                ushort ammo_reserve = player.GetAmmo(ammo.AmmoType);
+                byte ammo_loaded = (byte)UnityEngine.Mathf.Min(ammo_reserve, ammo.AmmoMax);
+                player.SetAmmo(ammo.AmmoType, (ushort)(ammo_reserve - ammo_loaded));
             }
         }
     }

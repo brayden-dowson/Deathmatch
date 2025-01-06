@@ -7,6 +7,7 @@ using PlayerStatsSystem;
 using PluginAPI.Core;
 using PluginAPI.Core.Attributes;
 using PluginAPI.Enums;
+using PluginAPI.Events;
 using Respawning;
 using System;
 using System.Collections.Generic;
@@ -64,7 +65,10 @@ namespace TheRiptide
 
         public void MapGenerated()
         {
-            BuildSpawn(config.SpawnDimX, config.SpawnDimY);
+            Timing.CallDelayed(0.0f, () =>
+            {
+                BuildSpawn(config.SpawnDimX, config.SpawnDimY);
+            });
             round_started = false;
 
             //foreach (var c in NetworkManager.singleton.spawnPrefabs)
@@ -233,7 +237,7 @@ namespace TheRiptide
         }
 
         [PluginEvent(ServerEventType.TeamRespawn)]
-        bool OnRespawn(SpawnableTeamType team, List<Player> player, int count)
+        bool OnRespawn(TeamRespawnEvent _)
         {
             return false;
         }
@@ -329,10 +333,10 @@ namespace TheRiptide
             }
         }
 
-        private void BuildBlock(Vector3 offset, Vector3 size)
+        private void BuildBlock(GameObject prefab, Vector3 offset, Vector3 size)
         {
             Vector3 mid = (offset + (offset + size)) / 2.0f;
-            GameObject obj = NetworkManager.Instantiate(NetworkManager.singleton.spawnPrefabs[7], mid, Quaternion.Euler(Vector3.zero));
+            GameObject obj = NetworkManager.Instantiate(prefab, mid, Quaternion.Euler(Vector3.zero));
             PrimitiveObjectToy toy = obj.GetComponent<PrimitiveObjectToy>();
             toy.NetworkScale = size;
             toy.NetworkPrimitiveType = PrimitiveType.Cube;
@@ -349,7 +353,7 @@ namespace TheRiptide
             toy.LightColor = color;
             toy.LightIntensity = intensity;
             toy.LightRange = range;
-            toy.LightShadows = false;
+            toy.ShadowStrength = 0.0f;
             NetworkServer.Spawn(obj);
         }
 
@@ -357,15 +361,17 @@ namespace TheRiptide
 
         private void BuildSpawn(int x, int y)
         {
-            BuildBlock(offset, new Vector3(2.0f * x, -0.1f, 2.0f * y));
+            GameObject pot_prefab = NetworkClient.prefabs.Values.First(p => p.name == "PrimitiveObjectToy");
+
+            BuildBlock(pot_prefab, offset, new Vector3(2.0f * x, -0.1f, 2.0f * y));
             //BuildBlock(offset + new Vector3(0.0f, 3.0f, 0.0f), new Vector3(16.0f, 0.1f, 16.0f));
             for (int i = 0; i < x + 1; i++)
             {
-                BuildBlock(offset + new Vector3(i * 2.0f, 0.0f, 0.0f), new Vector3(0.1f, 2.25f, 2.0f * y));
+                BuildBlock(pot_prefab, offset + new Vector3(i * 2.0f, 0.0f, 0.0f), new Vector3(0.1f, 2.25f, 2.0f * y));
             }
             for (int i = 0; i < y + 1; i++)
             {
-                BuildBlock(offset + new Vector3(0.0f, 0.0f, i * 2.0f), new Vector3(2.0f * x, 2.25f, 0.1f));
+                BuildBlock(pot_prefab, offset + new Vector3(0.0f, 0.0f, i * 2.0f), new Vector3(2.0f * x, 2.25f, 0.1f));
             }
             AddLight(offset + new Vector3(x, x + y, y), new Color((float)config.SpawnColorRed / 255.0f, (float)config.SpawnColorGreen / 255.0f, (float)config.SpawnColorBlue / 255.0f), config.SpawnLightIntensity, (x + y) * 2.0f);
         }

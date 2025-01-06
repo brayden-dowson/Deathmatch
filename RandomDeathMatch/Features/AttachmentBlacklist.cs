@@ -82,9 +82,9 @@ namespace TheRiptide
                 BannedWeaponCodes.Add(firearm.ItemTypeId, ~code_mask);
             }
 
-            var s = firearm.Status;
-            uint new_code = s.Attachments & BannedWeaponCodes[firearm.ItemTypeId];
-            if(new_code != s.Attachments)
+            uint old_code = firearm.GetCurrentAttachmentsCode();
+            uint new_code = old_code & BannedWeaponCodes[firearm.ItemTypeId];
+            if(new_code != old_code)
             {
                 BitArray ba = new BitArray(BitConverter.GetBytes(~BannedWeaponCodes[firearm.ItemTypeId]));
                 List<string> attachments = new List<string>();
@@ -99,7 +99,7 @@ namespace TheRiptide
                 }
                 BroadcastOverride.BroadcastLine(player, 1, 3.0f, BroadcastPriority.Medium, translation.AttachmentBanned.Replace("{attachment}", string.Join(", ", attachments)));
                 BroadcastOverride.UpdateIfDirty(player);
-                firearm.Status = new FirearmStatus(s.Ammo, s.Flags, new_code);
+                firearm.ApplyAttachmentsCode(new_code, true);
             }
         }
     }

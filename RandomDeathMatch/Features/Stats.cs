@@ -322,10 +322,10 @@ namespace TheRiptide
                 }
 
                 float mins_alive = 60.0f / math.max(stats.time_alive, 300);
-                float kd = (float)stats.kills / stats.deaths;
+                float akd = (stats.kills + 1.0f) / (stats.deaths + 1.0f);
                 float HsK = (float)stats.headshot_kills / stats.kills;
                 float accuracy = (float)stats.shots_hit / stats.shots;
-                float score = kd * HsK * accuracy / mins_alive;
+                float score = akd * HsK * accuracy / mins_alive;
 
                 if (score > most_score)
                 {

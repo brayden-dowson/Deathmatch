@@ -145,10 +145,15 @@ namespace TheRiptide
                 Database.Rank victim_rank = player_ranks[victim.PlayerId];
                 Database.Rank killer_rank = player_ranks[killer.PlayerId];
 
-                if (!(victim_rank.state == Database.RankState.Ranked && killer_rank.state == Database.RankState.Placement))
-                    player_matches[victim.UserId].Add(new GlickoOpponent(player_glikco[killer.UserId], 0));
-                if (!(killer_rank.state == Database.RankState.Ranked && victim_rank.state == Database.RankState.Placement))
-                    player_matches[killer.UserId].Add(new GlickoOpponent(player_glikco[victim.UserId], 1));
+                //if (!(victim_rank.state == Database.RankState.Ranked && killer_rank.state == Database.RankState.Placement))
+                //    player_matches[victim.UserId].Add(new GlickoOpponent(player_glikco[killer.UserId], 0));
+                //if (!(killer_rank.state == Database.RankState.Ranked && victim_rank.state == Database.RankState.Placement))
+                //    player_matches[killer.UserId].Add(new GlickoOpponent(player_glikco[victim.UserId], 1));
+
+                if (victim_rank.state == Database.RankState.Placement || killer_rank.state == Database.RankState.Ranked)//(ranked/placement) kills placement || ranked kills ranked
+                    player_matches[victim.UserId].Add(new GlickoOpponent(player_glikco[killer.UserId], 0));//-1 on victim
+                if (killer_rank.state == Database.RankState.Placement || victim_rank.state == Database.RankState.Ranked)//(ranked/placement) kills ranked    || placement kills placement
+                    player_matches[killer.UserId].Add(new GlickoOpponent(player_glikco[victim.UserId], 1));//+1 on killer
 
                 if (victim_rank.state == Database.RankState.Placement)
                     victim_rank.placement_matches++;
@@ -455,6 +460,7 @@ namespace TheRiptide
         }
 
         [CommandHandler(typeof(RemoteAdminCommandHandler))]
+        [CommandHandler(typeof(GameConsoleCommandHandler))]
         public class DmGetRank : ICommand
         {
             public bool SanitizeResponse => false;
@@ -463,7 +469,7 @@ namespace TheRiptide
 
             public string[] Aliases { get; } = new string[] { "dmgr" };
 
-            public string Description { get; } = "set players rating. usage: dm_get_rank [player_id] [rating]";
+            public string Description { get; } = "get players rating. usage: dm_get_rank [player_id]";
 
             public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
             {

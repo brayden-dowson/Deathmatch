@@ -48,10 +48,10 @@ namespace TheRiptide
             Log.Info(EventName + " event is preparing");
             IsRunning = true;
             Deathmatch.Singleton.Start();
-            //Deathmatch.Singleton.OnMapGenerated();
+            Deathmatch.Singleton.OnMapGenerated();
             Deathmatch.Singleton.OnWaitingForPlayers();
             Log.Info(EventName + " event is prepared");
-            PluginAPI.Events.EventManager.RegisterEvents<DmRound>(this);
+            //PluginAPI.Events.EventManager.RegisterEvents<DmRound>(this);
         }
 
         public void StopEvent()
@@ -63,7 +63,7 @@ namespace TheRiptide
             Deathmatch.Singleton.OnRoundEnd(LeadingTeam.Draw);
             Deathmatch.Singleton.OnRoundRestart();
             Deathmatch.Singleton.Stop();
-            PluginAPI.Events.EventManager.UnregisterEvents<DmRound>(this);
+            //PluginAPI.Events.EventManager.UnregisterEvents<DmRound>(this);
         }
 
         [PluginEntryPoint("Random Deathmatch Event", "1.0.0", "", "The Riptide")]
